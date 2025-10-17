@@ -1,9 +1,9 @@
 import { useQuery } from "@tanstack/react-query";
 import PropertyCard from "@/components/PropertyCard";
+import PropertyCardSkeleton from "@/components/PropertyCardSkeleton";
 import FiltersBar from "@/components/FiltersBar";
 import SortingControls from "@/components/SortingControls";
 import PaginationControls from "@/components/PaginationControls";
-import { Loader2 } from "lucide-react";
 import { useLocation } from "wouter";
 
 interface Property {
@@ -68,8 +68,14 @@ export default function Immobili() {
       <div className="container mx-auto px-4 py-8">
         <h1 className="text-4xl font-bold mb-8">Lista Immobili</h1>
         <FiltersBar />
-        <div className="flex items-center justify-center py-12">
-          <Loader2 className="w-8 h-8 animate-spin text-primary" data-testid="loader-properties" />
+        <div className="flex flex-wrap items-center justify-between gap-4 mb-6">
+          <div className="h-5 w-32 bg-muted rounded animate-pulse" />
+          <div className="h-10 w-48 bg-muted rounded animate-pulse" />
+        </div>
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+          {Array.from({ length: 6 }).map((_, i) => (
+            <PropertyCardSkeleton key={i} />
+          ))}
         </div>
       </div>
     );
