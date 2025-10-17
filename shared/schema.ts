@@ -53,6 +53,7 @@ export const posts = pgTable("posts", {
   categoria: text("categoria"),
   autore: text("autore").notNull(),
   stato: postStatusEnum("stato").notNull().default("bozza"),
+  publishedAt: timestamp("published_at"),
   metaTitle: text("meta_title"),
   metaDescription: text("meta_description"),
   createdAt: timestamp("created_at").notNull().default(sql`now()`),
@@ -102,6 +103,7 @@ export const insertPostSchema = createInsertSchema(posts).omit({
   id: true,
   createdAt: true,
   updatedAt: true,
+  publishedAt: true,
 });
 
 export type InsertPost = z.infer<typeof insertPostSchema>;
