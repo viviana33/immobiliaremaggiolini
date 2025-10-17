@@ -1,6 +1,8 @@
 import { useQuery } from "@tanstack/react-query";
 import PropertyCard from "@/components/PropertyCard";
+import FiltersBar from "@/components/FiltersBar";
 import { Loader2 } from "lucide-react";
+import { useState, useEffect } from "react";
 
 interface Property {
   id: string;
@@ -13,14 +15,58 @@ interface Property {
 }
 
 export default function Immobili() {
+  const [queryParams, setQueryParams] = useState<string>("");
+
+  useEffect(() => {
+    const params = new URLSearchParams(window.location.search);
+    setQueryParams(params.toString());
+  }, []);
+
+  useEffect(() => {
+    const handlePopState = () => {
+      const params = new URLSearchParams(window.location.search);
+      setQueryParams(params.toString());
+    };
+
+    window.addEventListener("popstate", handlePopState);
+    
+    const observer = new MutationObserver(() => {
+      const params = new URLSearchParams(window.location.search);
+      if (params.toString() !== queryParams) {
+        setQueryParams(params.toString());
+      }
+    });
+
+    return () => {
+      window.removeEventListener("popstate", handlePopState);
+      observer.disconnect();
+    };
+  }, [queryParams]);
+
+  const queryKey = queryParams ? ['/api/properties', queryParams] : ['/api/properties'];
+  const queryUrl = queryParams ? `/api/properties?${queryParams}` : '/api/properties';
+
   const { data: properties, isLoading, error } = useQuery<Property[]>({
-    queryKey: ['/api/properties'],
+    queryKey,
+    queryFn: async () => {
+      const response = await fetch(queryUrl);
+      if (!response.ok) {
+        throw new Error('Failed to fetch properties');
+      }
+      return response.json();
+    },
   });
+
+  const handleFiltersChange = () => {
+    const params = new URLSearchParams(window.location.search);
+    setQueryParams(params.toString());
+  };
 
   if (error) {
     return (
       <div className="container mx-auto px-4 py-8">
         <h1 className="text-4xl font-bold mb-8">Lista Immobili</h1>
+        <FiltersBar onFiltersChange={handleFiltersChange} />
         <div className="text-center py-12">
           <p className="text-destructive text-lg" data-testid="text-error">
             Errore nel caricamento degli immobili. Riprova più tardi.
@@ -34,6 +80,7 @@ export default function Immobili() {
     return (
       <div className="container mx-auto px-4 py-8">
         <h1 className="text-4xl font-bold mb-8">Lista Immobili</h1>
+        <FiltersBar onFiltersChange={handleFiltersChange} />
         <div className="flex items-center justify-center py-12">
           <Loader2 className="w-8 h-8 animate-spin text-primary" data-testid="loader-properties" />
         </div>
@@ -42,13 +89,27 @@ export default function Immobili() {
   }
 
   if (!properties || properties.length === 0) {
+    const hasFilters = queryParams !== "";
+    
     return (
       <div className="container mx-auto px-4 py-8">
-        <h1 className="text-4xl font-bold mb-8">Lista Immobili</h1>
+        <h1 className="text-4xl font-bold mb-8" data-testid="heading-immobili">Lista Immobili</h1>
+        <FiltersBar onFiltersChange={handleFiltersChange} />
         <div className="text-center py-12">
-          <p className="text-muted-foreground text-lg" data-testid="text-no-properties">
-            Nessun immobile disponibile al momento.
-          </p>
+          {hasFilters ? (
+            <div className="space-y-4">
+              <p className="text-muted-foreground text-lg" data-testid="text-no-results">
+                Nessun immobile corrisponde ai filtri selezionati.
+              </p>
+              <p className="text-sm text-muted-foreground">
+                Prova a modificare i criteri di ricerca o rimuovere alcuni filtri.
+              </p>
+            </div>
+          ) : (
+            <p className="text-muted-foreground text-lg" data-testid="text-no-properties">
+              Nessun immobile disponibile al momento.
+            </p>
+          )}
         </div>
       </div>
     );
@@ -57,6 +118,14 @@ export default function Immobili() {
   return (
     <div className="container mx-auto px-4 py-8">
       <h1 className="text-4xl font-bold mb-8" data-testid="heading-immobili">Lista Immobili</h1>
+      
+      <FiltersBar onFiltersChange={handleFiltersChange} />
+      
+      <div className="mb-4">
+        <p className="text-sm text-muted-foreground" data-testid="text-results-count">
+          {properties.length} {properties.length === 1 ? "immobile trovato" : "immobili trovati"}
+        </p>
+      </div>
       
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
         {properties.map((property) => {
