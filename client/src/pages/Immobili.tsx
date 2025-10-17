@@ -59,20 +59,26 @@ export default function Immobili() {
       <h1 className="text-4xl font-bold mb-8" data-testid="heading-immobili">Lista Immobili</h1>
       
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-        {properties.map((property) => (
-          <PropertyCard
-            key={property.id}
-            id={property.id}
-            title={property.title}
-            location={property.location}
-            price={`€ ${parseFloat(property.price).toLocaleString('it-IT')}`}
-            image="https://images.unsplash.com/photo-1568605114967-8130f3a36994?w=800&h=600&fit=crop"
-            type={property.for_rent ? "affitto" : "vendita"}
-            bedrooms={2}
-            bathrooms={1}
-            area={property.area_mq}
-          />
-        ))}
+        {properties.map((property) => {
+          const priceValue = typeof property.price === 'string' 
+            ? parseFloat(property.price) 
+            : property.price;
+          
+          return (
+            <PropertyCard
+              key={property.id}
+              id={property.id}
+              title={property.title}
+              location={property.location}
+              price={`€ ${priceValue.toLocaleString('it-IT')}`}
+              image="https://images.unsplash.com/photo-1568605114967-8130f3a36994?w=800&h=600&fit=crop"
+              type={property.for_rent ? "affitto" : "vendita"}
+              bedrooms={2}
+              bathrooms={1}
+              area={property.area_mq}
+            />
+          );
+        })}
       </div>
     </div>
   );

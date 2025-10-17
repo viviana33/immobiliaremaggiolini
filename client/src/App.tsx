@@ -31,11 +31,6 @@ function Router() {
           </ProtectedRoute>
         )}
       </Route>
-      <Route path="/admin/immobili" component={() => (
-        <ProtectedRoute>
-          <AdminImmobili />
-        </ProtectedRoute>
-      )} />
       <Route path="/admin/immobili/nuovo" component={() => (
         <ProtectedRoute>
           <AdminImmobileForm />
@@ -46,19 +41,24 @@ function Router() {
           <AdminImmobileForm />
         </ProtectedRoute>
       )} />
-      <Route path="/">
+      <Route path="/admin/immobili" component={() => (
+        <ProtectedRoute>
+          <AdminImmobili />
+        </ProtectedRoute>
+      )} />
+      <Route>
         {() => (
           <div className="min-h-screen flex flex-col">
             <Navbar />
             <main className="flex-1">
               <Switch>
-                <Route path="/" component={Home} />
                 <Route path="/proprieta" component={Proprieta} />
                 <Route path="/immobili" component={Immobili} />
                 <Route path="/immobile/:slug" component={ImmobileDettaglio} />
                 <Route path="/blog" component={Blog} />
                 <Route path="/chi-siamo" component={ChiSiamo} />
                 <Route path="/contatti" component={Contatti} />
+                <Route path="/" component={Home} />
                 <Route component={NotFound} />
               </Switch>
             </main>
