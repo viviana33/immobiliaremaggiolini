@@ -49,6 +49,7 @@ export const posts = pgTable("posts", {
   cover: text("cover"),
   contenuto: text("contenuto").notNull(),
   tag: text("tag").array().default(sql`ARRAY[]::text[]`),
+  categoria: text("categoria"),
   autore: text("autore").notNull(),
   stato: postStatusEnum("stato").notNull().default("bozza"),
   metaTitle: text("meta_title"),
