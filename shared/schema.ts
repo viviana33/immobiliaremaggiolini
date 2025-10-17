@@ -122,3 +122,13 @@ export const insertUserSchema = createInsertSchema(users).pick({
 
 export type InsertUser = z.infer<typeof insertUserSchema>;
 export type User = typeof users.$inferSelect;
+
+// Property filters schema
+export const propertyFiltersSchema = z.object({
+  tipo: z.enum(["vendita", "affitto"]).optional(),
+  prezzoMin: z.coerce.number().positive().optional(),
+  prezzoMax: z.coerce.number().positive().optional(),
+  mqMin: z.coerce.number().positive().optional(),
+});
+
+export type PropertyFilters = z.infer<typeof propertyFiltersSchema>;
