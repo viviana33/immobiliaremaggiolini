@@ -1,4 +1,4 @@
-import { eq, desc, and, gte, lte } from "drizzle-orm";
+import { eq, desc, asc, and, gte, lte, count } from "drizzle-orm";
 import { db } from "./db";
 import { 
   users, 
@@ -13,13 +13,21 @@ import {
   type PropertyFilters
 } from "@shared/schema";
 
+export interface PaginatedProperties {
+  properties: Property[];
+  total: number;
+  page: number;
+  perPage: number;
+  totalPages: number;
+}
+
 export interface IStorage {
   getUser(id: string): Promise<User | undefined>;
   getUserByUsername(username: string): Promise<User | undefined>;
   createUser(user: InsertUser): Promise<User>;
   
   getAllProperties(): Promise<Property[]>;
-  getFilteredProperties(filters: PropertyFilters): Promise<Property[]>;
+  getFilteredProperties(filters: PropertyFilters): Promise<PaginatedProperties>;
   getPropertyById(id: string): Promise<Property | undefined>;
   createProperty(property: InsertProperty): Promise<Property>;
   updateProperty(id: string, property: Partial<InsertProperty>): Promise<Property | undefined>;
@@ -51,7 +59,7 @@ export class DbStorage implements IStorage {
     return db.select().from(properties).orderBy(desc(properties.createdAt));
   }
 
-  async getFilteredProperties(filters: PropertyFilters): Promise<Property[]> {
+  async getFilteredProperties(filters: PropertyFilters): Promise<PaginatedProperties> {
     const conditions = [];
     
     if (filters.tipo) {
@@ -70,11 +78,48 @@ export class DbStorage implements IStorage {
       conditions.push(gte(properties.mq, filters.mqMin));
     }
     
-    const query = conditions.length > 0 
-      ? db.select().from(properties).where(and(...conditions)).orderBy(desc(properties.createdAt))
-      : db.select().from(properties).orderBy(desc(properties.createdAt));
+    const orderBy = this.getOrderBy(filters.sort);
+    const page = filters.page || 1;
+    const perPage = filters.perPage || 12;
+    const offset = (page - 1) * perPage;
     
-    return query;
+    const whereClause = conditions.length > 0 ? and(...conditions) : undefined;
+    
+    const [totalResult] = await db
+      .select({ count: count() })
+      .from(properties)
+      .where(whereClause);
+    
+    const total = totalResult?.count || 0;
+    const totalPages = Math.ceil(total / perPage);
+    
+    const propertiesList = whereClause
+      ? await db.select().from(properties).where(whereClause).orderBy(orderBy).limit(perPage).offset(offset)
+      : await db.select().from(properties).orderBy(orderBy).limit(perPage).offset(offset);
+    
+    return {
+      properties: propertiesList,
+      total,
+      page,
+      perPage,
+      totalPages,
+    };
+  }
+  
+  private getOrderBy(sort?: string) {
+    switch (sort) {
+      case "prezzo_asc":
+        return asc(properties.prezzo);
+      case "prezzo_desc":
+        return desc(properties.prezzo);
+      case "mq_asc":
+        return asc(properties.mq);
+      case "mq_desc":
+        return desc(properties.mq);
+      case "recente":
+      default:
+        return desc(properties.createdAt);
+    }
   }
 
   async getPropertyById(id: string): Promise<Property | undefined> {
