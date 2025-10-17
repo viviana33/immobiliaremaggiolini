@@ -86,7 +86,7 @@ Preferred communication style: Simple, everyday language.
 
 3. **Blog Posts Table** (`posts`):
    - Title, subtitle, slug (unique), cover image
-   - Rich content field, tag array
+   - Rich content field, tag array, category
    - Author and publication metadata
    - Status enum (bozza/pubblicato/archiviato)
    - SEO fields and timestamps
@@ -115,6 +115,17 @@ Preferred communication style: Simple, everyday language.
 - **Contact CTA**: "Richiedi Informazioni" button links to `/contatti?ref=immobile&context=<id>`
 - **Error handling**: Elegant 404 page with back-to-listings option for invalid slugs
 - **Image placeholders**: Graceful fallback when no images are available
+
+**Blog Admin Form** (`/admin/blog/nuovo`) (October 2025):
+- **Form implementation**: Complete blog post form with React Hook Form and Zod validation
+- **All required fields**: title (required), subtitle (optional), slug (readonly), cover image URL, content with MarkdownEditor, tags (comma-separated), category, status (bozza/pubblicato), SEO fields
+- **MarkdownEditor component**: Tabbed interface with Edit and Preview modes
+  - Edit tab: textarea for markdown content input
+  - Preview tab: displays raw markdown text (fake preview without rendering)
+  - Controlled component integrated with React Hook Form
+- **Status management**: Default status is "bozza" (draft), can be changed to "pubblicato" (published)
+- **Tags handling**: Comma-separated string input converted to array for database storage
+- **Disabled actions**: "Salva Bozza" (Save Draft) and "Pubblica" (Publish) buttons are disabled pending backend implementation
 
 **Type Safety**: 
 - Zod schemas generated from Drizzle schemas via drizzle-zod

@@ -269,13 +269,13 @@ export function PostForm({ postId }: PostFormProps) {
           <Button 
             variant="outline" 
             data-testid="button-save-draft"
-            disabled
+            disabled={true}
           >
             Salva Bozza
           </Button>
           <Button 
             data-testid="button-publish"
-            disabled
+            disabled={true}
           >
             Pubblica
           </Button>
