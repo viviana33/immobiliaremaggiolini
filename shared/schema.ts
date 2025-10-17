@@ -48,6 +48,7 @@ export const posts = pgTable("posts", {
   slug: text("slug").notNull().unique(),
   cover: text("cover"),
   contenuto: text("contenuto").notNull(),
+  readingTimeMin: integer("reading_time_min"),
   tag: text("tag").array().default(sql`ARRAY[]::text[]`),
   categoria: text("categoria"),
   autore: text("autore").notNull(),
