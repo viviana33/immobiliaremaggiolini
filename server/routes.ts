@@ -2,6 +2,9 @@ import type { Express } from "express";
 import { createServer, type Server } from "http";
 import { storage } from "./storage";
 import { requireAdmin } from "./middleware/auth";
+import multer from "multer";
+import { uploadService } from "./uploadService";
+import { insertPropertySchema } from "@shared/schema";
 
 export async function registerRoutes(app: Express): Promise<Server> {
   // Auth routes
@@ -37,8 +40,122 @@ export async function registerRoutes(app: Express): Promise<Server> {
     res.json({ isAuthenticated: !!req.session.isAdmin });
   });
 
-  // Protected admin routes - add your admin API routes here
-  // Example: app.get("/api/admin/stats", requireAdmin, async (req, res) => { ... });
+  const upload = multer({ 
+    storage: multer.memoryStorage(),
+    limits: { 
+      fileSize: 10 * 1024 * 1024,
+      files: 15
+    }
+  });
+
+  app.get("/api/admin/properties", requireAdmin, async (req, res) => {
+    try {
+      const properties = await storage.getAllProperties();
+      res.json(properties);
+    } catch (error) {
+      console.error("Error fetching properties:", error);
+      res.status(500).json({ message: "Errore nel recupero degli immobili" });
+    }
+  });
+
+  app.get("/api/admin/properties/:id", requireAdmin, async (req, res) => {
+    try {
+      const property = await storage.getPropertyById(req.params.id);
+      if (!property) {
+        return res.status(404).json({ message: "Immobile non trovato" });
+      }
+      
+      const images = await storage.getPropertyImages(req.params.id);
+      res.json({ ...property, images });
+    } catch (error) {
+      console.error("Error fetching property:", error);
+      res.status(500).json({ message: "Errore nel recupero dell'immobile" });
+    }
+  });
+
+  app.post("/api/admin/properties", requireAdmin, upload.array("images", 15), async (req, res) => {
+    try {
+      const validatedData = insertPropertySchema.parse(req.body);
+      
+      const property = await storage.createProperty(validatedData);
+      
+      const files = req.files as Express.Multer.File[];
+      if (files && files.length > 0) {
+        const uploadPromises = files.map(async (file) => {
+          const result = await uploadService.uploadImage(file.buffer, file.originalname);
+          return storage.createPropertyImage({
+            propertyId: property.id,
+            urlHot: result.urlHot,
+            urlCold: result.urlCold,
+            hashFile: result.hashFile,
+          });
+        });
+        
+        await Promise.all(uploadPromises);
+      }
+      
+      res.status(201).json(property);
+    } catch (error) {
+      console.error("Error creating property:", error);
+      res.status(500).json({ message: "Errore nella creazione dell'immobile" });
+    }
+  });
+
+  app.put("/api/admin/properties/:id", requireAdmin, upload.array("images", 15), async (req, res) => {
+    try {
+      const validatedData = insertPropertySchema.partial().parse(req.body);
+      
+      const updatedProperty = await storage.updateProperty(req.params.id, validatedData);
+      
+      if (!updatedProperty) {
+        return res.status(404).json({ message: "Immobile non trovato" });
+      }
+      
+      const files = req.files as Express.Multer.File[];
+      if (files && files.length > 0) {
+        const uploadPromises = files.map(async (file) => {
+          const result = await uploadService.uploadImage(file.buffer, file.originalname);
+          return storage.createPropertyImage({
+            propertyId: updatedProperty.id,
+            urlHot: result.urlHot,
+            urlCold: result.urlCold,
+            hashFile: result.hashFile,
+          });
+        });
+        
+        await Promise.all(uploadPromises);
+      }
+      
+      if (updatedProperty.stato === "venduto" || updatedProperty.stato === "affittato") {
+        await storage.archivePropertyImages(updatedProperty.id, 3);
+      }
+      
+      res.json(updatedProperty);
+    } catch (error) {
+      console.error("Error updating property:", error);
+      res.status(500).json({ message: "Errore nell'aggiornamento dell'immobile" });
+    }
+  });
+
+  app.delete("/api/admin/properties/:id", requireAdmin, async (req, res) => {
+    try {
+      await storage.deleteProperty(req.params.id);
+      res.json({ message: "Immobile eliminato con successo" });
+    } catch (error) {
+      console.error("Error deleting property:", error);
+      res.status(500).json({ message: "Errore nell'eliminazione dell'immobile" });
+    }
+  });
+
+  app.delete("/api/admin/properties/:propertyId/images/:imageId", requireAdmin, async (req, res) => {
+    try {
+      await storage.deletePropertyImage(req.params.imageId);
+      res.json({ message: "Immagine eliminata con successo" });
+    } catch (error) {
+      console.error("Error deleting image:", error);
+      res.status(500).json({ message: "Errore nell'eliminazione dell'immagine" });
+    }
+  });
 
   const httpServer = createServer(app);
 
