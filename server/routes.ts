@@ -48,6 +48,27 @@ export async function registerRoutes(app: Express): Promise<Server> {
     }
   });
 
+  app.get("/api/properties", async (req, res) => {
+    try {
+      const properties = await storage.getAllProperties();
+      
+      const formattedProperties = properties.map(p => ({
+        id: p.id,
+        slug: p.slug,
+        title: p.titolo,
+        price: p.prezzo,
+        for_rent: p.tipo === "affitto",
+        area_mq: p.mq,
+        location: p.zona,
+      }));
+      
+      res.json(formattedProperties);
+    } catch (error) {
+      console.error("Error fetching properties:", error);
+      res.status(500).json({ message: "Errore nel recupero degli immobili" });
+    }
+  });
+
   app.get("/api/admin/properties", requireAdmin, async (req, res) => {
     try {
       const properties = await storage.getAllProperties();
