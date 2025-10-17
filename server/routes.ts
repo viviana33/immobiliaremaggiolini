@@ -7,7 +7,14 @@ export async function registerRoutes(app: Express): Promise<Server> {
   // Auth routes
   app.post("/api/auth/login", async (req, res) => {
     const { token } = req.body;
-    const adminToken = process.env.ADMIN_TOKEN || "admin123";
+    const adminToken = process.env.ADMIN_TOKEN;
+    
+    if (!adminToken) {
+      return res.status(500).json({ 
+        success: false, 
+        message: "Configurazione server non corretta. Contatta l'amministratore." 
+      });
+    }
     
     if (token === adminToken) {
       req.session.isAdmin = true;

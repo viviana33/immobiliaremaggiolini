@@ -11,17 +11,33 @@ import Proprieta from "@/pages/Proprieta";
 import Blog from "@/pages/Blog";
 import ChiSiamo from "@/pages/ChiSiamo";
 import Contatti from "@/pages/Contatti";
+import Login from "@/pages/Login";
+import AdminDashboard from "@/pages/AdminDashboard";
 import NotFound from "@/pages/not-found";
 
 function Router() {
   return (
     <Switch>
-      <Route path="/" component={Home} />
-      <Route path="/proprieta" component={Proprieta} />
-      <Route path="/blog" component={Blog} />
-      <Route path="/chi-siamo" component={ChiSiamo} />
-      <Route path="/contatti" component={Contatti} />
-      <Route component={NotFound} />
+      <Route path="/login" component={Login} />
+      <Route path="/admin/dashboard" component={AdminDashboard} />
+      <Route path="/">
+        {() => (
+          <div className="min-h-screen flex flex-col">
+            <Navbar />
+            <main className="flex-1">
+              <Switch>
+                <Route path="/" component={Home} />
+                <Route path="/proprieta" component={Proprieta} />
+                <Route path="/blog" component={Blog} />
+                <Route path="/chi-siamo" component={ChiSiamo} />
+                <Route path="/contatti" component={Contatti} />
+                <Route component={NotFound} />
+              </Switch>
+            </main>
+            <Footer />
+          </div>
+        )}
+      </Route>
     </Switch>
   );
 }
@@ -31,13 +47,7 @@ function App() {
     <QueryClientProvider client={queryClient}>
       <ThemeProvider>
         <TooltipProvider>
-          <div className="min-h-screen flex flex-col">
-            <Navbar />
-            <main className="flex-1">
-              <Router />
-            </main>
-            <Footer />
-          </div>
+          <Router />
           <Toaster />
         </TooltipProvider>
       </ThemeProvider>
