@@ -80,6 +80,31 @@ export async function registerRoutes(app: Express): Promise<Server> {
     }
   });
 
+  app.get("/api/properties/:slug", async (req, res) => {
+    try {
+      const property = await storage.getPropertyBySlug(req.params.slug);
+      if (!property) {
+        return res.status(404).json({ message: "Immobile non trovato" });
+      }
+      
+      const images = await storage.getPropertyImages(property.id);
+      const activeImages = images.filter(img => !img.archiviato).slice(0, 15);
+      
+      const similarProperties = property.stato !== "disponibile" 
+        ? await storage.getSimilarProperties(property.id, 3)
+        : [];
+      
+      res.json({ 
+        ...property, 
+        images: activeImages,
+        similarProperties 
+      });
+    } catch (error) {
+      console.error("Error fetching property:", error);
+      res.status(500).json({ message: "Errore nel recupero dell'immobile" });
+    }
+  });
+
   app.get("/api/admin/properties", requireAdmin, async (req, res) => {
     try {
       const properties = await storage.getAllProperties();

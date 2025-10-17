@@ -29,6 +29,8 @@ export interface IStorage {
   getAllProperties(): Promise<Property[]>;
   getFilteredProperties(filters: PropertyFilters): Promise<PaginatedProperties>;
   getPropertyById(id: string): Promise<Property | undefined>;
+  getPropertyBySlug(slug: string): Promise<Property | undefined>;
+  getSimilarProperties(propertyId: string, limit?: number): Promise<Property[]>;
   createProperty(property: InsertProperty): Promise<Property>;
   updateProperty(id: string, property: Partial<InsertProperty>): Promise<Property | undefined>;
   deleteProperty(id: string): Promise<void>;
@@ -125,6 +127,35 @@ export class DbStorage implements IStorage {
   async getPropertyById(id: string): Promise<Property | undefined> {
     const [property] = await db.select().from(properties).where(eq(properties.id, id));
     return property;
+  }
+
+  async getPropertyBySlug(slug: string): Promise<Property | undefined> {
+    const [property] = await db.select().from(properties).where(eq(properties.slug, slug));
+    return property;
+  }
+
+  async getSimilarProperties(propertyId: string, limit: number = 3): Promise<Property[]> {
+    const property = await this.getPropertyById(propertyId);
+    if (!property) return [];
+    
+    const priceRange = Number(property.prezzo) * 0.2;
+    const minPrice = (Number(property.prezzo) - priceRange).toString();
+    const maxPrice = (Number(property.prezzo) + priceRange).toString();
+    
+    const similar = await db
+      .select()
+      .from(properties)
+      .where(
+        and(
+          eq(properties.tipo, property.tipo),
+          eq(properties.zona, property.zona),
+          gte(properties.prezzo, minPrice),
+          lte(properties.prezzo, maxPrice)
+        )
+      )
+      .limit(limit + 1);
+    
+    return similar.filter(p => p.id !== propertyId).slice(0, limit);
   }
 
   async createProperty(property: InsertProperty): Promise<Property> {
