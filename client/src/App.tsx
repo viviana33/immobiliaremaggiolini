@@ -8,6 +8,8 @@ import Navbar from "@/components/Navbar";
 import Footer from "@/components/Footer";
 import Home from "@/pages/Home";
 import Proprieta from "@/pages/Proprieta";
+import Immobili from "@/pages/Immobili";
+import ImmobileDettaglio from "@/pages/ImmobileDettaglio";
 import Blog from "@/pages/Blog";
 import ChiSiamo from "@/pages/ChiSiamo";
 import Contatti from "@/pages/Contatti";
@@ -52,6 +54,8 @@ function Router() {
               <Switch>
                 <Route path="/" component={Home} />
                 <Route path="/proprieta" component={Proprieta} />
+                <Route path="/immobili" component={Immobili} />
+                <Route path="/immobile/:slug" component={ImmobileDettaglio} />
                 <Route path="/blog" component={Blog} />
                 <Route path="/chi-siamo" component={ChiSiamo} />
                 <Route path="/contatti" component={Contatti} />
