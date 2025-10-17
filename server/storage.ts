@@ -4,13 +4,16 @@ import {
   users, 
   properties, 
   propertiesImages,
+  posts,
   type User, 
   type InsertUser,
   type Property,
   type InsertProperty,
   type PropertyImage,
   type InsertPropertyImage,
-  type PropertyFilters
+  type PropertyFilters,
+  type Post,
+  type InsertPost
 } from "@shared/schema";
 
 export interface PaginatedProperties {
@@ -39,6 +42,12 @@ export interface IStorage {
   createPropertyImage(image: InsertPropertyImage): Promise<PropertyImage>;
   deletePropertyImage(id: string): Promise<void>;
   archivePropertyImages(propertyId: string, keepCount: number): Promise<void>;
+  
+  getAllPosts(): Promise<Post[]>;
+  getPostById(id: string): Promise<Post | undefined>;
+  createPost(post: InsertPost): Promise<Post>;
+  updatePost(id: string, post: Partial<InsertPost>): Promise<Post | undefined>;
+  deletePost(id: string): Promise<void>;
 }
 
 export class DbStorage implements IStorage {
@@ -207,6 +216,33 @@ export class DbStorage implements IStorage {
           .where(eq(propertiesImages.id, img.id));
       }
     }
+  }
+
+  async getAllPosts(): Promise<Post[]> {
+    return db.select().from(posts).orderBy(desc(posts.updatedAt));
+  }
+
+  async getPostById(id: string): Promise<Post | undefined> {
+    const [post] = await db.select().from(posts).where(eq(posts.id, id));
+    return post;
+  }
+
+  async createPost(post: InsertPost): Promise<Post> {
+    const [newPost] = await db.insert(posts).values(post).returning();
+    return newPost;
+  }
+
+  async updatePost(id: string, post: Partial<InsertPost>): Promise<Post | undefined> {
+    const [updated] = await db
+      .update(posts)
+      .set({ ...post, updatedAt: new Date() })
+      .where(eq(posts.id, id))
+      .returning();
+    return updated;
+  }
+
+  async deletePost(id: string): Promise<void> {
+    await db.delete(posts).where(eq(posts.id, id));
   }
 }
 

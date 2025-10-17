@@ -236,6 +236,16 @@ export async function registerRoutes(app: Express): Promise<Server> {
     }
   });
 
+  app.get("/api/admin/posts", requireAdmin, async (req, res) => {
+    try {
+      const posts = await storage.getAllPosts();
+      res.json(posts);
+    } catch (error) {
+      console.error("Error fetching posts:", error);
+      res.status(500).json({ message: "Errore nel recupero dei post" });
+    }
+  });
+
   const httpServer = createServer(app);
 
   return httpServer;
