@@ -1,4 +1,4 @@
-import { eq, desc } from "drizzle-orm";
+import { eq, desc, and, gte, lte } from "drizzle-orm";
 import { db } from "./db";
 import { 
   users, 
@@ -9,7 +9,8 @@ import {
   type Property,
   type InsertProperty,
   type PropertyImage,
-  type InsertPropertyImage
+  type InsertPropertyImage,
+  type PropertyFilters
 } from "@shared/schema";
 
 export interface IStorage {
@@ -18,6 +19,7 @@ export interface IStorage {
   createUser(user: InsertUser): Promise<User>;
   
   getAllProperties(): Promise<Property[]>;
+  getFilteredProperties(filters: PropertyFilters): Promise<Property[]>;
   getPropertyById(id: string): Promise<Property | undefined>;
   createProperty(property: InsertProperty): Promise<Property>;
   updateProperty(id: string, property: Partial<InsertProperty>): Promise<Property | undefined>;
@@ -47,6 +49,32 @@ export class DbStorage implements IStorage {
 
   async getAllProperties(): Promise<Property[]> {
     return db.select().from(properties).orderBy(desc(properties.createdAt));
+  }
+
+  async getFilteredProperties(filters: PropertyFilters): Promise<Property[]> {
+    const conditions = [];
+    
+    if (filters.tipo) {
+      conditions.push(eq(properties.tipo, filters.tipo));
+    }
+    
+    if (filters.prezzoMin !== undefined) {
+      conditions.push(gte(properties.prezzo, filters.prezzoMin.toString()));
+    }
+    
+    if (filters.prezzoMax !== undefined) {
+      conditions.push(lte(properties.prezzo, filters.prezzoMax.toString()));
+    }
+    
+    if (filters.mqMin !== undefined) {
+      conditions.push(gte(properties.mq, filters.mqMin));
+    }
+    
+    const query = conditions.length > 0 
+      ? db.select().from(properties).where(and(...conditions)).orderBy(desc(properties.createdAt))
+      : db.select().from(properties).orderBy(desc(properties.createdAt));
+    
+    return query;
   }
 
   async getPropertyById(id: string): Promise<Property | undefined> {
