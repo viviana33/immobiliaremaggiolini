@@ -228,14 +228,28 @@ export class DbStorage implements IStorage {
   }
 
   async createPost(post: InsertPost): Promise<Post> {
-    const [newPost] = await db.insert(posts).values(post).returning();
+    const postData = {
+      ...post,
+      publishedAt: post.stato === "pubblicato" ? new Date() : null,
+    };
+    const [newPost] = await db.insert(posts).values(postData).returning();
     return newPost;
   }
 
   async updatePost(id: string, post: Partial<InsertPost>): Promise<Post | undefined> {
+    // Get existing post to check status change
+    const existingPost = await this.getPostById(id);
+    
+    const updateData: any = { ...post, updatedAt: new Date() };
+    
+    // If changing status from bozza to pubblicato, set publishedAt
+    if (post.stato === "pubblicato" && existingPost?.stato !== "pubblicato") {
+      updateData.publishedAt = new Date();
+    }
+    
     const [updated] = await db
       .update(posts)
-      .set({ ...post, updatedAt: new Date() })
+      .set(updateData)
       .where(eq(posts.id, id))
       .returning();
     return updated;

@@ -263,6 +263,34 @@ export async function registerRoutes(app: Express): Promise<Server> {
     try {
       const validatedData = insertPostSchema.parse(req.body);
       
+      // Validate publish requirements if status is "pubblicato"
+      if (validatedData.stato === "pubblicato") {
+        const errors: Record<string, string> = {};
+        
+        if (!validatedData.titolo || validatedData.titolo.trim() === "") {
+          errors.titolo = "Il titolo è obbligatorio per la pubblicazione";
+        }
+        
+        if (!validatedData.slug || validatedData.slug.trim() === "") {
+          errors.slug = "Lo slug è obbligatorio per la pubblicazione";
+        }
+        
+        if (!validatedData.contenuto || validatedData.contenuto.trim() === "") {
+          errors.contenuto = "Il contenuto è obbligatorio per la pubblicazione";
+        }
+        
+        if (!validatedData.cover || validatedData.cover.trim() === "") {
+          errors.cover = "L'immagine di copertina è obbligatoria per la pubblicazione";
+        }
+        
+        if (Object.keys(errors).length > 0) {
+          return res.status(400).json({ 
+            message: "Impossibile pubblicare: alcuni campi obbligatori sono mancanti",
+            errors 
+          });
+        }
+      }
+      
       // Check if slug is unique
       const existingPost = await storage.getAllPosts();
       const slugExists = existingPost.some(p => p.slug === validatedData.slug);
@@ -284,6 +312,42 @@ export async function registerRoutes(app: Express): Promise<Server> {
   app.put("/api/admin/posts/:id", requireAdmin, async (req, res) => {
     try {
       const validatedData = insertPostSchema.partial().parse(req.body);
+      
+      // Get existing post to check status change
+      const existingPost = await storage.getPostById(req.params.id);
+      if (!existingPost) {
+        return res.status(404).json({ message: "Post non trovato" });
+      }
+      
+      // Validate publish requirements if status is changing to "pubblicato"
+      if (validatedData.stato === "pubblicato") {
+        const errors: Record<string, string> = {};
+        
+        const finalData = { ...existingPost, ...validatedData };
+        
+        if (!finalData.titolo || finalData.titolo.trim() === "") {
+          errors.titolo = "Il titolo è obbligatorio per la pubblicazione";
+        }
+        
+        if (!finalData.slug || finalData.slug.trim() === "") {
+          errors.slug = "Lo slug è obbligatorio per la pubblicazione";
+        }
+        
+        if (!finalData.contenuto || finalData.contenuto.trim() === "") {
+          errors.contenuto = "Il contenuto è obbligatorio per la pubblicazione";
+        }
+        
+        if (!finalData.cover || finalData.cover.trim() === "") {
+          errors.cover = "L'immagine di copertina è obbligatoria per la pubblicazione";
+        }
+        
+        if (Object.keys(errors).length > 0) {
+          return res.status(400).json({ 
+            message: "Impossibile pubblicare: alcuni campi obbligatori sono mancanti",
+            errors 
+          });
+        }
+      }
       
       // Check if slug is unique (excluding current post)
       if (validatedData.slug) {
