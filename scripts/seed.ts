@@ -17,6 +17,7 @@ async function seed() {
     console.log("📍 Inserimento immobili...");
     
     const property1 = await db.insert(properties).values({
+      slug: "villa-moderna-vista-mare",
       titolo: "Villa moderna con vista mare",
       descrizione: "Splendida villa di nuova costruzione con vista panoramica sul mare. La proprietà dispone di ampi spazi luminosi, finiture di pregio e un giardino privato con piscina. Perfetta per chi cerca eleganza e comfort in una location esclusiva.",
       prezzo: "850000",
@@ -24,6 +25,7 @@ async function seed() {
       mq: 280,
       stanze: 5,
       bagni: 3,
+      piano: 0,
       classeEnergetica: "A2",
       zona: "Costa Smeralda",
       stato: "disponibile",
@@ -31,6 +33,7 @@ async function seed() {
     }).returning();
 
     const property2 = await db.insert(properties).values({
+      slug: "appartamento-centro-storico",
       titolo: "Appartamento luminoso in centro storico",
       descrizione: "Elegante appartamento completamente ristrutturato nel cuore del centro storico. Due camere da letto, cucina abitabile, doppi servizi e balcone. Ideale per single o coppie che cercano un'abitazione comoda e ben servita.",
       prezzo: "1200",
@@ -38,6 +41,7 @@ async function seed() {
       mq: 95,
       stanze: 3,
       bagni: 2,
+      piano: 2,
       classeEnergetica: "C",
       zona: "Centro Storico",
       stato: "disponibile",

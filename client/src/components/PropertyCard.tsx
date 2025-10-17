@@ -7,21 +7,23 @@ interface PropertyCardProps {
   title: string;
   location: string;
   price: string;
-  image: string;
+  image?: string;
   type: "vendita" | "affitto";
-  bedrooms: number;
-  bathrooms: number;
+  bedrooms?: number;
+  bathrooms?: number;
   area: number;
 }
+
+const DEFAULT_IMAGE = "https://images.unsplash.com/photo-1568605114967-8130f3a36994?w=800&h=600&fit=crop";
 
 export default function PropertyCard({
   title,
   location,
   price,
-  image,
+  image = DEFAULT_IMAGE,
   type,
-  bedrooms,
-  bathrooms,
+  bedrooms = 2,
+  bathrooms = 1,
   area,
 }: PropertyCardProps) {
   return (
