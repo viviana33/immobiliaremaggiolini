@@ -100,6 +100,22 @@ Preferred communication style: Simple, everyday language.
 - **React Query integration**: Location-based query keys trigger re-fetch on URL changes
 - **Browser navigation support**: Back/forward buttons properly sync filter UI state
 
+**Property Detail Page** (`/immobile/[slug]`) (October 2025):
+- **Single property query**: Fetches complete property data by slug via `/api/properties/:slug` endpoint
+- **Image gallery**: Displays up to 15 non-archived images with Cloudinary optimization
+  - Thumbnail grid (300x300 optimized)
+  - Main view (1200x675 optimized)
+  - Lightbox zoom view (1920x1080 optimized)
+  - Keyboard navigation (arrow keys) in lightbox
+  - Image counter display
+- **Video embed**: YouTube videos sanitized and embedded responsively when `linkVideo` is present
+- **Property information panel**: Displays price, area, rooms, bathrooms, floor, energy class, and status
+- **Status badges**: Visual indicators for disponibile/venduto/affittato/riservato
+- **Similar properties**: Automatically shown when property is unavailable (same zone, ±20% price range)
+- **Contact CTA**: "Richiedi Informazioni" button links to `/contatti?ref=immobile&context=<id>`
+- **Error handling**: Elegant 404 page with back-to-listings option for invalid slugs
+- **Image placeholders**: Graceful fallback when no images are available
+
 **Type Safety**: 
 - Zod schemas generated from Drizzle schemas via drizzle-zod
 - Shared types between client and server via `/shared` directory
