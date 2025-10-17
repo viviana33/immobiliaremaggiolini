@@ -91,6 +91,15 @@ Preferred communication style: Simple, everyday language.
    - Status enum (bozza/pubblicato/archiviato)
    - SEO fields and timestamps
 
+**Property Filtering System** (October 2025):
+- **URL-based filtering**: Query parameters (tipo, prezzoMin, prezzoMax, mqMin) control property display
+- **Single-query optimization**: Uses Drizzle's `and()`, `gte()`, `lte()`, `eq()` operators to filter in database
+- **N+1 query avoidance**: One filtered SELECT query instead of fetching all and filtering in memory
+- **Default behavior**: No filters returns all properties; empty/invalid params are ignored
+- **Filter validation**: Zod schema (`propertyFiltersSchema`) validates query params server-side
+- **React Query integration**: Location-based query keys trigger re-fetch on URL changes
+- **Browser navigation support**: Back/forward buttons properly sync filter UI state
+
 **Type Safety**: 
 - Zod schemas generated from Drizzle schemas via drizzle-zod
 - Shared types between client and server via `/shared` directory

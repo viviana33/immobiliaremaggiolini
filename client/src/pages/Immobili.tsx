@@ -2,7 +2,7 @@ import { useQuery } from "@tanstack/react-query";
 import PropertyCard from "@/components/PropertyCard";
 import FiltersBar from "@/components/FiltersBar";
 import { Loader2 } from "lucide-react";
-import { useState, useEffect } from "react";
+import { useLocation } from "wouter";
 
 interface Property {
   id: string;
@@ -15,33 +15,8 @@ interface Property {
 }
 
 export default function Immobili() {
-  const [queryParams, setQueryParams] = useState<string>("");
-
-  useEffect(() => {
-    const params = new URLSearchParams(window.location.search);
-    setQueryParams(params.toString());
-  }, []);
-
-  useEffect(() => {
-    const handlePopState = () => {
-      const params = new URLSearchParams(window.location.search);
-      setQueryParams(params.toString());
-    };
-
-    window.addEventListener("popstate", handlePopState);
-    
-    const observer = new MutationObserver(() => {
-      const params = new URLSearchParams(window.location.search);
-      if (params.toString() !== queryParams) {
-        setQueryParams(params.toString());
-      }
-    });
-
-    return () => {
-      window.removeEventListener("popstate", handlePopState);
-      observer.disconnect();
-    };
-  }, [queryParams]);
+  const [location] = useLocation();
+  const queryParams = location.includes('?') ? location.split('?')[1] : '';
 
   const queryKey = queryParams ? ['/api/properties', queryParams] : ['/api/properties'];
   const queryUrl = queryParams ? `/api/properties?${queryParams}` : '/api/properties';
@@ -57,16 +32,11 @@ export default function Immobili() {
     },
   });
 
-  const handleFiltersChange = () => {
-    const params = new URLSearchParams(window.location.search);
-    setQueryParams(params.toString());
-  };
-
   if (error) {
     return (
       <div className="container mx-auto px-4 py-8">
         <h1 className="text-4xl font-bold mb-8">Lista Immobili</h1>
-        <FiltersBar onFiltersChange={handleFiltersChange} />
+        <FiltersBar />
         <div className="text-center py-12">
           <p className="text-destructive text-lg" data-testid="text-error">
             Errore nel caricamento degli immobili. Riprova più tardi.
@@ -80,7 +50,7 @@ export default function Immobili() {
     return (
       <div className="container mx-auto px-4 py-8">
         <h1 className="text-4xl font-bold mb-8">Lista Immobili</h1>
-        <FiltersBar onFiltersChange={handleFiltersChange} />
+        <FiltersBar />
         <div className="flex items-center justify-center py-12">
           <Loader2 className="w-8 h-8 animate-spin text-primary" data-testid="loader-properties" />
         </div>
@@ -94,7 +64,7 @@ export default function Immobili() {
     return (
       <div className="container mx-auto px-4 py-8">
         <h1 className="text-4xl font-bold mb-8" data-testid="heading-immobili">Lista Immobili</h1>
-        <FiltersBar onFiltersChange={handleFiltersChange} />
+        <FiltersBar />
         <div className="text-center py-12">
           {hasFilters ? (
             <div className="space-y-4">
@@ -119,7 +89,7 @@ export default function Immobili() {
     <div className="container mx-auto px-4 py-8">
       <h1 className="text-4xl font-bold mb-8" data-testid="heading-immobili">Lista Immobili</h1>
       
-      <FiltersBar onFiltersChange={handleFiltersChange} />
+      <FiltersBar />
       
       <div className="mb-4">
         <p className="text-sm text-muted-foreground" data-testid="text-results-count">

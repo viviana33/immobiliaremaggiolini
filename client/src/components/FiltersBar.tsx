@@ -6,18 +6,23 @@ import { Label } from "@/components/ui/label";
 import { Badge } from "@/components/ui/badge";
 import { X } from "lucide-react";
 
-interface FiltersBarProps {
-  onFiltersChange?: (filters: Record<string, string>) => void;
-}
-
-export default function FiltersBar({ onFiltersChange }: FiltersBarProps) {
-  const [, setLocation] = useLocation();
-  const searchParams = new URLSearchParams(window.location.search);
+export default function FiltersBar() {
+  const [location, setLocation] = useLocation();
+  const currentPath = location.split('?')[0];
   
-  const [tipo, setTipo] = useState<string>(searchParams.get("tipo") || "");
-  const [prezzoMin, setPrezzoMin] = useState<string>(searchParams.get("prezzoMin") || "");
-  const [prezzoMax, setPrezzoMax] = useState<string>(searchParams.get("prezzoMax") || "");
-  const [mqMin, setMqMin] = useState<string>(searchParams.get("mqMin") || "");
+  const [tipo, setTipo] = useState<string>("");
+  const [prezzoMin, setPrezzoMin] = useState<string>("");
+  const [prezzoMax, setPrezzoMax] = useState<string>("");
+  const [mqMin, setMqMin] = useState<string>("");
+
+  useEffect(() => {
+    const queryString = location.includes('?') ? location.split('?')[1] : '';
+    const searchParams = new URLSearchParams(queryString);
+    setTipo(searchParams.get("tipo") || "");
+    setPrezzoMin(searchParams.get("prezzoMin") || "");
+    setPrezzoMax(searchParams.get("prezzoMax") || "");
+    setMqMin(searchParams.get("mqMin") || "");
+  }, [location]);
 
   const updateURL = (newFilters: Record<string, string>) => {
     const params = new URLSearchParams();
@@ -29,11 +34,8 @@ export default function FiltersBar({ onFiltersChange }: FiltersBarProps) {
     });
     
     const queryString = params.toString();
-    setLocation(`?${queryString}`, { replace: true });
-    
-    if (onFiltersChange) {
-      onFiltersChange(newFilters);
-    }
+    const newLocation = queryString ? `${currentPath}?${queryString}` : currentPath;
+    setLocation(newLocation);
   };
 
   const applyFilters = () => {
@@ -50,11 +52,7 @@ export default function FiltersBar({ onFiltersChange }: FiltersBarProps) {
     setPrezzoMin("");
     setPrezzoMax("");
     setMqMin("");
-    setLocation("", { replace: true });
-    
-    if (onFiltersChange) {
-      onFiltersChange({});
-    }
+    setLocation(currentPath);
   };
 
   const hasActiveFilters = tipo || prezzoMin || prezzoMax || mqMin;
