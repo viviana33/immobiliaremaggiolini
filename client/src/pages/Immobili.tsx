@@ -88,6 +88,16 @@ export default function Immobili() {
       <div className="container mx-auto px-4 py-8">
         <h1 className="text-4xl font-bold mb-8" data-testid="heading-immobili">Lista Immobili</h1>
         <FiltersBar />
+        
+        <div className="flex flex-wrap items-center justify-between gap-4 mb-6">
+          <div>
+            <p className="text-sm text-muted-foreground" data-testid="text-results-count">
+              0 immobili trovati
+            </p>
+          </div>
+          <SortingControls />
+        </div>
+        
         <div className="text-center py-12">
           {hasFilters ? (
             <div className="space-y-4">

@@ -1,3 +1,4 @@
+import { useState, useEffect } from "react";
 import { useLocation } from "wouter";
 import {
   Select,
@@ -12,19 +13,30 @@ export default function SortingControls() {
   const [location, setLocation] = useLocation();
   const currentPath = location.split('?')[0];
   const queryString = location.includes('?') ? location.split('?')[1] : '';
-  const searchParams = new URLSearchParams(queryString);
-  const currentSort = searchParams.get("sort") || "recente";
+  
+  const [sortValue, setSortValue] = useState(() => {
+    const params = new URLSearchParams(queryString);
+    return params.get("sort") || "recente";
+  });
+
+  useEffect(() => {
+    const params = new URLSearchParams(queryString);
+    const urlSort = params.get("sort") || "recente";
+    setSortValue(urlSort);
+  }, [queryString]);
 
   const handleSortChange = (value: string) => {
+    const newSearchParams = new URLSearchParams(queryString);
+    
     if (value === "recente") {
-      searchParams.delete("sort");
+      newSearchParams.delete("sort");
     } else {
-      searchParams.set("sort", value);
+      newSearchParams.set("sort", value);
     }
     
-    searchParams.delete("page");
+    newSearchParams.delete("page");
     
-    const newQueryString = searchParams.toString();
+    const newQueryString = newSearchParams.toString();
     const newLocation = newQueryString ? `${currentPath}?${newQueryString}` : currentPath;
     setLocation(newLocation);
   };
@@ -34,13 +46,13 @@ export default function SortingControls() {
       <Label htmlFor="sort-select" className="text-sm font-medium whitespace-nowrap">
         Ordina per:
       </Label>
-      <Select value={currentSort} onValueChange={handleSortChange}>
+      <Select value={sortValue} onValueChange={handleSortChange}>
         <SelectTrigger 
           id="sort-select"
           className="w-[180px]" 
           data-testid="select-sort"
         >
-          <SelectValue />
+          <SelectValue placeholder="Seleziona ordinamento" />
         </SelectTrigger>
         <SelectContent>
           <SelectItem value="recente" data-testid="option-sort-recente">Più recente</SelectItem>
