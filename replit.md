@@ -1,0 +1,181 @@
+# Immobiliare Maggiolini - Real Estate Platform
+
+## Overview
+
+Immobiliare Maggiolini is a warm, Mediterranean-inspired real estate platform built for a boutique Italian real estate agency with 20+ years of experience. The application emphasizes trust, warmth, and human connection through a sophisticated yet personal design approach. It features property listings (vendita/affitto), a blog system, team information, and an admin authentication system.
+
+The platform is designed to showcase properties with rich media support (images, videos), provide informative blog content, and build trust through team profiles and testimonials. The design philosophy draws inspiration from platforms like Airbnb while incorporating Italian lifestyle aesthetics with earth tones and Mediterranean warmth.
+
+## User Preferences
+
+Preferred communication style: Simple, everyday language.
+
+## System Architecture
+
+### Frontend Architecture
+
+**Framework**: React 18+ with TypeScript, using Vite as the build tool and development server
+
+**Routing**: Client-side routing implemented with Wouter (lightweight React Router alternative)
+
+**State Management**: 
+- TanStack Query (React Query v5) for server state management and data fetching
+- React Context API for theme management
+- Session-based state for authentication
+
+**UI Framework**: shadcn/ui components (Radix UI primitives) with Tailwind CSS
+- Custom design system with Mediterranean color palette (terracotta, warm sand, sage green)
+- Typography: Playfair Display (headings), Inter (body), Crimson Text (accents)
+- Dark mode support with custom theme provider
+- Responsive design with mobile-first approach
+
+**Component Architecture**:
+- Presentational components in `/client/src/components`
+- Page components in `/client/src/pages`
+- Reusable UI primitives in `/client/src/components/ui`
+- Custom hooks in `/client/src/hooks`
+
+**Design System Features**:
+- Hover and active elevation effects for interactive elements
+- Custom color variables supporting light/dark themes
+- Border radius: lg (9px), md (6px), sm (3px)
+- Comprehensive component library including cards, forms, dialogs, navigation
+
+### Backend Architecture
+
+**Runtime**: Node.js with Express.js
+
+**API Design**: RESTful API with JSON responses
+- `/api/auth/*` - Authentication endpoints (login, logout, status)
+- Protected admin routes using session-based middleware
+
+**Session Management**: 
+- Express-session with configurable store
+- Cookie-based sessions with secure flags for production
+- 7-day session expiration
+- connect-pg-simple for PostgreSQL session storage
+
+**Middleware Stack**:
+- JSON body parsing
+- URL-encoded form data support
+- Custom request/response logging
+- Authentication middleware (`requireAdmin`)
+
+**Development Setup**:
+- Hot Module Replacement (HMR) via Vite middleware
+- Replit-specific plugins for development (cartographer, dev-banner, runtime error overlay)
+- Environment-based configuration
+
+### Data Layer
+
+**ORM**: Drizzle ORM with Neon serverless PostgreSQL driver
+
+**Database Schema** (`shared/schema.ts`):
+
+1. **Properties Table** (`properties`):
+   - Core fields: title, description, price, type (vendita/affitto), area, rooms, bathrooms
+   - Metadata: energy class, zone, status (disponibile/venduto/affittato/riservato)
+   - Optional video link support
+   - Timestamps for creation and updates
+
+2. **Property Images Table** (`properties_images`):
+   - Foreign key to properties with cascade delete
+   - Hot/cold URL storage for image optimization
+   - File hash for deduplication
+   - Archive flag for soft deletes
+
+3. **Blog Posts Table** (`posts`):
+   - Title, subtitle, slug (unique), cover image
+   - Rich content field, tag array
+   - Author and publication metadata
+   - Status enum (bozza/pubblicato/archiviato)
+   - SEO fields and timestamps
+
+**Type Safety**: 
+- Zod schemas generated from Drizzle schemas via drizzle-zod
+- Shared types between client and server via `/shared` directory
+- TypeScript strict mode enabled
+
+**Database Migrations**: 
+- Managed via Drizzle Kit
+- Migrations output to `/migrations` directory
+- Push command: `npm run db:push`
+
+### Authentication & Authorization
+
+**Authentication Strategy**: Token-based admin authentication
+- Single admin token stored in environment variable (`ADMIN_TOKEN`)
+- Session-based persistence after successful login
+- No user registration - admin-only access
+
+**Protected Routes**:
+- Client-side: `ProtectedRoute` component wraps admin pages
+- Server-side: `requireAdmin` middleware for API endpoints
+- Automatic redirect to login for unauthenticated access
+
+**Session Security**:
+- HTTP-only cookies
+- Secure flag enabled in production
+- SameSite 'lax' policy
+- Custom session secret (configurable via `SESSION_SECRET`)
+
+### Build & Deployment
+
+**Development**:
+- `npm run dev` - Starts development server with HMR
+- Vite dev server on client, tsx on server
+- Auto-reload on file changes
+
+**Production Build**:
+- Client: Vite build → `/dist/public`
+- Server: esbuild bundle → `/dist/index.js`
+- ESM module format throughout
+
+**Asset Management**:
+- Static assets in `/attached_assets/generated_images`
+- Path aliases configured for clean imports (@, @shared, @assets)
+- Image optimization via Vite
+
+## External Dependencies
+
+### Core Framework & Runtime
+- **@vitejs/plugin-react** - React integration for Vite
+- **express** - Web server framework
+- **react** & **react-dom** - UI library
+- **typescript** - Type safety
+- **tsx** - TypeScript execution for development
+
+### Database & ORM
+- **drizzle-orm** - TypeScript ORM with type-safe queries
+- **@neondatabase/serverless** - Neon PostgreSQL serverless driver
+- **drizzle-kit** - Schema management and migrations
+- **drizzle-zod** - Zod schema generation from Drizzle schemas
+
+### UI & Styling
+- **tailwindcss** - Utility-first CSS framework
+- **@radix-ui/react-*** - Headless UI primitives (30+ components)
+- **class-variance-authority** - Component variant management
+- **clsx** & **tailwind-merge** - Conditional className utilities
+- **lucide-react** - Icon library
+
+### State & Data Fetching
+- **@tanstack/react-query** - Server state management
+- **wouter** - Lightweight routing library
+- **react-hook-form** - Form state management
+- **@hookform/resolvers** - Form validation resolvers
+- **zod** - Schema validation
+
+### Session & Authentication
+- **express-session** - Session middleware
+- **connect-pg-simple** - PostgreSQL session store
+
+### Development Tools
+- **@replit/vite-plugin-*** - Replit-specific development enhancements
+- **esbuild** - JavaScript bundler for server build
+- **postcss** & **autoprefixer** - CSS processing
+
+### Utilities
+- **date-fns** - Date manipulation
+- **embla-carousel-react** - Carousel component
+- **cmdk** - Command menu component
+- **nanoid** - Unique ID generation
