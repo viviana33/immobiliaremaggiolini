@@ -521,6 +521,7 @@ export default function AdminImmobileForm() {
                     <FormControl>
                       <Input
                         {...field}
+                        value={field.value || ""}
                         placeholder="https://www.youtube.com/watch?v=..."
                         data-testid="input-link-video"
                       />

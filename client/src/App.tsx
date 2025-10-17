@@ -13,13 +13,37 @@ import ChiSiamo from "@/pages/ChiSiamo";
 import Contatti from "@/pages/Contatti";
 import Login from "@/pages/Login";
 import AdminDashboard from "@/pages/AdminDashboard";
+import AdminImmobili from "@/pages/AdminImmobili";
+import AdminImmobileForm from "@/pages/AdminImmobileForm";
 import NotFound from "@/pages/not-found";
+import { ProtectedRoute } from "@/components/ProtectedRoute";
 
 function Router() {
   return (
     <Switch>
       <Route path="/login" component={Login} />
-      <Route path="/admin/dashboard" component={AdminDashboard} />
+      <Route path="/admin/dashboard">
+        {() => (
+          <ProtectedRoute>
+            <AdminDashboard />
+          </ProtectedRoute>
+        )}
+      </Route>
+      <Route path="/admin/immobili" component={() => (
+        <ProtectedRoute>
+          <AdminImmobili />
+        </ProtectedRoute>
+      )} />
+      <Route path="/admin/immobili/nuovo" component={() => (
+        <ProtectedRoute>
+          <AdminImmobileForm />
+        </ProtectedRoute>
+      )} />
+      <Route path="/admin/immobili/:id" component={() => (
+        <ProtectedRoute>
+          <AdminImmobileForm />
+        </ProtectedRoute>
+      )} />
       <Route path="/">
         {() => (
           <div className="min-h-screen flex flex-col">

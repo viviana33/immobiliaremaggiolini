@@ -86,8 +86,13 @@ export class DbStorage implements IStorage {
   }
 
   async archivePropertyImages(propertyId: string, keepCount: number): Promise<void> {
-    const images = await this.getPropertyImages(propertyId);
-    const nonArchivedImages = images.filter(img => !img.archiviato);
+    const images = await db
+      .select()
+      .from(propertiesImages)
+      .where(eq(propertiesImages.propertyId, propertyId))
+      .orderBy(desc(propertiesImages.createdAt));
+    
+    const nonArchivedImages = images.filter((img: PropertyImage) => !img.archiviato);
     
     if (nonArchivedImages.length > keepCount) {
       const imagesToArchive = nonArchivedImages.slice(keepCount);

@@ -75,7 +75,16 @@ export async function registerRoutes(app: Express): Promise<Server> {
 
   app.post("/api/admin/properties", requireAdmin, upload.array("images", 15), async (req, res) => {
     try {
-      const validatedData = insertPropertySchema.parse(req.body);
+      const formData = {
+        ...req.body,
+        mq: parseInt(req.body.mq),
+        stanze: parseInt(req.body.stanze),
+        bagni: parseInt(req.body.bagni),
+        piano: parseInt(req.body.piano),
+        prezzo: req.body.prezzo,
+      };
+      
+      const validatedData = insertPropertySchema.parse(formData);
       
       const property = await storage.createProperty(validatedData);
       
@@ -95,15 +104,25 @@ export async function registerRoutes(app: Express): Promise<Server> {
       }
       
       res.status(201).json(property);
-    } catch (error) {
+    } catch (error: any) {
       console.error("Error creating property:", error);
+      if (error.name === 'ZodError') {
+        return res.status(400).json({ message: "Dati non validi", errors: error.errors });
+      }
       res.status(500).json({ message: "Errore nella creazione dell'immobile" });
     }
   });
 
   app.put("/api/admin/properties/:id", requireAdmin, upload.array("images", 15), async (req, res) => {
     try {
-      const validatedData = insertPropertySchema.partial().parse(req.body);
+      const formData: any = { ...req.body };
+      
+      if (req.body.mq) formData.mq = parseInt(req.body.mq);
+      if (req.body.stanze) formData.stanze = parseInt(req.body.stanze);
+      if (req.body.bagni) formData.bagni = parseInt(req.body.bagni);
+      if (req.body.piano) formData.piano = parseInt(req.body.piano);
+      
+      const validatedData = insertPropertySchema.partial().parse(formData);
       
       const updatedProperty = await storage.updateProperty(req.params.id, validatedData);
       
@@ -131,8 +150,11 @@ export async function registerRoutes(app: Express): Promise<Server> {
       }
       
       res.json(updatedProperty);
-    } catch (error) {
+    } catch (error: any) {
       console.error("Error updating property:", error);
+      if (error.name === 'ZodError') {
+        return res.status(400).json({ message: "Dati non validi", errors: error.errors });
+      }
       res.status(500).json({ message: "Errore nell'aggiornamento dell'immobile" });
     }
   });
