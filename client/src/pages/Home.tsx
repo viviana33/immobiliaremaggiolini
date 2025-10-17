@@ -4,6 +4,7 @@ import PropertyCard from "@/components/PropertyCard";
 import BlogCard from "@/components/BlogCard";
 import { Button } from "@/components/ui/button";
 import { ArrowRight } from "lucide-react";
+import { Link } from "wouter";
 import apartmentImage from "@assets/generated_images/Apartment_interior_property_image_66b8a52c.png";
 import countrysideImage from "@assets/generated_images/Countryside_property_image_dddb1072.png";
 import penthouseImage from "@assets/generated_images/Penthouse_terrace_property_image_6980bf5a.png";
@@ -93,10 +94,12 @@ export default function Home() {
                 Scopri le migliori opportunità selezionate per te
               </p>
             </div>
-            <Button variant="outline" className="gap-2" data-testid="button-view-all-properties">
-              Vedi Tutte
-              <ArrowRight className="w-4 h-4" />
-            </Button>
+            <Link href="/immobili">
+              <Button variant="outline" className="gap-2" data-testid="button-view-all-properties">
+                Vedi Tutte
+                <ArrowRight className="w-4 h-4" />
+              </Button>
+            </Link>
           </div>
 
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
@@ -160,10 +163,12 @@ export default function Home() {
                 Consigli, novità e storie dal mondo immobiliare
               </p>
             </div>
-            <Button variant="outline" className="gap-2" data-testid="button-view-all-blog">
-              Leggi Tutto
-              <ArrowRight className="w-4 h-4" />
-            </Button>
+            <Link href="/blog">
+              <Button variant="outline" className="gap-2" data-testid="button-view-all-blog">
+                Leggi Tutto
+                <ArrowRight className="w-4 h-4" />
+              </Button>
+            </Link>
           </div>
 
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
@@ -184,23 +189,27 @@ export default function Home() {
             Siamo qui per aiutarvi a realizzare il vostro sogno.
           </p>
           <div className="flex flex-col sm:flex-row gap-4 justify-center pt-4">
-            <Button
-              size="lg"
-              variant="outline"
-              className="gap-2 text-base bg-primary-foreground text-primary hover:bg-primary-foreground/90"
-              data-testid="button-cta-contact"
-            >
-              Contattaci Ora
-              <ArrowRight className="w-5 h-5" />
-            </Button>
-            <Button
-              size="lg"
-              variant="outline"
-              className="gap-2 text-base border-primary-foreground/30 text-primary-foreground hover:bg-primary-foreground/10"
-              data-testid="button-cta-properties"
-            >
-              Esplora Proprietà
-            </Button>
+            <Link href="/contatti">
+              <Button
+                size="lg"
+                variant="outline"
+                className="gap-2 text-base bg-primary-foreground text-primary hover:bg-primary-foreground/90"
+                data-testid="button-cta-contact"
+              >
+                Contattaci Ora
+                <ArrowRight className="w-5 h-5" />
+              </Button>
+            </Link>
+            <Link href="/immobili">
+              <Button
+                size="lg"
+                variant="outline"
+                className="gap-2 text-base border-primary-foreground/30 text-primary-foreground hover:bg-primary-foreground/10"
+                data-testid="button-cta-properties"
+              >
+                Esplora Proprietà
+              </Button>
+            </Link>
           </div>
         </div>
       </section>

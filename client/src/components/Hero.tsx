@@ -1,5 +1,6 @@
 import { Button } from "@/components/ui/button";
 import { ArrowRight, Search } from "lucide-react";
+import { Link } from "wouter";
 import heroImage from "@assets/generated_images/Italian_villa_hero_image_8b4b5e4b.png";
 
 export default function Hero() {
@@ -22,24 +23,28 @@ export default function Hero() {
             Un rapporto di fiducia e amicizia che dura nel tempo.
           </p>
           <div className="flex flex-col sm:flex-row gap-4">
-            <Button
-              size="lg"
-              variant="default"
-              className="gap-2 text-base"
-              data-testid="button-discover-properties"
-            >
-              <Search className="w-5 h-5" />
-              Scopri le Proprietà
-            </Button>
-            <Button
-              size="lg"
-              variant="outline"
-              className="gap-2 text-base bg-background/20 backdrop-blur-sm border-primary-foreground/30 text-primary-foreground hover:bg-background/30"
-              data-testid="button-contact-us"
-            >
-              Contattaci
-              <ArrowRight className="w-5 h-5" />
-            </Button>
+            <Link href="/immobili">
+              <Button
+                size="lg"
+                variant="default"
+                className="gap-2 text-base"
+                data-testid="button-discover-properties"
+              >
+                <Search className="w-5 h-5" />
+                Scopri le Proprietà
+              </Button>
+            </Link>
+            <Link href="/contatti">
+              <Button
+                size="lg"
+                variant="outline"
+                className="gap-2 text-base bg-background/20 backdrop-blur-sm border-primary-foreground/30 text-primary-foreground hover:bg-background/30"
+                data-testid="button-contact-us"
+              >
+                Contattaci
+                <ArrowRight className="w-5 h-5" />
+              </Button>
+            </Link>
           </div>
         </div>
       </div>
