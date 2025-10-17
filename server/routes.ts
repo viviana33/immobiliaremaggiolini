@@ -313,17 +313,18 @@ export async function registerRoutes(app: Express): Promise<Server> {
     try {
       const validatedData = insertPostSchema.partial().parse(req.body);
       
-      // Get existing post to check status change
+      // Get existing post to check status change and validate complete data
       const existingPost = await storage.getPostById(req.params.id);
       if (!existingPost) {
         return res.status(404).json({ message: "Post non trovato" });
       }
       
-      // Validate publish requirements if status is changing to "pubblicato"
-      if (validatedData.stato === "pubblicato") {
+      // Merge existing data with updates to get the complete final state
+      const finalData = { ...existingPost, ...validatedData };
+      
+      // Validate publish requirements if final status is "pubblicato"
+      if (finalData.stato === "pubblicato") {
         const errors: Record<string, string> = {};
-        
-        const finalData = { ...existingPost, ...validatedData };
         
         if (!finalData.titolo || finalData.titolo.trim() === "") {
           errors.titolo = "Il titolo è obbligatorio per la pubblicazione";
