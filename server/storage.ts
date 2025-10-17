@@ -155,7 +155,7 @@ export class DbStorage implements IStorage {
       )
       .limit(limit + 1);
     
-    return similar.filter(p => p.id !== propertyId).slice(0, limit);
+    return similar.filter((p: Property) => p.id !== propertyId).slice(0, limit);
   }
 
   async createProperty(property: InsertProperty): Promise<Property> {
