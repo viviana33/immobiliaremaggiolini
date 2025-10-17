@@ -4,7 +4,7 @@ import { storage } from "./storage";
 import { requireAdmin } from "./middleware/auth";
 import multer from "multer";
 import { uploadService } from "./uploadService";
-import { insertPropertySchema } from "@shared/schema";
+import { insertPropertySchema, propertyFiltersSchema } from "@shared/schema";
 
 export async function registerRoutes(app: Express): Promise<Server> {
   // Auth routes
@@ -50,7 +50,10 @@ export async function registerRoutes(app: Express): Promise<Server> {
 
   app.get("/api/properties", async (req, res) => {
     try {
-      const properties = await storage.getAllProperties();
+      const filterResult = propertyFiltersSchema.safeParse(req.query);
+      const filters = filterResult.success ? filterResult.data : {};
+      
+      const properties = await storage.getFilteredProperties(filters);
       
       const formattedProperties = properties.map(p => ({
         id: p.id,
