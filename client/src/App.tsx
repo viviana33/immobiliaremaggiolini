@@ -17,6 +17,8 @@ import Login from "@/pages/Login";
 import AdminDashboard from "@/pages/AdminDashboard";
 import AdminImmobili from "@/pages/AdminImmobili";
 import AdminImmobileForm from "@/pages/AdminImmobileForm";
+import AdminBlog from "@/pages/AdminBlog";
+import AdminBlogForm from "@/pages/AdminBlogForm";
 import NotFound from "@/pages/not-found";
 import { ProtectedRoute } from "@/components/ProtectedRoute";
 
@@ -44,6 +46,21 @@ function Router() {
       <Route path="/admin/immobili" component={() => (
         <ProtectedRoute>
           <AdminImmobili />
+        </ProtectedRoute>
+      )} />
+      <Route path="/admin/blog/nuovo" component={() => (
+        <ProtectedRoute>
+          <AdminBlogForm />
+        </ProtectedRoute>
+      )} />
+      <Route path="/admin/blog/:id" component={() => (
+        <ProtectedRoute>
+          <AdminBlogForm />
+        </ProtectedRoute>
+      )} />
+      <Route path="/admin/blog" component={() => (
+        <ProtectedRoute>
+          <AdminBlog />
         </ProtectedRoute>
       )} />
       <Route>

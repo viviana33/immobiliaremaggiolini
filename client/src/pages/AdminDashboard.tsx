@@ -47,7 +47,7 @@ function AdminDashboardContent() {
             </CardContent>
           </Card>
 
-          <Card className="hover-elevate cursor-pointer opacity-50">
+          <Card className="hover-elevate cursor-pointer" onClick={() => setLocation("/admin/blog")}>
             <CardHeader>
               <div className="flex items-center gap-3">
                 <div className="bg-primary/10 p-3 rounded-lg">
@@ -61,7 +61,7 @@ function AdminDashboardContent() {
             </CardHeader>
             <CardContent>
               <p className="text-sm text-muted-foreground">
-                Prossimamente disponibile
+                Crea e gestisci gli articoli del blog
               </p>
             </CardContent>
           </Card>
