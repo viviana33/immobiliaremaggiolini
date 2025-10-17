@@ -4,7 +4,7 @@ import { storage } from "./storage";
 import { requireAdmin } from "./middleware/auth";
 import multer from "multer";
 import { uploadService } from "./uploadService";
-import { insertPropertySchema, propertyFiltersSchema } from "@shared/schema";
+import { insertPropertySchema, propertyFiltersSchema, insertPostSchema } from "@shared/schema";
 
 export async function registerRoutes(app: Express): Promise<Server> {
   // Auth routes
@@ -243,6 +243,70 @@ export async function registerRoutes(app: Express): Promise<Server> {
     } catch (error) {
       console.error("Error fetching posts:", error);
       res.status(500).json({ message: "Errore nel recupero dei post" });
+    }
+  });
+
+  app.get("/api/admin/posts/:id", requireAdmin, async (req, res) => {
+    try {
+      const post = await storage.getPostById(req.params.id);
+      if (!post) {
+        return res.status(404).json({ message: "Post non trovato" });
+      }
+      res.json(post);
+    } catch (error) {
+      console.error("Error fetching post:", error);
+      res.status(500).json({ message: "Errore nel recupero del post" });
+    }
+  });
+
+  app.post("/api/admin/posts", requireAdmin, async (req, res) => {
+    try {
+      const validatedData = insertPostSchema.parse(req.body);
+      
+      // Check if slug is unique
+      const existingPost = await storage.getAllPosts();
+      const slugExists = existingPost.some(p => p.slug === validatedData.slug);
+      if (slugExists) {
+        return res.status(400).json({ message: "Lo slug è già in uso" });
+      }
+      
+      const post = await storage.createPost(validatedData);
+      res.status(201).json(post);
+    } catch (error: any) {
+      console.error("Error creating post:", error);
+      if (error.name === 'ZodError') {
+        return res.status(400).json({ message: "Dati non validi", errors: error.errors });
+      }
+      res.status(500).json({ message: "Errore nella creazione del post" });
+    }
+  });
+
+  app.put("/api/admin/posts/:id", requireAdmin, async (req, res) => {
+    try {
+      const validatedData = insertPostSchema.partial().parse(req.body);
+      
+      // Check if slug is unique (excluding current post)
+      if (validatedData.slug) {
+        const existingPosts = await storage.getAllPosts();
+        const slugExists = existingPosts.some(p => p.slug === validatedData.slug && p.id !== req.params.id);
+        if (slugExists) {
+          return res.status(400).json({ message: "Lo slug è già in uso" });
+        }
+      }
+      
+      const updatedPost = await storage.updatePost(req.params.id, validatedData);
+      
+      if (!updatedPost) {
+        return res.status(404).json({ message: "Post non trovato" });
+      }
+      
+      res.json(updatedPost);
+    } catch (error: any) {
+      console.error("Error updating post:", error);
+      if (error.name === 'ZodError') {
+        return res.status(400).json({ message: "Dati non validi", errors: error.errors });
+      }
+      res.status(500).json({ message: "Errore nell'aggiornamento del post" });
     }
   });
 

@@ -20,11 +20,15 @@ import {
 import { MarkdownEditor } from "./MarkdownEditor";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
-import { insertPostSchema } from "@shared/schema";
+import { insertPostSchema, type Post } from "@shared/schema";
 import { z } from "zod";
 import { Separator } from "@/components/ui/separator";
 import { useEffect, useState } from "react";
-import { Clock } from "lucide-react";
+import { Clock, Loader2 } from "lucide-react";
+import { useQuery, useMutation } from "@tanstack/react-query";
+import { apiRequest, queryClient } from "@/lib/queryClient";
+import { useToast } from "@/hooks/use-toast";
+import { useLocation } from "wouter";
 
 interface PostFormProps {
   postId?: string;
@@ -74,6 +78,8 @@ function calculateReadingTime(content: string): number {
 export function PostForm({ postId }: PostFormProps) {
   const isEdit = Boolean(postId);
   const [readingTime, setReadingTime] = useState<number>(0);
+  const { toast } = useToast();
+  const [, setLocation] = useLocation();
 
   const form = useForm<FormValues>({
     resolver: zodResolver(formSchema),
@@ -92,6 +98,147 @@ export function PostForm({ postId }: PostFormProps) {
       metaDescription: "",
     },
   });
+
+  // Fetch existing post data when editing
+  const { data: existingPost, isLoading: isLoadingPost } = useQuery<Post>({
+    queryKey: [`/api/admin/posts/${postId}`],
+    enabled: isEdit && !!postId,
+  });
+
+  // Load existing post data into form
+  useEffect(() => {
+    if (existingPost) {
+      form.reset({
+        titolo: existingPost.titolo,
+        sottotitolo: existingPost.sottotitolo || "",
+        slug: existingPost.slug,
+        cover: existingPost.cover || "",
+        contenuto: existingPost.contenuto,
+        readingTimeMin: existingPost.readingTimeMin || 0,
+        tag: existingPost.tag || [],
+        categoria: existingPost.categoria || "",
+        autore: existingPost.autore,
+        stato: existingPost.stato,
+        metaTitle: existingPost.metaTitle || "",
+        metaDescription: existingPost.metaDescription || "",
+      });
+    }
+  }, [existingPost, form]);
+
+  // Create post mutation
+  const createPostMutation = useMutation({
+    mutationFn: async (data: FormValues) => {
+      const res = await apiRequest("POST", "/api/admin/posts", data);
+      return res.json();
+    },
+    onSuccess: (data: Post) => {
+      queryClient.invalidateQueries({ queryKey: ["/api/admin/posts"] });
+      toast({
+        title: "Post creato",
+        description: data.stato === "pubblicato" 
+          ? "Il post è stato pubblicato con successo" 
+          : "Il post è stato salvato come bozza",
+      });
+      // Redirect to edit page after creation
+      setLocation(`/admin/blog/${data.id}`);
+    },
+    onError: (error: any) => {
+      toast({
+        variant: "destructive",
+        title: "Errore",
+        description: error.message || "Errore nella creazione del post",
+      });
+    },
+  });
+
+  // Update post mutation
+  const updatePostMutation = useMutation({
+    mutationFn: async (data: FormValues) => {
+      const res = await apiRequest("PUT", `/api/admin/posts/${postId}`, data);
+      return res.json();
+    },
+    onSuccess: (data: Post) => {
+      queryClient.invalidateQueries({ queryKey: ["/api/admin/posts"] });
+      queryClient.invalidateQueries({ queryKey: [`/api/admin/posts/${postId}`] });
+      toast({
+        title: "Post aggiornato",
+        description: data.stato === "pubblicato" 
+          ? "Il post è stato pubblicato con successo" 
+          : "Il post è stato salvato come bozza",
+      });
+    },
+    onError: (error: any) => {
+      toast({
+        variant: "destructive",
+        title: "Errore",
+        description: error.message || "Errore nell'aggiornamento del post",
+      });
+    },
+  });
+
+  // Handle save draft
+  const handleSaveDraft = async () => {
+    const isValid = await form.trigger();
+    if (!isValid) return;
+
+    const formData = form.getValues();
+    const dataToSave = { ...formData, stato: "bozza" as const };
+
+    if (isEdit) {
+      updatePostMutation.mutate(dataToSave);
+    } else {
+      createPostMutation.mutate(dataToSave);
+    }
+  };
+
+  // Handle publish
+  const handlePublish = async () => {
+    const isValid = await form.trigger();
+    if (!isValid) return;
+
+    const formData = form.getValues();
+    const dataToSave = { ...formData, stato: "pubblicato" as const };
+
+    if (isEdit) {
+      updatePostMutation.mutate(dataToSave);
+    } else {
+      createPostMutation.mutate(dataToSave);
+    }
+  };
+
+  const isSaving = createPostMutation.isPending || updatePostMutation.isPending;
+
+  // Autosave functionality - save draft every 10 seconds when editing
+  useEffect(() => {
+    if (!isEdit || !postId) return;
+
+    const autosaveInterval = setInterval(async () => {
+      // Only autosave if form has changes (is dirty)
+      if (!form.formState.isDirty) return;
+
+      const formData = form.getValues();
+      
+      // Validate silently without showing errors to user
+      const validationResult = formSchema.safeParse(formData);
+      if (!validationResult.success) return; // Skip autosave if invalid
+
+      const dataToSave = { ...formData, stato: "bozza" as const };
+
+      // Silent autosave (no toast notification)
+      try {
+        await apiRequest("PUT", `/api/admin/posts/${postId}`, dataToSave);
+        queryClient.invalidateQueries({ queryKey: ["/api/admin/posts"] });
+        queryClient.invalidateQueries({ queryKey: [`/api/admin/posts/${postId}`] });
+        // Reset form dirty state after successful autosave
+        form.reset(formData);
+      } catch (error) {
+        // Silently fail autosave - user can still manually save
+        console.error("Autosave failed:", error);
+      }
+    }, 10000); // 10 seconds
+
+    return () => clearInterval(autosaveInterval);
+  }, [isEdit, postId, form, queryClient]);
 
   // Auto-generate slug from title
   useEffect(() => {
@@ -115,6 +262,16 @@ export function PostForm({ postId }: PostFormProps) {
     });
     return () => subscription.unsubscribe();
   }, [form]);
+
+  // Show loading state while fetching existing post
+  if (isEdit && isLoadingPost) {
+    return (
+      <div className="flex items-center justify-center py-12" data-testid="loading-post-form">
+        <Loader2 className="h-8 w-8 animate-spin text-muted-foreground" />
+        <span className="ml-2 text-muted-foreground">Caricamento post...</span>
+      </div>
+    );
+  }
 
   return (
     <Form {...form}>
@@ -327,16 +484,22 @@ export function PostForm({ postId }: PostFormProps) {
 
         <div className="flex gap-3">
           <Button 
+            type="button"
             variant="outline" 
             data-testid="button-save-draft"
-            disabled={true}
+            onClick={handleSaveDraft}
+            disabled={isSaving}
           >
+            {isSaving && <Loader2 className="mr-2 h-4 w-4 animate-spin" />}
             Salva Bozza
           </Button>
           <Button 
+            type="button"
             data-testid="button-publish"
-            disabled={true}
+            onClick={handlePublish}
+            disabled={isSaving}
           >
+            {isSaving && <Loader2 className="mr-2 h-4 w-4 animate-spin" />}
             Pubblica
           </Button>
         </div>
