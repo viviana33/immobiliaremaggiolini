@@ -129,6 +129,9 @@ export const propertyFiltersSchema = z.object({
   prezzoMin: z.coerce.number().positive().optional(),
   prezzoMax: z.coerce.number().positive().optional(),
   mqMin: z.coerce.number().positive().optional(),
+  sort: z.enum(["recente", "prezzo_asc", "prezzo_desc", "mq_asc", "mq_desc"]).optional(),
+  page: z.coerce.number().positive().optional(),
+  perPage: z.coerce.number().positive().max(100).optional(),
 });
 
 export type PropertyFilters = z.infer<typeof propertyFiltersSchema>;
