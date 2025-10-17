@@ -53,9 +53,9 @@ export async function registerRoutes(app: Express): Promise<Server> {
       const filterResult = propertyFiltersSchema.safeParse(req.query);
       const filters = filterResult.success ? filterResult.data : {};
       
-      const properties = await storage.getFilteredProperties(filters);
+      const result = await storage.getFilteredProperties(filters);
       
-      const formattedProperties = properties.map(p => ({
+      const formattedProperties = result.properties.map((p: any) => ({
         id: p.id,
         slug: p.slug,
         title: p.titolo,
@@ -65,7 +65,15 @@ export async function registerRoutes(app: Express): Promise<Server> {
         location: p.zona,
       }));
       
-      res.json(formattedProperties);
+      res.json({
+        properties: formattedProperties,
+        pagination: {
+          total: result.total,
+          page: result.page,
+          perPage: result.perPage,
+          totalPages: result.totalPages,
+        },
+      });
     } catch (error) {
       console.error("Error fetching properties:", error);
       res.status(500).json({ message: "Errore nel recupero degli immobili" });
