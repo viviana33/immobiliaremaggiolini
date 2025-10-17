@@ -1,6 +1,8 @@
 import { useQuery } from "@tanstack/react-query";
 import PropertyCard from "@/components/PropertyCard";
 import FiltersBar from "@/components/FiltersBar";
+import SortingControls from "@/components/SortingControls";
+import PaginationControls from "@/components/PaginationControls";
 import { Loader2 } from "lucide-react";
 import { useLocation } from "wouter";
 
@@ -14,6 +16,18 @@ interface Property {
   location: string;
 }
 
+interface PaginationData {
+  total: number;
+  page: number;
+  perPage: number;
+  totalPages: number;
+}
+
+interface PropertiesResponse {
+  properties: Property[];
+  pagination: PaginationData;
+}
+
 export default function Immobili() {
   const [location] = useLocation();
   const queryParams = location.includes('?') ? location.split('?')[1] : '';
@@ -21,7 +35,7 @@ export default function Immobili() {
   const queryKey = queryParams ? ['/api/properties', queryParams] : ['/api/properties'];
   const queryUrl = queryParams ? `/api/properties?${queryParams}` : '/api/properties';
 
-  const { data: properties, isLoading, error } = useQuery<Property[]>({
+  const { data, isLoading, error } = useQuery<PropertiesResponse>({
     queryKey,
     queryFn: async () => {
       const response = await fetch(queryUrl);
@@ -31,6 +45,9 @@ export default function Immobili() {
       return response.json();
     },
   });
+
+  const properties = data?.properties || [];
+  const pagination = data?.pagination;
 
   if (error) {
     return (
@@ -91,10 +108,13 @@ export default function Immobili() {
       
       <FiltersBar />
       
-      <div className="mb-4">
-        <p className="text-sm text-muted-foreground" data-testid="text-results-count">
-          {properties.length} {properties.length === 1 ? "immobile trovato" : "immobili trovati"}
-        </p>
+      <div className="flex flex-wrap items-center justify-between gap-4 mb-6">
+        <div>
+          <p className="text-sm text-muted-foreground" data-testid="text-results-count">
+            {pagination?.total || 0} {pagination?.total === 1 ? "immobile trovato" : "immobili trovati"}
+          </p>
+        </div>
+        <SortingControls />
       </div>
       
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
@@ -119,6 +139,14 @@ export default function Immobili() {
           );
         })}
       </div>
+      
+      {pagination && (
+        <PaginationControls
+          currentPage={pagination.page}
+          totalPages={pagination.totalPages}
+          total={pagination.total}
+        />
+      )}
     </div>
   );
 }
