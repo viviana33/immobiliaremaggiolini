@@ -12,6 +12,7 @@ export const postStatusEnum = pgEnum("post_status", ["bozza", "pubblicato", "arc
 // Tabella properties (immobili)
 export const properties = pgTable("properties", {
   id: varchar("id").primaryKey().default(sql`gen_random_uuid()`),
+  slug: text("slug").notNull().unique(),
   titolo: text("titolo").notNull(),
   descrizione: text("descrizione").notNull(),
   prezzo: decimal("prezzo", { precision: 10, scale: 2 }).notNull(),
