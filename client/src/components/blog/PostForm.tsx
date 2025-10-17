@@ -17,6 +17,16 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select";
+import {
+  AlertDialog,
+  AlertDialogAction,
+  AlertDialogCancel,
+  AlertDialogContent,
+  AlertDialogDescription,
+  AlertDialogFooter,
+  AlertDialogHeader,
+  AlertDialogTitle,
+} from "@/components/ui/alert-dialog";
 import { MarkdownEditor } from "./MarkdownEditor";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
@@ -78,6 +88,7 @@ function calculateReadingTime(content: string): number {
 export function PostForm({ postId }: PostFormProps) {
   const isEdit = Boolean(postId);
   const [readingTime, setReadingTime] = useState<number>(0);
+  const [showPublishDialog, setShowPublishDialog] = useState(false);
   const { toast } = useToast();
   const [, setLocation] = useLocation();
 
@@ -129,6 +140,10 @@ export function PostForm({ postId }: PostFormProps) {
   const createPostMutation = useMutation({
     mutationFn: async (data: FormValues) => {
       const res = await apiRequest("POST", "/api/admin/posts", data);
+      if (!res.ok) {
+        const errorData = await res.json();
+        throw errorData;
+      }
       return res.json();
     },
     onSuccess: (data: Post) => {
@@ -143,6 +158,16 @@ export function PostForm({ postId }: PostFormProps) {
       setLocation(`/admin/blog/${data.id}`);
     },
     onError: (error: any) => {
+      // Set field-specific errors if they exist
+      if (error.errors) {
+        Object.keys(error.errors).forEach((field) => {
+          form.setError(field as any, {
+            type: "manual",
+            message: error.errors[field],
+          });
+        });
+      }
+      
       toast({
         variant: "destructive",
         title: "Errore",
@@ -155,6 +180,10 @@ export function PostForm({ postId }: PostFormProps) {
   const updatePostMutation = useMutation({
     mutationFn: async (data: FormValues) => {
       const res = await apiRequest("PUT", `/api/admin/posts/${postId}`, data);
+      if (!res.ok) {
+        const errorData = await res.json();
+        throw errorData;
+      }
       return res.json();
     },
     onSuccess: (data: Post) => {
@@ -168,6 +197,16 @@ export function PostForm({ postId }: PostFormProps) {
       });
     },
     onError: (error: any) => {
+      // Set field-specific errors if they exist
+      if (error.errors) {
+        Object.keys(error.errors).forEach((field) => {
+          form.setError(field as any, {
+            type: "manual",
+            message: error.errors[field],
+          });
+        });
+      }
+      
       toast({
         variant: "destructive",
         title: "Errore",
@@ -191,11 +230,74 @@ export function PostForm({ postId }: PostFormProps) {
     }
   };
 
-  // Handle publish
-  const handlePublish = async () => {
+  // Validate publish requirements
+  const validatePublishRequirements = (): boolean => {
+    const formData = form.getValues();
+    let hasErrors = false;
+
+    // Check title
+    if (!formData.titolo || formData.titolo.trim() === "") {
+      form.setError("titolo", {
+        type: "manual",
+        message: "Il titolo è obbligatorio per la pubblicazione",
+      });
+      hasErrors = true;
+    }
+
+    // Check slug
+    if (!formData.slug || formData.slug.trim() === "") {
+      form.setError("slug", {
+        type: "manual",
+        message: "Lo slug è obbligatorio per la pubblicazione",
+      });
+      hasErrors = true;
+    }
+
+    // Check content
+    if (!formData.contenuto || formData.contenuto.trim() === "") {
+      form.setError("contenuto", {
+        type: "manual",
+        message: "Il contenuto è obbligatorio per la pubblicazione",
+      });
+      hasErrors = true;
+    }
+
+    // Check cover image
+    if (!formData.cover || formData.cover.trim() === "") {
+      form.setError("cover", {
+        type: "manual",
+        message: "L'immagine di copertina è obbligatoria per la pubblicazione",
+      });
+      hasErrors = true;
+    }
+
+    if (hasErrors) {
+      toast({
+        variant: "destructive",
+        title: "Impossibile pubblicare",
+        description: "Compila tutti i campi obbligatori prima di pubblicare",
+      });
+    }
+
+    return !hasErrors;
+  };
+
+  // Handle publish button click - show confirmation dialog
+  const handlePublishClick = async () => {
     const isValid = await form.trigger();
     if (!isValid) return;
 
+    // Check publish requirements
+    if (!validatePublishRequirements()) {
+      return;
+    }
+
+    // Show confirmation dialog
+    setShowPublishDialog(true);
+  };
+
+  // Handle confirmed publish
+  const handleConfirmPublish = () => {
     const formData = form.getValues();
     const dataToSave = { ...formData, stato: "pubblicato" as const };
 
@@ -204,6 +306,8 @@ export function PostForm({ postId }: PostFormProps) {
     } else {
       createPostMutation.mutate(dataToSave);
     }
+    
+    setShowPublishDialog(false);
   };
 
   const isSaving = createPostMutation.isPending || updatePostMutation.isPending;
@@ -339,7 +443,7 @@ export function PostForm({ postId }: PostFormProps) {
             name="cover"
             render={({ field }) => (
               <FormItem>
-                <FormLabel>Immagine di copertina (URL)</FormLabel>
+                <FormLabel>Immagine di copertina (URL) *</FormLabel>
                 <FormControl>
                   <Input
                     placeholder="https://esempio.com/immagine.jpg"
@@ -347,6 +451,7 @@ export function PostForm({ postId }: PostFormProps) {
                     {...field}
                   />
                 </FormControl>
+                <FormDescription>Obbligatoria per la pubblicazione</FormDescription>
                 <FormMessage />
               </FormItem>
             )}
@@ -496,7 +601,7 @@ export function PostForm({ postId }: PostFormProps) {
           <Button 
             type="button"
             data-testid="button-publish"
-            onClick={handlePublish}
+            onClick={handlePublishClick}
             disabled={isSaving}
           >
             {isSaving && <Loader2 className="mr-2 h-4 w-4 animate-spin" />}
@@ -504,6 +609,26 @@ export function PostForm({ postId }: PostFormProps) {
           </Button>
         </div>
       </form>
+
+      <AlertDialog open={showPublishDialog} onOpenChange={setShowPublishDialog}>
+        <AlertDialogContent data-testid="dialog-publish-confirm">
+          <AlertDialogHeader>
+            <AlertDialogTitle>Conferma pubblicazione</AlertDialogTitle>
+            <AlertDialogDescription>
+              Sei sicuro di voler pubblicare questo post? Il post sarà visibile pubblicamente.
+            </AlertDialogDescription>
+          </AlertDialogHeader>
+          <AlertDialogFooter>
+            <AlertDialogCancel data-testid="button-cancel-publish">Annulla</AlertDialogCancel>
+            <AlertDialogAction 
+              data-testid="button-confirm-publish"
+              onClick={handleConfirmPublish}
+            >
+              Pubblica
+            </AlertDialogAction>
+          </AlertDialogFooter>
+        </AlertDialogContent>
+      </AlertDialog>
     </Form>
   );
 }
