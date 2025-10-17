@@ -19,6 +19,7 @@ export const properties = pgTable("properties", {
   mq: integer("mq").notNull(),
   stanze: integer("stanze").notNull(),
   bagni: integer("bagni").notNull(),
+  piano: integer("piano").notNull(),
   classeEnergetica: energyClassEnum("classe_energetica").notNull(),
   zona: text("zona").notNull(),
   stato: propertyStatusEnum("stato").notNull().default("disponibile"),
