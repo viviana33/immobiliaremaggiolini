@@ -23,6 +23,8 @@ import { zodResolver } from "@hookform/resolvers/zod";
 import { insertPostSchema } from "@shared/schema";
 import { z } from "zod";
 import { Separator } from "@/components/ui/separator";
+import { useEffect, useState } from "react";
+import { Clock } from "lucide-react";
 
 interface PostFormProps {
   postId?: string;
@@ -34,6 +36,7 @@ const formSchema = insertPostSchema.extend({
   slug: z.string().min(1, "Lo slug è obbligatorio"),
   cover: z.string().optional(),
   contenuto: z.string().min(1, "Il contenuto è obbligatorio"),
+  readingTimeMin: z.number().optional(),
   tag: z.array(z.string()).optional(),
   categoria: z.string().optional(),
   autore: z.string().min(1, "L'autore è obbligatorio"),
@@ -44,8 +47,33 @@ const formSchema = insertPostSchema.extend({
 
 type FormValues = z.infer<typeof formSchema>;
 
+// Utility function to generate slug from title
+function generateSlug(title: string): string {
+  return title
+    .toLowerCase()
+    .normalize("NFD")
+    .replace(/[\u0300-\u036f]/g, "") // Remove accents
+    .replace(/[^\w\s-]/g, "") // Remove special characters
+    .replace(/\s+/g, "-") // Replace spaces with hyphens
+    .replace(/-+/g, "-") // Replace multiple hyphens with single hyphen
+    .replace(/^-+|-+$/g, ""); // Remove leading/trailing hyphens
+}
+
+// Utility function to calculate reading time from markdown content
+function calculateReadingTime(content: string): number {
+  const wordsPerMinute = 200;
+  const text = content
+    .replace(/!\[.*?\]\(.*?\)/g, "") // Remove images first
+    .replace(/\[.*?\]\(.*?\)/g, "") // Remove links
+    .replace(/[#*`\[\]()]/g, "") // Then remove other markdown syntax
+    .trim();
+  const words = text.split(/\s+/).filter(Boolean).length;
+  return Math.max(1, Math.ceil(words / wordsPerMinute));
+}
+
 export function PostForm({ postId }: PostFormProps) {
   const isEdit = Boolean(postId);
+  const [readingTime, setReadingTime] = useState<number>(0);
 
   const form = useForm<FormValues>({
     resolver: zodResolver(formSchema),
@@ -55,6 +83,7 @@ export function PostForm({ postId }: PostFormProps) {
       slug: "",
       cover: "",
       contenuto: "",
+      readingTimeMin: 0,
       tag: [],
       categoria: "",
       autore: "Admin",
@@ -63,6 +92,29 @@ export function PostForm({ postId }: PostFormProps) {
       metaDescription: "",
     },
   });
+
+  // Auto-generate slug from title
+  useEffect(() => {
+    const subscription = form.watch((value, { name }) => {
+      if (name === "titolo") {
+        const slug = value.titolo ? generateSlug(value.titolo) : "";
+        form.setValue("slug", slug);
+      }
+    });
+    return () => subscription.unsubscribe();
+  }, [form]);
+
+  // Calculate reading time from content
+  useEffect(() => {
+    const subscription = form.watch((value, { name }) => {
+      if (name === "contenuto") {
+        const time = value.contenuto ? calculateReadingTime(value.contenuto) : 0;
+        setReadingTime(time);
+        form.setValue("readingTimeMin", time);
+      }
+    });
+    return () => subscription.unsubscribe();
+  }, [form]);
 
   return (
     <Form {...form}>
@@ -152,6 +204,14 @@ export function PostForm({ postId }: PostFormProps) {
                 <FormControl>
                   <MarkdownEditor value={field.value} onChange={field.onChange} />
                 </FormControl>
+                {readingTime > 0 && (
+                  <FormDescription className="flex items-center gap-2 mt-2">
+                    <Clock className="w-4 h-4" />
+                    <span data-testid="text-reading-time">
+                      Tempo di lettura stimato: {readingTime} {readingTime === 1 ? 'minuto' : 'minuti'}
+                    </span>
+                  </FormDescription>
+                )}
                 <FormMessage />
               </FormItem>
             )}
