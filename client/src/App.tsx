@@ -14,6 +14,7 @@ import Blog from "@/pages/Blog";
 import BlogDettaglio from "@/pages/BlogDettaglio";
 import ChiSiamo from "@/pages/ChiSiamo";
 import Contatti from "@/pages/Contatti";
+import Preferenze from "@/pages/Preferenze";
 import Login from "@/pages/Login";
 import AdminDashboard from "@/pages/AdminDashboard";
 import AdminImmobili from "@/pages/AdminImmobili";
@@ -77,6 +78,7 @@ function Router() {
                 <Route path="/blog" component={Blog} />
                 <Route path="/chi-siamo" component={ChiSiamo} />
                 <Route path="/contatti" component={Contatti} />
+                <Route path="/preferenze" component={Preferenze} />
                 <Route path="/" component={Home} />
                 <Route component={NotFound} />
               </Switch>

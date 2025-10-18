@@ -41,35 +41,19 @@ export async function registerRoutes(app: Express): Promise<Server> {
   });
 
   app.post("/api/subscribe", async (req, res) => {
-    try {
-      const validationResult = insertSubscriptionSchema.safeParse(req.body);
-      
-      if (!validationResult.success) {
-        return res.status(400).json({ 
-          success: false, 
-          message: "Dati non validi",
-          errors: validationResult.error.errors 
-        });
-      }
+    console.log("POST /api/subscribe - Nuova iscrizione:", req.body);
+    res.status(200).json({ 
+      success: true, 
+      message: "Iscrizione ricevuta" 
+    });
+  });
 
-      console.log("Nuova iscrizione ricevuta:", {
-        email: validationResult.data.email,
-        nome: validationResult.data.nome,
-        wantsPropertyAlerts: validationResult.data.wantsPropertyAlerts,
-        timestamp: new Date().toISOString()
-      });
-
-      res.status(200).json({ 
-        success: true, 
-        message: "Iscrizione ricevuta! Controlla la tua email per confermare." 
-      });
-    } catch (error) {
-      console.error("Errore durante l'iscrizione:", error);
-      res.status(500).json({ 
-        success: false, 
-        message: "Si è verificato un errore. Riprova più tardi." 
-      });
-    }
+  app.put("/api/subscribe", async (req, res) => {
+    console.log("PUT /api/subscribe - Aggiornamento preferenze:", req.body);
+    res.status(200).json({ 
+      success: true, 
+      message: "Preferenze aggiornate" 
+    });
   });
 
   const upload = multer({ 
