@@ -2,7 +2,7 @@ import PostCard from "@/components/blog/PostCard";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { Input } from "@/components/ui/input";
-import { useState, useMemo, useEffect } from "react";
+import { useState, useEffect, useMemo } from "react";
 import { useQuery } from "@tanstack/react-query";
 import type { Post } from "@shared/schema";
 import { Loader2, AlertCircle, Search, X, FileText, ChevronLeft, ChevronRight } from "lucide-react";
@@ -43,12 +43,20 @@ interface PostsResponse {
 
 export default function Blog() {
   const [location, setLocation] = useLocation();
-  const searchParams = new URLSearchParams(location.split("?")[1] || "");
   
-  const categoria = searchParams.get("categoria") || "";
-  const searchQuery = searchParams.get("search") || "";
-  const selectedTag = searchParams.get("tag") || "";
-  const currentPage = parseInt(searchParams.get("page") || "1");
+  const queryParams = useMemo(() => {
+    return location.includes('?') ? location.split('?')[1] : '';
+  }, [location]);
+  
+  const { categoria, searchQuery, selectedTag, currentPage } = useMemo(() => {
+    const searchParams = new URLSearchParams(queryParams);
+    return {
+      categoria: searchParams.get("categoria") || "",
+      searchQuery: searchParams.get("search") || "",
+      selectedTag: searchParams.get("tag") || "",
+      currentPage: parseInt(searchParams.get("page") || "1"),
+    };
+  }, [queryParams]);
   
   const [searchInput, setSearchInput] = useState(searchQuery);
 
@@ -56,19 +64,13 @@ export default function Blog() {
     setSearchInput(searchQuery);
   }, [searchQuery]);
 
-  const queryString = useMemo(() => {
-    const params = new URLSearchParams();
-    if (categoria) params.set("categoria", categoria);
-    if (searchQuery) params.set("search", searchQuery);
-    if (selectedTag) params.set("tag", selectedTag);
-    if (currentPage > 1) params.set("page", currentPage.toString());
-    return params.toString();
-  }, [categoria, searchQuery, selectedTag, currentPage]);
+  const queryKey = queryParams ? ['/api/posts', queryParams] : ['/api/posts'];
 
   const { data, isLoading, error } = useQuery<PostsResponse>({
-    queryKey: ["/api/posts", queryString],
-    queryFn: async () => {
-      const url = `/api/posts${queryString ? `?${queryString}` : ""}`;
+    queryKey,
+    queryFn: async ({ queryKey }) => {
+      const params = queryKey[1] as string | undefined;
+      const url = params ? `/api/posts?${params}` : '/api/posts';
       const response = await fetch(url);
       if (!response.ok) throw new Error("Failed to fetch posts");
       return response.json();
@@ -78,24 +80,7 @@ export default function Blog() {
   const allPosts = data?.posts || [];
   const pagination = data?.pagination;
 
-  const allCategories = useMemo(() => {
-    if (!data?.posts) return [];
-    const uniqueCategories = new Set(
-      data.posts.map((p) => p.categoria).filter((cat): cat is string => Boolean(cat))
-    );
-    return Array.from(uniqueCategories);
-  }, [data?.posts]);
-
-  const allTags = useMemo(() => {
-    if (!data?.posts) return [];
-    const tagSet = new Set<string>();
-    data.posts.forEach((post) => {
-      if (post.tag) {
-        post.tag.forEach((t) => tagSet.add(t));
-      }
-    });
-    return Array.from(tagSet).sort();
-  }, [data?.posts]);
+  const hasActiveFilters = Boolean(categoria || searchQuery || selectedTag);
 
   const updateFilters = (updates: {
     categoria?: string;
@@ -103,19 +88,42 @@ export default function Blog() {
     tag?: string;
     page?: number;
   }) => {
-    const params = new URLSearchParams();
+    const params = new URLSearchParams(queryParams);
     
-    const newCategoria = updates.categoria !== undefined ? updates.categoria : categoria;
-    const newSearch = updates.search !== undefined ? updates.search : searchQuery;
-    const newTag = updates.tag !== undefined ? updates.tag : selectedTag;
-    const newPage = updates.page !== undefined ? updates.page : currentPage;
+    if (updates.categoria !== undefined) {
+      if (updates.categoria) {
+        params.set("categoria", updates.categoria);
+      } else {
+        params.delete("categoria");
+      }
+    }
+    
+    if (updates.search !== undefined) {
+      if (updates.search) {
+        params.set("search", updates.search);
+      } else {
+        params.delete("search");
+      }
+    }
+    
+    if (updates.tag !== undefined) {
+      if (updates.tag) {
+        params.set("tag", updates.tag);
+      } else {
+        params.delete("tag");
+      }
+    }
+    
+    if (updates.page !== undefined) {
+      if (updates.page > 1) {
+        params.set("page", updates.page.toString());
+      } else {
+        params.delete("page");
+      }
+    }
 
-    if (newCategoria) params.set("categoria", newCategoria);
-    if (newSearch) params.set("search", newSearch);
-    if (newTag) params.set("tag", newTag);
-    if (newPage > 1) params.set("page", newPage.toString());
-
-    const newUrl = `/blog${params.toString() ? `?${params.toString()}` : ""}`;
+    const newQueryString = params.toString();
+    const newUrl = `/blog${newQueryString ? `?${newQueryString}` : ""}`;
     setLocation(newUrl);
   };
 
@@ -146,7 +154,25 @@ export default function Blog() {
     window.scrollTo({ top: 0, behavior: "smooth" });
   };
 
-  const hasActiveFilters = Boolean(categoria || searchQuery || selectedTag);
+  const clearAllFilters = () => {
+    setSearchInput("");
+    setLocation("/blog");
+  };
+
+  const allCategories = Array.from(
+    new Set(
+      (allPosts || [])
+        .map(p => p.categoria)
+        .filter((cat): cat is string => Boolean(cat))
+    )
+  );
+
+  const allTags = Array.from(
+    new Set(
+      (allPosts || [])
+        .flatMap(post => post.tag || [])
+    )
+  ).sort();
 
   return (
     <div className="min-h-screen">
@@ -195,7 +221,7 @@ export default function Blog() {
             </Button>
           </form>
 
-          {allCategories.length > 0 && (
+          {!isLoading && allCategories.length > 0 && (
             <div>
               <h3 className="text-sm font-medium text-muted-foreground mb-3">Categorie</h3>
               <div className="flex flex-wrap gap-2">
@@ -222,7 +248,7 @@ export default function Blog() {
             </div>
           )}
 
-          {allTags.length > 0 && (
+          {!isLoading && allTags.length > 0 && (
             <div>
               <h3 className="text-sm font-medium text-muted-foreground mb-3">Tag</h3>
               <div className="flex flex-wrap gap-2">
@@ -265,10 +291,7 @@ export default function Blog() {
               <Button
                 variant="ghost"
                 size="sm"
-                onClick={() => {
-                  setSearchInput("");
-                  setLocation("/blog");
-                }}
+                onClick={clearAllFilters}
                 className="h-6 px-2"
                 data-testid="button-clear-all-filters"
               >
@@ -316,10 +339,7 @@ export default function Blog() {
               {hasActiveFilters && (
                 <Button
                   variant="outline"
-                  onClick={() => {
-                    setSearchInput("");
-                    setLocation("/blog");
-                  }}
+                  onClick={clearAllFilters}
                   data-testid="button-reset-filters"
                 >
                   Rimuovi filtri

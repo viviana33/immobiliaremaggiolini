@@ -252,10 +252,7 @@ export class DbStorage implements IStorage {
     if (filters.search) {
       const searchTerm = `%${filters.search}%`;
       conditions.push(
-        or(
-          ilike(posts.titolo, searchTerm),
-          ilike(posts.sottotitolo, searchTerm)
-        )!
+        sql`(${posts.titolo} ILIKE ${searchTerm} OR ${posts.sottotitolo} ILIKE ${searchTerm})`
       );
     }
     
