@@ -42,12 +42,23 @@ Preferred communication style: Simple, everyday language.
   - **Rendering strategy**: CSR (Client-Side Rendering) with React + Vite, TanStack Query for data fetching
   - **SEO considerations**: Documented in code comment - CSR chosen due to Vite/React architecture; SSR/ISR would require Next.js or similar framework
 - **Newsletter Notification Stub**: API endpoint for logging post publication notifications for future integration.
-- **Newsletter Subscription System** (October 2025):
-  - **Stub API endpoints**: POST `/api/subscribe` (new subscriptions), PUT `/api/subscribe` (preference updates) - both return 200 OK
-  - **Preferences Page** (`/preferenze`): Card layout with two toggle switches for notification preferences:
-    - "Nuovi articoli" - Toggle for blog post notifications (data-testid: toggle-nuovi-articoli)
-    - "Nuovi immobili" - Toggle for property notifications (data-testid: toggle-nuovi-immobili)
-  - **Implementation status**: Placeholder UI and stub endpoints ready for future email integration
+- **Newsletter Subscription System with Brevo Integration** (October 2025):
+  - **Database Schema**: Subscriptions table with `email`, `nome`, `blog_updates`, `new_listings`, `source`, `consent_ts`, `consent_ip`, `confirmed`, `confirm_token`, `created_at`
+  - **Brevo Service**: Double opt-in (DOI) integration via `@getbrevo/brevo` package
+    - `createContactWithDoubleOptIn()`: Creates contact and sends DOI confirmation email
+    - `updateContact()`: Updates contact preferences without new DOI
+    - `getContact()`: Retrieves contact information
+    - Environment variables: `BREVO_API_KEY` (required), `BREVO_TEMPLATE_ID` (optional), `BREVO_LIST_ID` (optional)
+  - **API Endpoints**:
+    - POST `/api/subscribe`: Creates/updates subscription with upsert logic, saves consent data (IP, timestamp), sends Brevo DOI email
+    - PUT `/api/subscribe`: Updates preferences (blog_updates, new_listings) without requiring new DOI
+    - GET `/api/subscribe/confirm/:token`: Local confirmation endpoint (fallback if Brevo redirect used)
+    - POST `/api/webhooks/brevo`: Webhook receiver for Brevo events (marks subscriptions as confirmed)
+  - **Rate Limiting**: 5 requests per 15 minutes per email+IP combination to prevent abuse
+  - **Validation**: Zod schemas for email validation, subscription fields
+  - **Consent Tracking**: Records consent IP (`consent_ip`), consent timestamp (`consent_ts`), source (`source`)
+  - **Frontend** (`SubscriptionBox.tsx`): Form with email, name (optional), blog updates toggle, new listings toggle
+  - **Preferences Page** (`/preferenze`): UI for managing notification preferences (future enhancement)
 - **Type Safety**: Zod schemas generated from Drizzle, shared types via `/shared` directory, TypeScript strict mode.
 - **Database Migrations**: Managed via Drizzle Kit.
 

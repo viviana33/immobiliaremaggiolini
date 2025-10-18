@@ -22,10 +22,9 @@ import { apiRequest } from "@/lib/queryClient";
 const subscriptionFormSchema = z.object({
   email: z.string().email("Inserisci un indirizzo email valido"),
   nome: z.string().optional(),
-  acceptedPrivacy: z.boolean().refine((val) => val === true, {
-    message: "Devi accettare l'informativa sulla privacy per iscriverti",
-  }),
-  wantsPropertyAlerts: z.boolean().default(false),
+  blogUpdates: z.boolean().default(true),
+  newListings: z.boolean().default(false),
+  source: z.string().optional(),
 });
 
 type SubscriptionFormData = z.infer<typeof subscriptionFormSchema>;
@@ -39,8 +38,9 @@ export default function SubscriptionBox() {
     defaultValues: {
       email: "",
       nome: "",
-      acceptedPrivacy: false,
-      wantsPropertyAlerts: false,
+      blogUpdates: true,
+      newListings: false,
+      source: "blog",
     },
   });
 
@@ -144,41 +144,19 @@ export default function SubscriptionBox() {
 
             <FormField
               control={form.control}
-              name="acceptedPrivacy"
+              name="newListings"
               render={({ field }) => (
                 <FormItem className="flex flex-row items-start space-x-3 space-y-0">
                   <FormControl>
                     <Checkbox
                       checked={field.value}
                       onCheckedChange={field.onChange}
-                      data-testid="checkbox-privacy"
+                      data-testid="checkbox-new-listings"
                     />
                   </FormControl>
                   <div className="space-y-1 leading-none">
                     <FormLabel className="text-sm font-normal">
-                      Accetto l'informativa sulla privacy *
-                    </FormLabel>
-                    <FormMessage />
-                  </div>
-                </FormItem>
-              )}
-            />
-
-            <FormField
-              control={form.control}
-              name="wantsPropertyAlerts"
-              render={({ field }) => (
-                <FormItem className="flex flex-row items-start space-x-3 space-y-0">
-                  <FormControl>
-                    <Checkbox
-                      checked={field.value}
-                      onCheckedChange={field.onChange}
-                      data-testid="checkbox-property-alerts"
-                    />
-                  </FormControl>
-                  <div className="space-y-1 leading-none">
-                    <FormLabel className="text-sm font-normal">
-                      Mandami anche i nuovi immobili
+                      Mandami anche le notifiche sui nuovi immobili
                     </FormLabel>
                   </div>
                 </FormItem>

@@ -2,11 +2,17 @@ import type { Express } from "express";
 import { createServer, type Server } from "http";
 import { storage } from "./storage";
 import { requireAdmin } from "./middleware/auth";
+import { subscriptionRateLimit } from "./middleware/rateLimit";
 import multer from "multer";
 import { uploadService } from "./uploadService";
-import { insertPropertySchema, propertyFiltersSchema, insertPostSchema, postFiltersSchema, insertSubscriptionSchema } from "@shared/schema";
+import { insertSubscriptionSchema, updateSubscriptionSchema, insertPropertySchema, propertyFiltersSchema, insertPostSchema, postFiltersSchema } from "@shared/schema";
+import { getBrevoService } from "./brevoService";
+import { registerSubscriptionConfirmRoutes } from "./routes-subscription-confirm";
+import crypto from "crypto";
 
 export async function registerRoutes(app: Express): Promise<Server> {
+  // Registra le route di conferma subscription
+  registerSubscriptionConfirmRoutes(app);
   // Auth routes
   app.post("/api/auth/login", async (req, res) => {
     const { token } = req.body;
@@ -40,20 +46,169 @@ export async function registerRoutes(app: Express): Promise<Server> {
     res.json({ isAuthenticated: !!req.session.isAdmin });
   });
 
-  app.post("/api/subscribe", async (req, res) => {
-    console.log("POST /api/subscribe - Nuova iscrizione:", req.body);
-    res.status(200).json({ 
-      success: true, 
-      message: "Iscrizione ricevuta" 
-    });
+  app.post("/api/subscribe", subscriptionRateLimit(), async (req, res) => {
+    try {
+      const validatedData = insertSubscriptionSchema.parse(req.body);
+      
+      // Ottieni IP del client
+      const forwarded = req.headers['x-forwarded-for'];
+      const clientIp = forwarded 
+        ? (Array.isArray(forwarded) ? forwarded[0] : forwarded.split(',')[0])
+        : req.socket.remoteAddress || 'unknown';
+      
+      // Verifica se l'utente esiste già
+      const existingSubscription = await storage.getSubscriptionByEmail(validatedData.email);
+      
+      if (existingSubscription) {
+        // Aggiorna le preferenze e consent timestamp
+        await storage.updateSubscription(validatedData.email, {
+          nome: validatedData.nome,
+          blogUpdates: validatedData.blogUpdates,
+          newListings: validatedData.newListings,
+          source: validatedData.source || 'website',
+          consentIp: clientIp,
+          consentTs: new Date(),
+        });
+        
+        // Se già confermato, non invia nuova email DOI
+        if (existingSubscription.confirmed) {
+          return res.json({
+            success: true,
+            message: "Preferenze aggiornate con successo"
+          });
+        }
+      }
+      
+      // Token per conferma (anche se Brevo gestisce il suo)
+      const confirmToken = crypto.randomBytes(32).toString('hex');
+      
+      // Crea o aggiorna subscription nel database
+      const subscriptionData = {
+        ...validatedData,
+        source: validatedData.source || 'website',
+        consentIp: clientIp,
+        confirmToken,
+        confirmed: false,
+      };
+      
+      if (existingSubscription) {
+        await storage.updateSubscription(validatedData.email, subscriptionData);
+      } else {
+        await storage.createSubscription(subscriptionData);
+      }
+      
+      // Invia email double opt-in tramite Brevo
+      try {
+        const brevo = getBrevoService();
+        
+        const attributes: any = {};
+        if (validatedData.nome) {
+          attributes.FIRSTNAME = validatedData.nome;
+        }
+        attributes.BLOG_UPDATES = validatedData.blogUpdates || false;
+        attributes.NEW_LISTINGS = validatedData.newListings || false;
+        
+        await brevo.createContactWithDoubleOptIn({
+          email: validatedData.email,
+          attributes,
+          listIds: [brevo.getDefaultListId()],
+          redirectionUrl: `${process.env.REPLIT_DOMAINS ? `https://${process.env.REPLIT_DOMAINS.split(',')[0]}` : 'http://localhost:5000'}/preferenze?confirmed=true`
+        });
+        
+        res.json({
+          success: true,
+          message: "Controlla la tua email per confermare l'iscrizione"
+        });
+      } catch (brevoError: any) {
+        console.error("Errore invio email Brevo:", brevoError);
+        
+        // Se Brevo non è configurato, rispondi comunque con successo
+        if (brevoError.message?.includes("non configurata")) {
+          return res.json({
+            success: true,
+            message: "Iscrizione ricevuta (servizio email in configurazione)"
+          });
+        }
+        
+        return res.status(500).json({
+          success: false,
+          message: "Errore nell'invio dell'email di conferma"
+        });
+      }
+    } catch (error: any) {
+      console.error("Error in POST /api/subscribe:", error);
+      
+      if (error.name === 'ZodError') {
+        return res.status(400).json({
+          success: false,
+          message: "Dati non validi",
+          errors: error.errors
+        });
+      }
+      
+      res.status(500).json({
+        success: false,
+        message: "Errore nell'elaborazione della richiesta"
+      });
+    }
   });
 
-  app.put("/api/subscribe", async (req, res) => {
-    console.log("PUT /api/subscribe - Aggiornamento preferenze:", req.body);
-    res.status(200).json({ 
-      success: true, 
-      message: "Preferenze aggiornate" 
-    });
+  app.put("/api/subscribe", subscriptionRateLimit(), async (req, res) => {
+    try {
+      const validatedData = updateSubscriptionSchema.parse(req.body);
+      
+      // Verifica che l'utente esista
+      const existingSubscription = await storage.getSubscriptionByEmail(validatedData.email);
+      
+      if (!existingSubscription) {
+        return res.status(404).json({
+          success: false,
+          message: "Iscrizione non trovata"
+        });
+      }
+      
+      // Aggiorna solo le preferenze (senza richiedere nuovo opt-in)
+      await storage.updateSubscription(validatedData.email, {
+        blogUpdates: validatedData.blogUpdates ?? existingSubscription.blogUpdates,
+        newListings: validatedData.newListings ?? existingSubscription.newListings,
+      });
+      
+      // Aggiorna anche su Brevo se configurato
+      try {
+        const brevo = getBrevoService();
+        
+        await brevo.updateContact({
+          email: validatedData.email,
+          attributes: {
+            BLOG_UPDATES: validatedData.blogUpdates ?? existingSubscription.blogUpdates,
+            NEW_LISTINGS: validatedData.newListings ?? existingSubscription.newListings,
+          }
+        });
+      } catch (brevoError: any) {
+        // Se Brevo non è configurato o il contatto non esiste, continua comunque
+        console.error("Errore aggiornamento Brevo:", brevoError.message);
+      }
+      
+      res.json({
+        success: true,
+        message: "Preferenze aggiornate con successo"
+      });
+    } catch (error: any) {
+      console.error("Error in PUT /api/subscribe:", error);
+      
+      if (error.name === 'ZodError') {
+        return res.status(400).json({
+          success: false,
+          message: "Dati non validi",
+          errors: error.errors
+        });
+      }
+      
+      res.status(500).json({
+        success: false,
+        message: "Errore nell'aggiornamento delle preferenze"
+      });
+    }
   });
 
   const upload = multer({ 

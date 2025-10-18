@@ -6,6 +6,7 @@ import {
   propertiesImages,
   posts,
   postsImages,
+  subscriptions,
   type User, 
   type InsertUser,
   type Property,
@@ -17,7 +18,9 @@ import {
   type InsertPost,
   type PostImage,
   type InsertPostImage,
-  type PostFilters
+  type PostFilters,
+  type Subscription,
+  type InsertSubscription
 } from "@shared/schema";
 
 export interface PaginatedProperties {
@@ -68,6 +71,11 @@ export interface IStorage {
   createPostImage(image: InsertPostImage): Promise<PostImage>;
   deletePostImage(id: string): Promise<void>;
   updatePostImagePositions(updates: { id: string; position: number }[]): Promise<void>;
+  
+  getSubscriptionByEmail(email: string): Promise<Subscription | undefined>;
+  getSubscriptionByToken(token: string): Promise<Subscription | undefined>;
+  createSubscription(subscription: InsertSubscription): Promise<Subscription>;
+  updateSubscription(email: string, subscription: Partial<Subscription>): Promise<Subscription | undefined>;
 }
 
 export class DbStorage implements IStorage {
@@ -365,6 +373,39 @@ export class DbStorage implements IStorage {
         .set({ position: update.position })
         .where(eq(postsImages.id, update.id));
     }
+  }
+
+  async getSubscriptionByEmail(email: string): Promise<Subscription | undefined> {
+    const [subscription] = await db
+      .select()
+      .from(subscriptions)
+      .where(eq(subscriptions.email, email));
+    return subscription;
+  }
+
+  async getSubscriptionByToken(token: string): Promise<Subscription | undefined> {
+    const [subscription] = await db
+      .select()
+      .from(subscriptions)
+      .where(eq(subscriptions.confirmToken, token));
+    return subscription;
+  }
+
+  async createSubscription(insertSubscription: InsertSubscription): Promise<Subscription> {
+    const [subscription] = await db
+      .insert(subscriptions)
+      .values(insertSubscription)
+      .returning();
+    return subscription;
+  }
+
+  async updateSubscription(email: string, updateData: Partial<Subscription>): Promise<Subscription | undefined> {
+    const [updated] = await db
+      .update(subscriptions)
+      .set(updateData)
+      .where(eq(subscriptions.email, email))
+      .returning();
+    return updated;
   }
 }
 
