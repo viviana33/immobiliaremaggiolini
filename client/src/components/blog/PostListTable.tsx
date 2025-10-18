@@ -316,7 +316,7 @@ export function PostListTable() {
                       <Button
                         variant="ghost"
                         size="icon"
-                        onClick={() => setLocation(`/admin/blog/modifica/${post.id}`)}
+                        onClick={() => setLocation(`/admin/blog/${post.id}`)}
                         data-testid={`button-edit-post-${post.id}`}
                       >
                         <Pencil className="h-4 w-4" />
