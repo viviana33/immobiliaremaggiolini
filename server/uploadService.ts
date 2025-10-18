@@ -133,26 +133,36 @@ class UploadService {
   }
 
   async resizeImage(buffer: Buffer, maxSize: number = 2560): Promise<Buffer> {
-    const image = sharp(buffer);
-    const metadata = await image.metadata();
-    
-    if (!metadata.width || !metadata.height) {
-      throw new Error("Unable to read image dimensions");
+    try {
+      const image = sharp(buffer);
+      const metadata = await image.metadata();
+      
+      if (!metadata.width || !metadata.height) {
+        throw new Error("INVALID_IMAGE: Il file non è un'immagine valida");
+      }
+
+      const longestSide = Math.max(metadata.width, metadata.height);
+      
+      if (longestSide <= maxSize) {
+        return buffer;
+      }
+
+      const resizeOptions = metadata.width > metadata.height
+        ? { width: maxSize }
+        : { height: maxSize };
+
+      return await image
+        .resize(resizeOptions)
+        .toBuffer();
+    } catch (error: any) {
+      if (error.message?.includes('INVALID_IMAGE:')) {
+        throw error;
+      }
+      if (error.message?.includes('unsupported') || error.message?.includes('Input buffer')) {
+        throw new Error('INVALID_IMAGE: Il file non è un formato immagine valido o è corrotto');
+      }
+      throw new Error('INVALID_IMAGE: Errore nell\'elaborazione dell\'immagine');
     }
-
-    const longestSide = Math.max(metadata.width, metadata.height);
-    
-    if (longestSide <= maxSize) {
-      return buffer;
-    }
-
-    const resizeOptions = metadata.width > metadata.height
-      ? { width: maxSize }
-      : { height: maxSize };
-
-    return await image
-      .resize(resizeOptions)
-      .toBuffer();
   }
 
   generateCloudinaryFetchUrl(coldUrl: string, transformations: string = "f_auto,q_auto,w_1600"): string {

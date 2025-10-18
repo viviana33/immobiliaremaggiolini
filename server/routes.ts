@@ -295,6 +295,11 @@ export async function registerRoutes(app: Express): Promise<Server> {
     } catch (error: any) {
       console.error("Error uploading post image:", error);
       
+      if (error.message?.includes('INVALID_IMAGE:')) {
+        const message = error.message.replace('INVALID_IMAGE: ', '');
+        return res.status(400).json({ message });
+      }
+      
       if (error.message?.includes('not configured')) {
         return res.status(500).json({ 
           message: "Servizio di storage non configurato. Contatta l'amministratore." 
