@@ -728,6 +728,66 @@ export async function registerRoutes(app: Express): Promise<Server> {
     }
   });
 
+  // RSS Feed endpoint
+  app.get("/api/feed.xml", async (req, res) => {
+    try {
+      // Get latest 30 published posts
+      const result = await storage.getPublishedPosts({ perPage: 30, page: 1 });
+      const posts = result.posts;
+
+      // Get site URL from request
+      const protocol = req.secure ? 'https' : 'http';
+      const host = req.get('host');
+      const siteUrl = `${protocol}://${host}`;
+
+      // Generate RSS 2.0 XML
+      const rssItems = posts.map(post => {
+        // Create excerpt from content (first 300 chars, strip HTML tags)
+        const plainContent = post.contenuto.replace(/<[^>]*>/g, '').replace(/\s+/g, ' ').trim();
+        const excerpt = plainContent.length > 300 
+          ? plainContent.substring(0, 300) + '...' 
+          : plainContent;
+
+        // Format pubDate in RFC 822 format
+        const pubDate = post.publishedAt 
+          ? new Date(post.publishedAt).toUTCString() 
+          : new Date(post.createdAt).toUTCString();
+
+        // Build enclosure tag for cover image
+        const enclosureTag = post.cover 
+          ? `      <enclosure url="${post.cover}" type="image/jpeg" />`
+          : '';
+
+        return `    <item>
+      <title><![CDATA[${post.titolo}]]></title>
+      <link>${siteUrl}/blog/${post.slug}</link>
+      <description><![CDATA[${excerpt}]]></description>
+      <pubDate>${pubDate}</pubDate>
+      <guid isPermaLink="true">${siteUrl}/blog/${post.slug}</guid>
+${enclosureTag}
+    </item>`;
+      }).join('\n');
+
+      const rssXml = `<?xml version="1.0" encoding="UTF-8"?>
+<rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom">
+  <channel>
+    <title>Immobiliare Maggiolini - Blog</title>
+    <link>${siteUrl}</link>
+    <description>Novità, consigli e approfondimenti dal mondo immobiliare</description>
+    <language>it</language>
+    <atom:link href="${siteUrl}/api/feed.xml" rel="self" type="application/rss+xml" />
+${rssItems}
+  </channel>
+</rss>`;
+
+      res.setHeader('Content-Type', 'application/rss+xml; charset=utf-8');
+      res.send(rssXml);
+    } catch (error) {
+      console.error("Error generating RSS feed:", error);
+      res.status(500).send('Errore nella generazione del feed RSS');
+    }
+  });
+
   const httpServer = createServer(app);
 
   return httpServer;
