@@ -118,14 +118,38 @@ Preferred communication style: Simple, everyday language.
 
 **Blog Admin Form** (`/admin/blog/nuovo`) (October 2025):
 - **Form implementation**: Complete blog post form with React Hook Form and Zod validation
-- **All required fields**: title (required), subtitle (optional), slug (readonly), cover image URL, content with MarkdownEditor, tags (comma-separated), category, status (bozza/pubblicato), SEO fields
+- **All required fields**: title (required), subtitle (optional), slug (readonly), cover image (uploader), content with MarkdownEditor, tags (comma-separated), category, status (bozza/pubblicato), SEO fields
 - **MarkdownEditor component**: Tabbed interface with Edit and Preview modes
   - Edit tab: textarea for markdown content input
   - Preview tab: displays raw markdown text (fake preview without rendering)
   - Controlled component integrated with React Hook Form
 - **Status management**: Default status is "bozza" (draft), can be changed to "pubblicato" (published)
 - **Tags handling**: Comma-separated string input converted to array for database storage
-- **Disabled actions**: "Salva Bozza" (Save Draft) and "Pubblica" (Publish) buttons are disabled pending backend implementation
+
+**Blog Cover Image Upload System** (October 2025):
+- **Dual-storage architecture**: Original images stored in R2 (cold), optimized delivery via Cloudinary fetch URLs (hot)
+- **ImageUploader component** (`client/src/components/blog/ImageUploader.tsx`):
+  - Drag-and-drop support with visual feedback
+  - Image preview with remove capability
+  - Upload progress indicator
+  - Client-side validation (MIME types, file size)
+  - Error handling with toast notifications
+- **API endpoint** POST `/api/admin/upload-post-image`:
+  - Multipart form-data with single "image" field
+  - File validation: JPEG, PNG, WebP, GIF only
+  - Size limits: 1KB minimum, 8MB maximum
+  - Returns: `{ hot_url, cold_key, file_hash }`
+  - Proper error responses (400 for validation, 500 for server errors)
+- **Image processing** (Sharp library):
+  - Automatic resizing: max 2560px on longest side
+  - Format validation and error handling
+  - File hash calculation (SHA-256) for deduplication
+- **Storage flow**:
+  1. Client uploads image via ImageUploader
+  2. Server resizes image (max 2560px)
+  3. Uploads to R2/S3 with hash-based key (`posts/{hash}/{filename}`)
+  4. Generates Cloudinary fetch URL with transformations (f_auto,q_auto,w_1600)
+  5. Returns hot_url (Cloudinary) for immediate use in post cover field
 
 **Type Safety**: 
 - Zod schemas generated from Drizzle schemas via drizzle-zod
