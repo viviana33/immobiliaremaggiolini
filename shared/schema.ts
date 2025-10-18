@@ -84,6 +84,19 @@ export const leads = pgTable("leads", {
   createdAt: timestamp("created_at").notNull().default(sql`now()`),
 });
 
+// Tabella subscriptions (iscrizioni newsletter)
+export const subscriptions = pgTable("subscriptions", {
+  id: varchar("id").primaryKey().default(sql`gen_random_uuid()`),
+  email: text("email").notNull().unique(),
+  nome: text("nome"),
+  acceptedPrivacy: boolean("accepted_privacy").notNull().default(true),
+  wantsPropertyAlerts: boolean("wants_property_alerts").notNull().default(false),
+  confirmed: boolean("confirmed").notNull().default(false),
+  confirmToken: text("confirm_token"),
+  ip: text("ip"),
+  createdAt: timestamp("created_at").notNull().default(sql`now()`),
+});
+
 // Tabella users (già esistente - mantenuta)
 export const users = pgTable("users", {
   id: varchar("id").primaryKey().default(sql`gen_random_uuid()`),
@@ -138,6 +151,24 @@ export const insertLeadSchema = createInsertSchema(leads).omit({
 
 export type InsertLead = z.infer<typeof insertLeadSchema>;
 export type Lead = typeof leads.$inferSelect;
+
+// Insert schemas per subscriptions
+export const insertSubscriptionSchema = createInsertSchema(subscriptions).omit({
+  id: true,
+  createdAt: true,
+  confirmed: true,
+  confirmToken: true,
+}).extend({
+  email: z.string().email("Email non valida"),
+  nome: z.string().optional(),
+  acceptedPrivacy: z.boolean().refine((val) => val === true, {
+    message: "Devi accettare l'informativa sulla privacy",
+  }),
+  wantsPropertyAlerts: z.boolean().optional(),
+});
+
+export type InsertSubscription = z.infer<typeof insertSubscriptionSchema>;
+export type Subscription = typeof subscriptions.$inferSelect;
 
 // Insert schemas per users (già esistente - mantenuto)
 export const insertUserSchema = createInsertSchema(users).pick({
