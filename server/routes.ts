@@ -4,7 +4,7 @@ import { storage } from "./storage";
 import { requireAdmin } from "./middleware/auth";
 import multer from "multer";
 import { uploadService } from "./uploadService";
-import { insertPropertySchema, propertyFiltersSchema, insertPostSchema, postFiltersSchema } from "@shared/schema";
+import { insertPropertySchema, propertyFiltersSchema, insertPostSchema, postFiltersSchema, insertSubscriptionSchema } from "@shared/schema";
 
 export async function registerRoutes(app: Express): Promise<Server> {
   // Auth routes
@@ -38,6 +38,38 @@ export async function registerRoutes(app: Express): Promise<Server> {
 
   app.get("/api/auth/status", (req, res) => {
     res.json({ isAuthenticated: !!req.session.isAdmin });
+  });
+
+  app.post("/api/subscribe", async (req, res) => {
+    try {
+      const validationResult = insertSubscriptionSchema.safeParse(req.body);
+      
+      if (!validationResult.success) {
+        return res.status(400).json({ 
+          success: false, 
+          message: "Dati non validi",
+          errors: validationResult.error.errors 
+        });
+      }
+
+      console.log("Nuova iscrizione ricevuta:", {
+        email: validationResult.data.email,
+        nome: validationResult.data.nome,
+        wantsPropertyAlerts: validationResult.data.wantsPropertyAlerts,
+        timestamp: new Date().toISOString()
+      });
+
+      res.status(200).json({ 
+        success: true, 
+        message: "Iscrizione ricevuta! Controlla la tua email per confermare." 
+      });
+    } catch (error) {
+      console.error("Errore durante l'iscrizione:", error);
+      res.status(500).json({ 
+        success: false, 
+        message: "Si è verificato un errore. Riprova più tardi." 
+      });
+    }
   });
 
   const upload = multer({ 
