@@ -449,6 +449,16 @@ export async function registerRoutes(app: Express): Promise<Server> {
     }
   });
 
+  app.delete("/api/admin/posts/:id", requireAdmin, async (req, res) => {
+    try {
+      await storage.deletePost(req.params.id);
+      res.json({ message: "Post eliminato con successo" });
+    } catch (error) {
+      console.error("Error deleting post:", error);
+      res.status(500).json({ message: "Errore nell'eliminazione del post" });
+    }
+  });
+
   // Post gallery images routes
   app.get("/api/admin/posts/:postId/images", requireAdmin, async (req, res) => {
     try {
