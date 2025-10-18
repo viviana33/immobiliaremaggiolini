@@ -262,7 +262,13 @@ export async function registerRoutes(app: Express): Promise<Server> {
 
   app.get("/api/posts", async (req, res) => {
     try {
-      const posts = await storage.getPublishedPosts();
+      const filters: { categoria?: string } = {};
+      
+      if (req.query.categoria && typeof req.query.categoria === 'string') {
+        filters.categoria = req.query.categoria;
+      }
+      
+      const posts = await storage.getPublishedPosts(filters);
       res.json(posts);
     } catch (error) {
       console.error("Error fetching published posts:", error);
