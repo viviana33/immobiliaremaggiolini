@@ -158,6 +158,39 @@ export async function registerRoutes(app: Express): Promise<Server> {
     }
   });
 
+  app.get("/api/subscribe/:email", subscriptionRateLimit(), async (req, res) => {
+    try {
+      const email = decodeURIComponent(req.params.email);
+      
+      const subscription = await storage.getSubscriptionByEmail(email);
+      
+      if (!subscription) {
+        return res.status(404).json({
+          success: false,
+          message: "Iscrizione non trovata"
+        });
+      }
+      
+      res.json({
+        success: true,
+        data: {
+          email: subscription.email,
+          nome: subscription.nome,
+          blogUpdates: subscription.blogUpdates,
+          newListings: subscription.newListings,
+          confirmed: subscription.confirmed,
+        }
+      });
+    } catch (error: any) {
+      console.error("Error in GET /api/subscribe/:email:", error);
+      
+      res.status(500).json({
+        success: false,
+        message: "Errore nel recupero delle preferenze"
+      });
+    }
+  });
+
   app.put("/api/subscribe", subscriptionRateLimit(), async (req, res) => {
     try {
       const validatedData = updateSubscriptionSchema.parse(req.body);
