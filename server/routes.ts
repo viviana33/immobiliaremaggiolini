@@ -449,6 +449,155 @@ export async function registerRoutes(app: Express): Promise<Server> {
     }
   });
 
+  // Post gallery images routes
+  app.get("/api/admin/posts/:postId/images", requireAdmin, async (req, res) => {
+    try {
+      const images = await storage.getPostImages(req.params.postId);
+      res.json(images);
+    } catch (error) {
+      console.error("Error fetching post images:", error);
+      res.status(500).json({ message: "Errore nel recupero delle immagini" });
+    }
+  });
+
+  const uploadPostGalleryImage = multer({
+    storage: multer.memoryStorage(),
+    limits: {
+      fileSize: 8 * 1024 * 1024,
+      files: 10
+    },
+    fileFilter: (req, file, cb) => {
+      const allowedMimeTypes = [
+        'image/jpeg',
+        'image/jpg',
+        'image/png',
+        'image/webp',
+        'image/gif'
+      ];
+      
+      if (allowedMimeTypes.includes(file.mimetype)) {
+        cb(null, true);
+      } else {
+        (req as any).fileValidationError = 'Formato file non supportato. Utilizza JPEG, PNG, WebP o GIF.';
+        cb(null, false);
+      }
+    }
+  });
+
+  app.post("/api/admin/posts/:postId/images", requireAdmin, (req, res, next) => {
+    uploadPostGalleryImage.array("images", 10)(req, res, (err) => {
+      if (err instanceof multer.MulterError) {
+        if (err.code === 'LIMIT_FILE_SIZE') {
+          return res.status(400).json({ message: "Un file supera la dimensione massima di 8MB" });
+        }
+        if (err.code === 'LIMIT_FILE_COUNT') {
+          return res.status(400).json({ message: "Puoi caricare massimo 10 immagini alla volta" });
+        }
+        return res.status(400).json({ message: `Errore nel caricamento: ${err.message}` });
+      }
+      if (err) {
+        return res.status(500).json({ message: "Errore nel caricamento delle immagini" });
+      }
+      next();
+    });
+  }, async (req, res) => {
+    try {
+      if ((req as any).fileValidationError) {
+        return res.status(400).json({ message: (req as any).fileValidationError });
+      }
+
+      const files = req.files as Express.Multer.File[];
+      if (!files || files.length === 0) {
+        return res.status(400).json({ message: "Nessun file caricato" });
+      }
+
+      const postId = req.params.postId;
+      
+      // Check if post exists
+      const post = await storage.getPostById(postId);
+      if (!post) {
+        return res.status(404).json({ message: "Post non trovato" });
+      }
+
+      // Check current image count
+      const existingImages = await storage.getPostImages(postId);
+      if (existingImages.length + files.length > 10) {
+        return res.status(400).json({ 
+          message: `Puoi avere massimo 10 immagini. Attualmente ne hai ${existingImages.length}.` 
+        });
+      }
+
+      const uploadedImages = [];
+      const nextPosition = existingImages.length;
+
+      for (let i = 0; i < files.length; i++) {
+        const file = files[i];
+        
+        if (file.size < 1024) {
+          continue; // Skip files that are too small
+        }
+
+        try {
+          const uploadResult = await uploadService.uploadPostImage(file.buffer, file.originalname);
+          
+          // Check for deduplication
+          const existingImage = await storage.getPostImageByHash(postId, uploadResult.file_hash);
+          if (existingImage) {
+            continue; // Skip duplicate images
+          }
+
+          const imageRecord = await storage.createPostImage({
+            postId,
+            fileHash: uploadResult.file_hash,
+            hotUrl: uploadResult.hot_url,
+            coldKey: uploadResult.cold_key,
+            isArchived: false,
+            position: nextPosition + uploadedImages.length,
+          });
+
+          uploadedImages.push(imageRecord);
+        } catch (uploadError) {
+          console.error("Error uploading image:", uploadError);
+          // Continue with other files
+        }
+      }
+
+      res.json({ 
+        message: `${uploadedImages.length} immagini caricate con successo`,
+        images: uploadedImages 
+      });
+    } catch (error: any) {
+      console.error("Error uploading post gallery images:", error);
+      res.status(500).json({ message: "Errore nel caricamento delle immagini" });
+    }
+  });
+
+  app.delete("/api/admin/posts/images/:imageId", requireAdmin, async (req, res) => {
+    try {
+      await storage.deletePostImage(req.params.imageId);
+      res.json({ message: "Immagine eliminata con successo" });
+    } catch (error) {
+      console.error("Error deleting post image:", error);
+      res.status(500).json({ message: "Errore nell'eliminazione dell'immagine" });
+    }
+  });
+
+  app.put("/api/admin/posts/:postId/images/reorder", requireAdmin, async (req, res) => {
+    try {
+      const { imageOrders } = req.body;
+      
+      if (!Array.isArray(imageOrders)) {
+        return res.status(400).json({ message: "Dati non validi" });
+      }
+
+      await storage.updatePostImagePositions(imageOrders);
+      res.json({ message: "Ordine aggiornato con successo" });
+    } catch (error) {
+      console.error("Error reordering post images:", error);
+      res.status(500).json({ message: "Errore nell'aggiornamento dell'ordine" });
+    }
+  });
+
   const httpServer = createServer(app);
 
   return httpServer;
