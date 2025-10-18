@@ -608,6 +608,35 @@ export async function registerRoutes(app: Express): Promise<Server> {
     }
   });
 
+  // TODO: Integrare l'invio reale in Fase 7 (Brevo/MailerLite)
+  // Endpoint stub per notifica newsletter quando un post viene pubblicato
+  // Attualmente registra solo un log, ma sarà sostituito con l'invio reale via provider email
+  app.post("/api/admin/notify-post", requireAdmin, async (req, res) => {
+    try {
+      const { id, title, slug, tags } = req.body;
+      
+      // Validazione base dei dati
+      if (!id || !title || !slug) {
+        return res.status(400).json({ message: "Dati incompleti: id, title e slug sono obbligatori" });
+      }
+
+      // Log dell'admin che ha richiesto l'invio (se disponibile nell'estensione della sessione)
+      const timestamp = new Date().toISOString();
+      
+      // Stub: per ora solo log, nessun invio reale
+      console.log(`[${timestamp}] Richiesta invio newsletter registrata per post: ${title}`);
+      console.log(`  - ID: ${id}`);
+      console.log(`  - Slug: ${slug}`);
+      console.log(`  - Tags: ${tags?.join(", ") || "nessun tag"}`);
+      console.log(`  - Admin session: ${req.session.isAdmin ? "authenticated" : "not authenticated"}`);
+
+      res.json({ ok: true });
+    } catch (error) {
+      console.error("Error in notify-post endpoint:", error);
+      res.status(500).json({ message: "Errore nella registrazione della richiesta di invio" });
+    }
+  });
+
   const httpServer = createServer(app);
 
   return httpServer;
