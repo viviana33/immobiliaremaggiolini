@@ -62,7 +62,11 @@ Preferred communication style: Simple, everyday language.
     - `Footer.tsx`: Simplified newsletter form in footer (email only, defaults: blog_updates=true, new_listings=false, source="footer")
     - `SubscriptionBox.tsx`: Full subscription form in blog page with email, name (optional), new_listings checkbox (defaults: blog_updates=true, source="blog")
   - **Error Handling**: All components show success/error alerts, handle loading states, reset forms on success
-  - **Preferences Page** (`/preferenze`): UI for managing notification preferences (future enhancement)
+  - **Preferences Page** (`/preferenze`) (October 2025):
+    - **Frontend**: Email input with load/save preferences, two toggles (blog_updates, new_listings), success/error alerts, unsubscribe link to Brevo
+    - **Backend**: GET `/api/subscribe/:email` to retrieve preferences, PUT `/api/subscribe` to update (both with rate limiting)
+    - **Features**: Auto-load from URL param `?email=`, state management with React Query, TypeScript strict typing with shared schema types
+    - **UX**: Clear success/error messages, "Cambia Email" button, external unsubscribe link, loading states
 - **Type Safety**: Zod schemas generated from Drizzle, shared types via `/shared` directory, TypeScript strict mode.
 - **Database Migrations**: Managed via Drizzle Kit.
 
