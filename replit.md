@@ -151,6 +151,26 @@ Preferred communication style: Simple, everyday language.
   4. Generates Cloudinary fetch URL with transformations (f_auto,q_auto,w_1600)
   5. Returns hot_url (Cloudinary) for immediate use in post cover field
 
+**Newsletter Notification Stub** (Step 5.10 - October 2025):
+- **Purpose**: Stub implementation for newsletter notifications when blog posts are published
+- **API endpoint** POST `/api/admin/notify-post`:
+  - Protected with requireAdmin middleware
+  - Accepts: `{ id, title, slug, tags }`
+  - Currently logs to console only (stub implementation)
+  - Returns: `{ ok: true }`
+  - Includes TODO comment for Phase 7 integration (Brevo/MailerLite)
+- **UI Implementation** (`PostForm.tsx`):
+  - "Invia ai lettori" button appears when:
+    * Post is in edit mode (not during creation)
+    * Post status is "pubblicato"
+  - Button triggers POST to `/api/admin/notify-post`
+  - Shows toast confirmation: "Richiesta invio registrata (stub)"
+  - Uses `useWatch` from react-hook-form for reactive status monitoring
+- **Technical notes**:
+  - Logs include timestamp, admin session status, post details
+  - Reactive button visibility via `useWatch({ control, name: "stato" })`
+  - Designed for future replacement with actual email service in Phase 7
+
 **Type Safety**: 
 - Zod schemas generated from Drizzle schemas via drizzle-zod
 - Shared types between client and server via `/shared` directory
