@@ -1,4 +1,4 @@
-import { eq, desc, asc, and, gte, lte, count } from "drizzle-orm";
+import { eq, desc, asc, and, gte, lte, count, or, ilike, arrayContains, sql } from "drizzle-orm";
 import { db } from "./db";
 import { 
   users, 
@@ -16,11 +16,20 @@ import {
   type Post,
   type InsertPost,
   type PostImage,
-  type InsertPostImage
+  type InsertPostImage,
+  type PostFilters
 } from "@shared/schema";
 
 export interface PaginatedProperties {
   properties: Property[];
+  total: number;
+  page: number;
+  perPage: number;
+  totalPages: number;
+}
+
+export interface PaginatedPosts {
+  posts: Post[];
   total: number;
   page: number;
   perPage: number;
@@ -47,7 +56,7 @@ export interface IStorage {
   archivePropertyImages(propertyId: string, keepCount: number): Promise<void>;
   
   getAllPosts(): Promise<Post[]>;
-  getPublishedPosts(filters?: { categoria?: string }): Promise<Post[]>;
+  getPublishedPosts(filters: PostFilters): Promise<PaginatedPosts>;
   getPostById(id: string): Promise<Post | undefined>;
   getPostBySlug(slug: string): Promise<Post | undefined>;
   createPost(post: InsertPost): Promise<Post>;
@@ -233,18 +242,56 @@ export class DbStorage implements IStorage {
     return db.select().from(posts).orderBy(desc(posts.updatedAt));
   }
 
-  async getPublishedPosts(filters?: { categoria?: string }): Promise<Post[]> {
+  async getPublishedPosts(filters: PostFilters): Promise<PaginatedPosts> {
     const conditions = [eq(posts.stato, "pubblicato")];
     
-    if (filters?.categoria) {
+    if (filters.categoria) {
       conditions.push(eq(posts.categoria, filters.categoria));
     }
     
-    return db
+    if (filters.search) {
+      const searchTerm = `%${filters.search}%`;
+      conditions.push(
+        or(
+          ilike(posts.titolo, searchTerm),
+          ilike(posts.sottotitolo, searchTerm)
+        )!
+      );
+    }
+    
+    if (filters.tag) {
+      conditions.push(sql`${posts.tag} @> ARRAY[${filters.tag}]::text[]`);
+    }
+    
+    const page = filters.page || 1;
+    const perPage = filters.perPage || 9;
+    const offset = (page - 1) * perPage;
+    
+    const whereClause = and(...conditions);
+    
+    const [totalResult] = await db
+      .select({ count: count() })
+      .from(posts)
+      .where(whereClause);
+    
+    const total = totalResult?.count || 0;
+    const totalPages = Math.ceil(total / perPage);
+    
+    const postsList = await db
       .select()
       .from(posts)
-      .where(and(...conditions))
-      .orderBy(desc(posts.publishedAt));
+      .where(whereClause)
+      .orderBy(desc(posts.publishedAt))
+      .limit(perPage)
+      .offset(offset);
+    
+    return {
+      posts: postsList,
+      total,
+      page,
+      perPage,
+      totalPages,
+    };
   }
 
   async getPostById(id: string): Promise<Post | undefined> {

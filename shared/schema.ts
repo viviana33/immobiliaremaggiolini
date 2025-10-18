@@ -160,3 +160,13 @@ export const propertyFiltersSchema = z.object({
 });
 
 export type PropertyFilters = z.infer<typeof propertyFiltersSchema>;
+
+export const postFiltersSchema = z.object({
+  search: z.string().optional(),
+  tag: z.string().optional(),
+  categoria: z.string().optional(),
+  page: z.coerce.number().positive().optional(),
+  perPage: z.coerce.number().positive().max(50).optional(),
+});
+
+export type PostFilters = z.infer<typeof postFiltersSchema>;

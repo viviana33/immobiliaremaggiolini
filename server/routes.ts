@@ -4,7 +4,7 @@ import { storage } from "./storage";
 import { requireAdmin } from "./middleware/auth";
 import multer from "multer";
 import { uploadService } from "./uploadService";
-import { insertPropertySchema, propertyFiltersSchema, insertPostSchema } from "@shared/schema";
+import { insertPropertySchema, propertyFiltersSchema, insertPostSchema, postFiltersSchema } from "@shared/schema";
 
 export async function registerRoutes(app: Express): Promise<Server> {
   // Auth routes
@@ -262,14 +262,20 @@ export async function registerRoutes(app: Express): Promise<Server> {
 
   app.get("/api/posts", async (req, res) => {
     try {
-      const filters: { categoria?: string } = {};
+      const filterResult = postFiltersSchema.safeParse(req.query);
+      const filters = filterResult.success ? filterResult.data : {};
       
-      if (req.query.categoria && typeof req.query.categoria === 'string') {
-        filters.categoria = req.query.categoria;
-      }
+      const result = await storage.getPublishedPosts(filters);
       
-      const posts = await storage.getPublishedPosts(filters);
-      res.json(posts);
+      res.json({
+        posts: result.posts,
+        pagination: {
+          total: result.total,
+          page: result.page,
+          perPage: result.perPage,
+          totalPages: result.totalPages,
+        },
+      });
     } catch (error) {
       console.error("Error fetching published posts:", error);
       res.status(500).json({ message: "Errore nel recupero dei post" });
