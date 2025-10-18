@@ -29,6 +29,7 @@ import {
 } from "@/components/ui/alert-dialog";
 import { MarkdownEditor } from "./MarkdownEditor";
 import { ImageUploader } from "./ImageUploader";
+import { PostGallery } from "./PostGallery";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { insertPostSchema, type Post } from "@shared/schema";
@@ -456,6 +457,14 @@ export function PostForm({ postId }: PostFormProps) {
               </FormItem>
             )}
           />
+
+          {isEdit && postId && (
+            <>
+              <Separator />
+              <PostGallery postId={postId} />
+              <Separator />
+            </>
+          )}
 
           <FormField
             control={form.control}
