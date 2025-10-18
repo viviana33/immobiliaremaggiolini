@@ -47,7 +47,9 @@ export interface IStorage {
   archivePropertyImages(propertyId: string, keepCount: number): Promise<void>;
   
   getAllPosts(): Promise<Post[]>;
+  getPublishedPosts(): Promise<Post[]>;
   getPostById(id: string): Promise<Post | undefined>;
+  getPostBySlug(slug: string): Promise<Post | undefined>;
   createPost(post: InsertPost): Promise<Post>;
   updatePost(id: string, post: Partial<InsertPost>): Promise<Post | undefined>;
   deletePost(id: string): Promise<void>;
@@ -231,8 +233,21 @@ export class DbStorage implements IStorage {
     return db.select().from(posts).orderBy(desc(posts.updatedAt));
   }
 
+  async getPublishedPosts(): Promise<Post[]> {
+    return db
+      .select()
+      .from(posts)
+      .where(eq(posts.stato, "pubblicato"))
+      .orderBy(desc(posts.publishedAt));
+  }
+
   async getPostById(id: string): Promise<Post | undefined> {
     const [post] = await db.select().from(posts).where(eq(posts.id, id));
+    return post;
+  }
+
+  async getPostBySlug(slug: string): Promise<Post | undefined> {
+    const [post] = await db.select().from(posts).where(eq(posts.slug, slug));
     return post;
   }
 

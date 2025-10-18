@@ -260,6 +260,34 @@ export async function registerRoutes(app: Express): Promise<Server> {
     }
   });
 
+  app.get("/api/posts", async (req, res) => {
+    try {
+      const posts = await storage.getPublishedPosts();
+      res.json(posts);
+    } catch (error) {
+      console.error("Error fetching published posts:", error);
+      res.status(500).json({ message: "Errore nel recupero dei post" });
+    }
+  });
+
+  app.get("/api/posts/:slug", async (req, res) => {
+    try {
+      const post = await storage.getPostBySlug(req.params.slug);
+      if (!post) {
+        return res.status(404).json({ message: "Post non trovato" });
+      }
+      
+      if (post.stato !== "pubblicato") {
+        return res.status(404).json({ message: "Post non disponibile" });
+      }
+      
+      res.json(post);
+    } catch (error) {
+      console.error("Error fetching post:", error);
+      res.status(500).json({ message: "Errore nel recupero del post" });
+    }
+  });
+
   app.post("/api/admin/upload-post-image", requireAdmin, (req, res, next) => {
     uploadPostImage.single("image")(req, res, (err) => {
       if (err instanceof multer.MulterError) {
