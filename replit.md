@@ -42,6 +42,12 @@ Preferred communication style: Simple, everyday language.
   - **Rendering strategy**: CSR (Client-Side Rendering) with React + Vite, TanStack Query for data fetching
   - **SEO considerations**: Documented in code comment - CSR chosen due to Vite/React architecture; SSR/ISR would require Next.js or similar framework
 - **Newsletter Notification Stub**: API endpoint for logging post publication notifications for future integration.
+- **Newsletter Subscription System** (October 2025):
+  - **Stub API endpoints**: POST `/api/subscribe` (new subscriptions), PUT `/api/subscribe` (preference updates) - both return 200 OK
+  - **Preferences Page** (`/preferenze`): Card layout with two toggle switches for notification preferences:
+    - "Nuovi articoli" - Toggle for blog post notifications (data-testid: toggle-nuovi-articoli)
+    - "Nuovi immobili" - Toggle for property notifications (data-testid: toggle-nuovi-immobili)
+  - **Implementation status**: Placeholder UI and stub endpoints ready for future email integration
 - **Type Safety**: Zod schemas generated from Drizzle, shared types via `/shared` directory, TypeScript strict mode.
 - **Database Migrations**: Managed via Drizzle Kit.
 
