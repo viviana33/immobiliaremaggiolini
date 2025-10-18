@@ -236,6 +236,75 @@ export async function registerRoutes(app: Express): Promise<Server> {
     }
   });
 
+  const uploadPostImage = multer({
+    storage: multer.memoryStorage(),
+    limits: {
+      fileSize: 8 * 1024 * 1024,
+      files: 1
+    },
+    fileFilter: (req, file, cb) => {
+      const allowedMimeTypes = [
+        'image/jpeg',
+        'image/jpg',
+        'image/png',
+        'image/webp',
+        'image/gif'
+      ];
+      
+      if (allowedMimeTypes.includes(file.mimetype)) {
+        cb(null, true);
+      } else {
+        (req as any).fileValidationError = 'Formato file non supportato. Utilizza JPEG, PNG, WebP o GIF.';
+        cb(null, false);
+      }
+    }
+  });
+
+  app.post("/api/admin/upload-post-image", requireAdmin, (req, res, next) => {
+    uploadPostImage.single("image")(req, res, (err) => {
+      if (err instanceof multer.MulterError) {
+        if (err.code === 'LIMIT_FILE_SIZE') {
+          return res.status(400).json({ message: "Il file supera la dimensione massima di 8MB" });
+        }
+        return res.status(400).json({ message: `Errore nel caricamento: ${err.message}` });
+      }
+      if (err) {
+        return res.status(500).json({ message: "Errore nel caricamento dell'immagine" });
+      }
+      next();
+    });
+  }, async (req, res) => {
+    try {
+      if ((req as any).fileValidationError) {
+        return res.status(400).json({ message: (req as any).fileValidationError });
+      }
+
+      if (!req.file) {
+        return res.status(400).json({ message: "Nessun file caricato" });
+      }
+
+      const file = req.file;
+
+      if (file.size < 1024) {
+        return res.status(400).json({ message: "Il file è troppo piccolo" });
+      }
+
+      const result = await uploadService.uploadPostImage(file.buffer, file.originalname);
+      
+      res.json(result);
+    } catch (error: any) {
+      console.error("Error uploading post image:", error);
+      
+      if (error.message?.includes('not configured')) {
+        return res.status(500).json({ 
+          message: "Servizio di storage non configurato. Contatta l'amministratore." 
+        });
+      }
+
+      res.status(500).json({ message: "Errore nel caricamento dell'immagine" });
+    }
+  });
+
   app.get("/api/admin/posts", requireAdmin, async (req, res) => {
     try {
       const posts = await storage.getAllPosts();

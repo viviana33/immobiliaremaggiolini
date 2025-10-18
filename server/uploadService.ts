@@ -1,10 +1,17 @@
 import crypto from "crypto";
 import { S3Client, PutObjectCommand } from "@aws-sdk/client-s3";
+import sharp from "sharp";
 
 interface UploadResult {
   urlHot: string;
   urlCold: string;
   hashFile: string;
+}
+
+interface PostImageUploadResult {
+  hot_url: string;
+  cold_key: string;
+  file_hash: string;
 }
 
 class UploadService {
@@ -123,6 +130,74 @@ class UploadService {
       webp: "image/webp",
     };
     return mimeTypes[ext || ""] || "application/octet-stream";
+  }
+
+  async resizeImage(buffer: Buffer, maxSize: number = 2560): Promise<Buffer> {
+    const image = sharp(buffer);
+    const metadata = await image.metadata();
+    
+    if (!metadata.width || !metadata.height) {
+      throw new Error("Unable to read image dimensions");
+    }
+
+    const longestSide = Math.max(metadata.width, metadata.height);
+    
+    if (longestSide <= maxSize) {
+      return buffer;
+    }
+
+    const resizeOptions = metadata.width > metadata.height
+      ? { width: maxSize }
+      : { height: maxSize };
+
+    return await image
+      .resize(resizeOptions)
+      .toBuffer();
+  }
+
+  generateCloudinaryFetchUrl(coldUrl: string, transformations: string = "f_auto,q_auto,w_1600"): string {
+    if (!process.env.CLOUDINARY_CLOUD_NAME) {
+      throw new Error("Cloudinary cloud name not configured");
+    }
+
+    const encodedUrl = encodeURIComponent(coldUrl);
+    return `https://res.cloudinary.com/${process.env.CLOUDINARY_CLOUD_NAME}/image/fetch/${transformations}/${coldUrl}`;
+  }
+
+  async uploadPostImage(buffer: Buffer, filename: string): Promise<PostImageUploadResult> {
+    const resizedBuffer = await this.resizeImage(buffer, 2560);
+    const fileHash = this.calculateFileHash(resizedBuffer);
+
+    if (!this.s3Client) {
+      throw new Error("S3/R2 storage not configured. Cold storage is required for post images.");
+    }
+
+    if (!process.env.R2_BUCKET_NAME) {
+      throw new Error("R2_BUCKET_NAME not configured");
+    }
+
+    const key = `posts/${fileHash}/${filename}`;
+
+    const command = new PutObjectCommand({
+      Bucket: process.env.R2_BUCKET_NAME,
+      Key: key,
+      Body: resizedBuffer,
+      ContentType: this.getContentType(filename),
+    });
+
+    await this.s3Client.send(command);
+
+    const coldUrl = process.env.R2_PUBLIC_URL
+      ? `${process.env.R2_PUBLIC_URL}/${key}`
+      : `https://${process.env.R2_BUCKET_NAME}.r2.dev/${key}`;
+
+    const hotUrl = this.generateCloudinaryFetchUrl(coldUrl, "f_auto,q_auto,w_1600");
+
+    return {
+      hot_url: hotUrl,
+      cold_key: key,
+      file_hash: fileHash,
+    };
   }
 }
 

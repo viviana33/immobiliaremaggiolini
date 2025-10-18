@@ -28,6 +28,7 @@ import {
   AlertDialogTitle,
 } from "@/components/ui/alert-dialog";
 import { MarkdownEditor } from "./MarkdownEditor";
+import { ImageUploader } from "./ImageUploader";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { insertPostSchema, type Post } from "@shared/schema";
@@ -443,15 +444,14 @@ export function PostForm({ postId }: PostFormProps) {
             name="cover"
             render={({ field }) => (
               <FormItem>
-                <FormLabel>Immagine di copertina (URL) *</FormLabel>
+                <FormLabel>Immagine di copertina *</FormLabel>
                 <FormControl>
-                  <Input
-                    placeholder="https://esempio.com/immagine.jpg"
-                    data-testid="input-cover-image"
-                    {...field}
+                  <ImageUploader
+                    value={field.value}
+                    onChange={field.onChange}
                   />
                 </FormControl>
-                <FormDescription>Obbligatoria per la pubblicazione</FormDescription>
+                <FormDescription>Obbligatoria per la pubblicazione (max 8MB)</FormDescription>
                 <FormMessage />
               </FormItem>
             )}
