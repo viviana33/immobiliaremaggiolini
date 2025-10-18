@@ -11,6 +11,7 @@ import Proprieta from "@/pages/Proprieta";
 import Immobili from "@/pages/Immobili";
 import ImmobileDettaglio from "@/pages/ImmobileDettaglio";
 import Blog from "@/pages/Blog";
+import BlogDettaglio from "@/pages/BlogDettaglio";
 import ChiSiamo from "@/pages/ChiSiamo";
 import Contatti from "@/pages/Contatti";
 import Login from "@/pages/Login";
@@ -72,6 +73,7 @@ function Router() {
                 <Route path="/proprieta" component={Proprieta} />
                 <Route path="/immobili" component={Immobili} />
                 <Route path="/immobile/:slug" component={ImmobileDettaglio} />
+                <Route path="/blog/:slug" component={BlogDettaglio} />
                 <Route path="/blog" component={Blog} />
                 <Route path="/chi-siamo" component={ChiSiamo} />
                 <Route path="/contatti" component={Contatti} />
