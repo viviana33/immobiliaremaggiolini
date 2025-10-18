@@ -49,15 +49,19 @@ Preferred communication style: Simple, everyday language.
     - `updateContact()`: Updates contact preferences without new DOI
     - `getContact()`: Retrieves contact information
     - Environment variables: `BREVO_API_KEY` (required), `BREVO_TEMPLATE_ID` (optional), `BREVO_LIST_ID` (optional)
+    - **Graceful degradation**: System saves subscriptions locally even when Brevo is not configured or returns errors
   - **API Endpoints**:
-    - POST `/api/subscribe`: Creates/updates subscription with upsert logic, saves consent data (IP, timestamp), sends Brevo DOI email
+    - POST `/api/subscribe`: Creates/updates subscription with upsert logic, saves consent data (IP, timestamp), sends Brevo DOI email (gracefully handles Brevo failures)
     - PUT `/api/subscribe`: Updates preferences (blog_updates, new_listings) without requiring new DOI
     - GET `/api/subscribe/confirm/:token`: Local confirmation endpoint (fallback if Brevo redirect used)
     - POST `/api/webhooks/brevo`: Webhook receiver for Brevo events (marks subscriptions as confirmed)
   - **Rate Limiting**: 5 requests per 15 minutes per email+IP combination to prevent abuse
   - **Validation**: Zod schemas for email validation, subscription fields
   - **Consent Tracking**: Records consent IP (`consent_ip`), consent timestamp (`consent_ts`), source (`source`)
-  - **Frontend** (`SubscriptionBox.tsx`): Form with email, name (optional), blog updates toggle, new listings toggle
+  - **Frontend Components**:
+    - `Footer.tsx`: Simplified newsletter form in footer (email only, defaults: blog_updates=true, new_listings=false, source="footer")
+    - `SubscriptionBox.tsx`: Full subscription form in blog page with email, name (optional), new_listings checkbox (defaults: blog_updates=true, source="blog")
+  - **Error Handling**: All components show success/error alerts, handle loading states, reset forms on success
   - **Preferences Page** (`/preferenze`): UI for managing notification preferences (future enhancement)
 - **Type Safety**: Zod schemas generated from Drizzle, shared types via `/shared` directory, TypeScript strict mode.
 - **Database Migrations**: Managed via Drizzle Kit.
