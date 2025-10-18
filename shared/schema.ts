@@ -89,11 +89,13 @@ export const subscriptions = pgTable("subscriptions", {
   id: varchar("id").primaryKey().default(sql`gen_random_uuid()`),
   email: text("email").notNull().unique(),
   nome: text("nome"),
-  acceptedPrivacy: boolean("accepted_privacy").notNull().default(true),
-  wantsPropertyAlerts: boolean("wants_property_alerts").notNull().default(false),
+  blogUpdates: boolean("blog_updates").notNull().default(false),
+  newListings: boolean("new_listings").notNull().default(false),
+  source: text("source"),
+  consentTs: timestamp("consent_ts").notNull().default(sql`now()`),
+  consentIp: text("consent_ip"),
   confirmed: boolean("confirmed").notNull().default(false),
   confirmToken: text("confirm_token"),
-  ip: text("ip"),
   createdAt: timestamp("created_at").notNull().default(sql`now()`),
 });
 
@@ -158,13 +160,21 @@ export const insertSubscriptionSchema = createInsertSchema(subscriptions).omit({
   createdAt: true,
   confirmed: true,
   confirmToken: true,
+  consentTs: true,
 }).extend({
   email: z.string().email("Email non valida"),
   nome: z.string().optional(),
-  acceptedPrivacy: z.boolean().refine((val) => val === true, {
-    message: "Devi accettare l'informativa sulla privacy",
-  }),
-  wantsPropertyAlerts: z.boolean().optional(),
+  blogUpdates: z.boolean().default(false),
+  newListings: z.boolean().default(false),
+  source: z.string().optional(),
+  consentIp: z.string().optional(),
+});
+
+// Update subscription schema per PUT (senza richiedere privacy)
+export const updateSubscriptionSchema = z.object({
+  email: z.string().email("Email non valida"),
+  blogUpdates: z.boolean().optional(),
+  newListings: z.boolean().optional(),
 });
 
 export type InsertSubscription = z.infer<typeof insertSubscriptionSchema>;
