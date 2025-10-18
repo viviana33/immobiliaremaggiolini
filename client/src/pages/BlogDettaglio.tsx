@@ -5,11 +5,12 @@ import PostContent from "@/components/blog/PostContent";
 import SubscriptionBox from "@/components/blog/SubscriptionBox";
 import { Skeleton } from "@/components/ui/skeleton";
 import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert";
-import { AlertCircle, ArrowLeft, Calendar, Clock, Tag } from "lucide-react";
+import { AlertCircle, ArrowLeft, Calendar, Clock, Tag, Home } from "lucide-react";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { formatDistanceToNow } from "date-fns";
 import { it } from "date-fns/locale";
+import { useEffect } from "react";
 
 export default function BlogDettaglio() {
   const { slug } = useParams<{ slug: string }>();
@@ -25,6 +26,139 @@ export default function BlogDettaglio() {
     queryKey: postId ? [`/api/posts/${postId}/images`] : ["disabled"],
     enabled: !!postId,
   });
+
+  // SEO: Meta tags dinamici e JSON-LD per article
+  useEffect(() => {
+    if (!post) return;
+
+    const siteUrl = window.location.origin;
+    const pageUrl = `${siteUrl}/blog/${post.slug}`;
+    
+    // Meta title dinamico
+    const metaTitle = post.metaTitle || `${post.titolo} | Blog Maggiolini`;
+    document.title = metaTitle;
+
+    // Meta description dinamica
+    const metaDescription = post.metaDescription || post.sottotitolo || post.titolo;
+    let metaDescTag = document.querySelector('meta[name="description"]');
+    if (!metaDescTag) {
+      metaDescTag = document.createElement('meta');
+      metaDescTag.setAttribute('name', 'description');
+      document.head.appendChild(metaDescTag);
+    }
+    metaDescTag.setAttribute('content', metaDescription);
+
+    // Open Graph tags
+    const ogTags = [
+      { property: 'og:type', content: 'article' },
+      { property: 'og:title', content: metaTitle },
+      { property: 'og:description', content: metaDescription },
+      { property: 'og:url', content: pageUrl },
+      { property: 'og:site_name', content: 'Maggiolini Immobiliare' },
+    ];
+
+    if (post.cover) {
+      ogTags.push({ property: 'og:image', content: post.cover });
+      ogTags.push({ property: 'og:image:alt', content: post.titolo });
+    }
+
+    if (post.publishedAt) {
+      ogTags.push({ property: 'article:published_time', content: new Date(post.publishedAt).toISOString() });
+    }
+
+    if (post.autore) {
+      ogTags.push({ property: 'article:author', content: post.autore });
+    }
+
+    if (post.tag && post.tag.length > 0) {
+      post.tag.forEach(tag => {
+        const tagMeta = document.createElement('meta');
+        tagMeta.setAttribute('property', 'article:tag');
+        tagMeta.setAttribute('content', tag);
+        document.head.appendChild(tagMeta);
+      });
+    }
+
+    ogTags.forEach(({ property, content }) => {
+      let tag = document.querySelector(`meta[property="${property}"]`);
+      if (!tag) {
+        tag = document.createElement('meta');
+        tag.setAttribute('property', property);
+        document.head.appendChild(tag);
+      }
+      tag.setAttribute('content', content);
+    });
+
+    // Twitter Card tags
+    const twitterTags = [
+      { name: 'twitter:card', content: 'summary_large_image' },
+      { name: 'twitter:title', content: metaTitle },
+      { name: 'twitter:description', content: metaDescription },
+    ];
+
+    if (post.cover) {
+      twitterTags.push({ name: 'twitter:image', content: post.cover });
+    }
+
+    twitterTags.forEach(({ name, content }) => {
+      let tag = document.querySelector(`meta[name="${name}"]`);
+      if (!tag) {
+        tag = document.createElement('meta');
+        tag.setAttribute('name', name);
+        document.head.appendChild(tag);
+      }
+      tag.setAttribute('content', content);
+    });
+
+    // JSON-LD Article Schema
+    const jsonLd: Record<string, any> = {
+      "@context": "https://schema.org",
+      "@type": "Article",
+      "headline": post.titolo,
+      "description": metaDescription,
+      "author": {
+        "@type": "Person",
+        "name": post.autore
+      },
+      "datePublished": post.publishedAt ? new Date(post.publishedAt).toISOString() : new Date(post.createdAt).toISOString(),
+      "dateModified": new Date(post.updatedAt).toISOString(),
+      "publisher": {
+        "@type": "Organization",
+        "name": "Maggiolini Immobiliare",
+        "logo": {
+          "@type": "ImageObject",
+          "url": `${siteUrl}/logo.png`
+        }
+      }
+    };
+
+    if (post.cover) {
+      jsonLd["image"] = post.cover;
+    }
+
+    if (post.categoria) {
+      jsonLd["articleSection"] = post.categoria;
+    }
+
+    if (post.tag && post.tag.length > 0) {
+      jsonLd["keywords"] = post.tag.join(', ');
+    }
+
+    let scriptTag = document.querySelector('script[type="application/ld+json"]');
+    if (!scriptTag) {
+      scriptTag = document.createElement('script');
+      scriptTag.setAttribute('type', 'application/ld+json');
+      document.head.appendChild(scriptTag);
+    }
+    scriptTag.textContent = JSON.stringify(jsonLd);
+
+    // Cleanup function per rimuovere i tag quando il componente viene smontato
+    return () => {
+      document.title = 'Maggiolini Immobiliare';
+      const tagsToRemove = document.querySelectorAll('meta[property^="og:"], meta[property^="article:"], meta[name^="twitter:"], script[type="application/ld+json"]');
+      tagsToRemove.forEach(tag => tag.remove());
+    };
+  }, [post]);
 
   if (isLoadingPost) {
     return (
@@ -80,25 +214,19 @@ export default function BlogDettaglio() {
 
   return (
     <div className="min-h-screen">
-      {/* Breadcrumb */}
+      {/* SEO: Breadcrumb - Home → Blog → Titolo */}
       <section className="py-6 border-b border-border">
         <div className="max-w-4xl mx-auto px-6 md:px-8">
           <nav className="flex items-center gap-2 text-sm text-muted-foreground" data-testid="breadcrumb">
+            <Link href="/" className="hover:text-foreground transition-colors flex items-center gap-1">
+              <Home className="h-4 w-4" />
+              Home
+            </Link>
+            <span>/</span>
             <Link href="/blog" className="hover:text-foreground transition-colors">
               Blog
             </Link>
             <span>/</span>
-            {post.categoria && (
-              <>
-                <Link 
-                  href={`/blog?categoria=${encodeURIComponent(post.categoria)}`}
-                  className="hover:text-foreground transition-colors"
-                >
-                  {post.categoria}
-                </Link>
-                <span>/</span>
-              </>
-            )}
             <span className="text-foreground line-clamp-1">{post.titolo}</span>
           </nav>
         </div>
