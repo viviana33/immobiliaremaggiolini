@@ -2,6 +2,7 @@ import { useParams, Link } from "wouter";
 import { useQuery } from "@tanstack/react-query";
 import type { Post, PostImage } from "@shared/schema";
 import PostContent from "@/components/blog/PostContent";
+import SubscriptionBox from "@/components/blog/SubscriptionBox";
 import { Skeleton } from "@/components/ui/skeleton";
 import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert";
 import { AlertCircle, ArrowLeft, Calendar, Clock, Tag } from "lucide-react";
@@ -197,6 +198,13 @@ export default function BlogDettaglio() {
           ) : (
             <PostContent content={post.contenuto} images={images} />
           )}
+        </div>
+      </section>
+
+      {/* Subscription Box */}
+      <section className="py-12 border-t border-border">
+        <div className="max-w-2xl mx-auto px-6 md:px-8">
+          <SubscriptionBox />
         </div>
       </section>
 
