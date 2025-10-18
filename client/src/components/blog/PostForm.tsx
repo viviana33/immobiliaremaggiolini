@@ -36,7 +36,7 @@ import { insertPostSchema, type Post } from "@shared/schema";
 import { z } from "zod";
 import { Separator } from "@/components/ui/separator";
 import { useEffect, useState } from "react";
-import { Clock, Loader2 } from "lucide-react";
+import { Clock, Loader2, Send } from "lucide-react";
 import { useQuery, useMutation } from "@tanstack/react-query";
 import { apiRequest, queryClient } from "@/lib/queryClient";
 import { useToast } from "@/hooks/use-toast";
@@ -213,6 +213,41 @@ export function PostForm({ postId }: PostFormProps) {
         variant: "destructive",
         title: "Errore",
         description: error.message || "Errore nell'aggiornamento del post",
+      });
+    },
+  });
+
+  // Collegamento publish → API notify-post:
+  // Quando un post è nello stato "pubblicato", viene mostrato un bottone "Invia ai lettori"
+  // che chiama l'endpoint POST /api/admin/notify-post con id, titolo, slug e tag del post.
+  // Attualmente è solo uno stub che registra un log. Nella Fase 7, questo endpoint verrà
+  // sostituito con l'invio reale della newsletter tramite Brevo/MailerLite.
+  const notifyPostMutation = useMutation({
+    mutationFn: async () => {
+      const formData = form.getValues();
+      const res = await apiRequest("POST", "/api/admin/notify-post", {
+        id: postId,
+        title: formData.titolo,
+        slug: formData.slug,
+        tags: formData.tag,
+      });
+      if (!res.ok) {
+        const errorData = await res.json();
+        throw errorData;
+      }
+      return res.json();
+    },
+    onSuccess: () => {
+      toast({
+        title: "Richiesta registrata",
+        description: "Richiesta invio registrata (stub)",
+      });
+    },
+    onError: (error: any) => {
+      toast({
+        variant: "destructive",
+        title: "Errore",
+        description: error.message || "Errore nell'invio della notifica",
       });
     },
   });
@@ -596,7 +631,7 @@ export function PostForm({ postId }: PostFormProps) {
           </div>
         </div>
 
-        <div className="flex gap-3">
+        <div className="flex gap-3 flex-wrap">
           <Button 
             type="button"
             variant="outline" 
@@ -616,6 +651,19 @@ export function PostForm({ postId }: PostFormProps) {
             {isSaving && <Loader2 className="mr-2 h-4 w-4 animate-spin" />}
             Pubblica
           </Button>
+          {isEdit && form.watch("stato") === "pubblicato" && (
+            <Button 
+              type="button"
+              variant="secondary"
+              data-testid="button-notify-readers"
+              onClick={() => notifyPostMutation.mutate()}
+              disabled={notifyPostMutation.isPending}
+            >
+              {notifyPostMutation.isPending && <Loader2 className="mr-2 h-4 w-4 animate-spin" />}
+              <Send className="mr-2 h-4 w-4" />
+              Invia ai lettori
+            </Button>
+          )}
         </div>
       </form>
 
