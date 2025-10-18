@@ -5,6 +5,7 @@ import {
   properties, 
   propertiesImages,
   posts,
+  postsImages,
   type User, 
   type InsertUser,
   type Property,
@@ -13,7 +14,9 @@ import {
   type InsertPropertyImage,
   type PropertyFilters,
   type Post,
-  type InsertPost
+  type InsertPost,
+  type PostImage,
+  type InsertPostImage
 } from "@shared/schema";
 
 export interface PaginatedProperties {
@@ -48,6 +51,12 @@ export interface IStorage {
   createPost(post: InsertPost): Promise<Post>;
   updatePost(id: string, post: Partial<InsertPost>): Promise<Post | undefined>;
   deletePost(id: string): Promise<void>;
+  
+  getPostImages(postId: string): Promise<PostImage[]>;
+  getPostImageByHash(postId: string, fileHash: string): Promise<PostImage | undefined>;
+  createPostImage(image: InsertPostImage): Promise<PostImage>;
+  deletePostImage(id: string): Promise<void>;
+  updatePostImagePositions(updates: { id: string; position: number }[]): Promise<void>;
 }
 
 export class DbStorage implements IStorage {
@@ -257,6 +266,40 @@ export class DbStorage implements IStorage {
 
   async deletePost(id: string): Promise<void> {
     await db.delete(posts).where(eq(posts.id, id));
+  }
+
+  async getPostImages(postId: string): Promise<PostImage[]> {
+    return db
+      .select()
+      .from(postsImages)
+      .where(eq(postsImages.postId, postId))
+      .orderBy(asc(postsImages.position));
+  }
+
+  async getPostImageByHash(postId: string, fileHash: string): Promise<PostImage | undefined> {
+    const [image] = await db
+      .select()
+      .from(postsImages)
+      .where(and(eq(postsImages.postId, postId), eq(postsImages.fileHash, fileHash)));
+    return image;
+  }
+
+  async createPostImage(image: InsertPostImage): Promise<PostImage> {
+    const [newImage] = await db.insert(postsImages).values(image).returning();
+    return newImage;
+  }
+
+  async deletePostImage(id: string): Promise<void> {
+    await db.delete(postsImages).where(eq(postsImages.id, id));
+  }
+
+  async updatePostImagePositions(updates: { id: string; position: number }[]): Promise<void> {
+    for (const update of updates) {
+      await db
+        .update(postsImages)
+        .set({ position: update.position })
+        .where(eq(postsImages.id, update.id));
+    }
   }
 }
 
