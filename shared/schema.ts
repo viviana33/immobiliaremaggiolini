@@ -60,6 +60,18 @@ export const posts = pgTable("posts", {
   updatedAt: timestamp("updated_at").notNull().default(sql`now()`),
 });
 
+// Tabella posts_images (galleria immagini dei post)
+export const postsImages = pgTable("posts_images", {
+  id: varchar("id").primaryKey().default(sql`gen_random_uuid()`),
+  postId: varchar("post_id").notNull().references(() => posts.id, { onDelete: "cascade" }),
+  fileHash: text("file_hash").notNull(),
+  hotUrl: text("hot_url").notNull(),
+  coldKey: text("cold_key").notNull(),
+  isArchived: boolean("is_archived").notNull().default(false),
+  position: integer("position").notNull().default(0),
+  createdAt: timestamp("created_at").notNull().default(sql`now()`),
+});
+
 // Tabella leads (contatti)
 export const leads = pgTable("leads", {
   id: varchar("id").primaryKey().default(sql`gen_random_uuid()`),
@@ -108,6 +120,15 @@ export const insertPostSchema = createInsertSchema(posts).omit({
 
 export type InsertPost = z.infer<typeof insertPostSchema>;
 export type Post = typeof posts.$inferSelect;
+
+// Insert schemas per posts_images
+export const insertPostImageSchema = createInsertSchema(postsImages).omit({
+  id: true,
+  createdAt: true,
+});
+
+export type InsertPostImage = z.infer<typeof insertPostImageSchema>;
+export type PostImage = typeof postsImages.$inferSelect;
 
 // Insert schemas per leads
 export const insertLeadSchema = createInsertSchema(leads).omit({
