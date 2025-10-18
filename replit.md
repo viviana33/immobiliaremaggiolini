@@ -33,6 +33,14 @@ Preferred communication style: Simple, everyday language.
 - **Property Detail Page**: Fetches single property by slug, displays image gallery (Cloudinary optimized, lightbox), video embed, detailed information, status badges, similar properties, contact CTA, 404 handling.
 - **Blog Admin Forms**: React Hook Form with Zod validation, MarkdownEditor with edit/preview modes, status management, tag handling.
 - **Blog Cover Image Upload System**: Dual-storage architecture (R2 for cold storage, Cloudinary for hot delivery), `ImageUploader` component with drag-and-drop, client-side validation, server-side processing (Sharp), deduplication via SHA-256 hashing.
+- **Blog Public Page** (`/blog`) (October 2025):
+  - **Public API endpoints**: GET `/api/posts` (all published posts, optional `?categoria=` filter), GET `/api/posts/:slug` (single post by slug)
+  - **PostCard component**: Displays post with cover image (Cloudinary optimized, lazy-loaded), title, excerpt, category badge, tags (max 3), formatted date, reading time
+  - **Category filtering**: Dynamic category badges extracted from published posts, client-side + optional server-side filtering
+  - **Pagination**: "Carica Altri Articoli" button with client-side incremental loading (6 posts at a time)
+  - **Loading/Error states**: Spinner with text during data fetch, error alert on failure, empty state message when no posts
+  - **Rendering strategy**: CSR (Client-Side Rendering) with React + Vite, TanStack Query for data fetching
+  - **SEO considerations**: Documented in code comment - CSR chosen due to Vite/React architecture; SSR/ISR would require Next.js or similar framework
 - **Newsletter Notification Stub**: API endpoint for logging post publication notifications for future integration.
 - **Type Safety**: Zod schemas generated from Drizzle, shared types via `/shared` directory, TypeScript strict mode.
 - **Database Migrations**: Managed via Drizzle Kit.
