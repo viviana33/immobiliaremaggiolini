@@ -30,7 +30,7 @@ import {
 import { MarkdownEditor } from "./MarkdownEditor";
 import { ImageUploader } from "./ImageUploader";
 import { PostGallery } from "./PostGallery";
-import { useForm } from "react-hook-form";
+import { useForm, useWatch } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { insertPostSchema, type Post } from "@shared/schema";
 import { z } from "zod";
@@ -110,6 +110,13 @@ export function PostForm({ postId }: PostFormProps) {
       metaTitle: "",
       metaDescription: "",
     },
+  });
+
+  // Watch the status field reactively - useWatch ensures proper re-rendering
+  const currentStatus = useWatch({
+    control: form.control,
+    name: "stato",
+    defaultValue: "bozza",
   });
 
   // Fetch existing post data when editing
@@ -651,7 +658,7 @@ export function PostForm({ postId }: PostFormProps) {
             {isSaving && <Loader2 className="mr-2 h-4 w-4 animate-spin" />}
             Pubblica
           </Button>
-          {isEdit && form.watch("stato") === "pubblicato" && (
+          {isEdit && currentStatus === "pubblicato" && (
             <Button 
               type="button"
               variant="secondary"
