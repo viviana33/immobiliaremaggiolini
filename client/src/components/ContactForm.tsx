@@ -87,15 +87,12 @@ export default function ContactForm({ source, contextId }: ContactFormProps) {
     
     messaggioCompleto += `\nPreferenza di contatto: ${data.preferenzaContatto}`;
     
-    if (contextId) {
-      messaggioCompleto += `\nRif. ID: ${contextId}`;
-    }
-    
     const leadData = {
       nome: data.nome,
       email: data.email,
       messaggio: messaggioCompleto,
       fonte: source,
+      contextId: contextId || undefined,
       newsletter: false,
       website: data.website || "",
     };

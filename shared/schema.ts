@@ -79,6 +79,7 @@ export const leads = pgTable("leads", {
   email: text("email").notNull(),
   messaggio: text("messaggio").notNull(),
   fonte: text("fonte"),
+  contextId: text("context_id"),
   newsletter: boolean("newsletter").notNull().default(false),
   ip: text("ip"),
   createdAt: timestamp("created_at").notNull().default(sql`now()`),

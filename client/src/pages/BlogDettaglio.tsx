@@ -3,6 +3,7 @@ import { useQuery } from "@tanstack/react-query";
 import type { Post, PostImage } from "@shared/schema";
 import PostContent from "@/components/blog/PostContent";
 import SubscriptionBox from "@/components/blog/SubscriptionBox";
+import ContactForm from "@/components/ContactForm";
 import { Skeleton } from "@/components/ui/skeleton";
 import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert";
 import { AlertCircle, ArrowLeft, Calendar, Clock, Tag, Home } from "lucide-react";
@@ -326,6 +327,14 @@ export default function BlogDettaglio() {
           ) : (
             <PostContent content={post.contenuto} images={images} />
           )}
+        </div>
+      </section>
+
+      {/* Contact Form */}
+      <section className="py-12 border-t border-border">
+        <div className="max-w-2xl mx-auto px-6 md:px-8">
+          <h3 className="text-2xl font-serif font-bold mb-6">Hai domande su questo articolo?</h3>
+          <ContactForm source="blog" contextId={post.slug} />
         </div>
       </section>
 
