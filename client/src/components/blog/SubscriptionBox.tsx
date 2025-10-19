@@ -3,6 +3,7 @@ import { useMutation } from "@tanstack/react-query";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { z } from "zod";
+import { useLocation } from "wouter";
 import { Card } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -30,6 +31,7 @@ const subscriptionFormSchema = z.object({
 type SubscriptionFormData = z.infer<typeof subscriptionFormSchema>;
 
 export default function SubscriptionBox() {
+  const [, setLocation] = useLocation();
   const [submitStatus, setSubmitStatus] = useState<"idle" | "success" | "error">("idle");
   const [errorMessage, setErrorMessage] = useState<string>("");
 
@@ -49,10 +51,8 @@ export default function SubscriptionBox() {
       const response = await apiRequest("POST", "/api/subscribe", data);
       return response.json();
     },
-    onSuccess: () => {
-      setSubmitStatus("success");
-      setErrorMessage("");
-      form.reset();
+    onSuccess: (data, variables) => {
+      setLocation(`/grazie?lead=ok&source=blog&email=${encodeURIComponent(variables.email)}`);
     },
     onError: (error: any) => {
       setSubmitStatus("error");
