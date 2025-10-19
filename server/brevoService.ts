@@ -1,4 +1,4 @@
-import { ContactsApi, ContactsApiApiKeys, CreateDoiContact, UpdateContact } from "@getbrevo/brevo";
+import { ContactsApi, ContactsApiApiKeys, CreateDoiContact, UpdateContact, TransactionalEmailsApi, TransactionalEmailsApiApiKeys, SendSmtpEmail } from "@getbrevo/brevo";
 
 export interface BrevoContactAttributes {
   FIRSTNAME?: string;
@@ -19,8 +19,16 @@ export interface UpdateContactParams {
   attributes: BrevoContactAttributes;
 }
 
+export interface SendEmailParams {
+  to: { email: string; name?: string }[];
+  subject: string;
+  htmlContent: string;
+  sender?: { email: string; name: string };
+}
+
 class BrevoService {
   private apiInstance: ContactsApi;
+  private emailApiInstance: TransactionalEmailsApi;
   private apiKey: string;
   private defaultTemplateId: number;
   private defaultListId: number;
@@ -38,6 +46,9 @@ class BrevoService {
 
     this.apiInstance = new ContactsApi();
     this.apiInstance.setApiKey(ContactsApiApiKeys.apiKey, this.apiKey);
+
+    this.emailApiInstance = new TransactionalEmailsApi();
+    this.emailApiInstance.setApiKey(TransactionalEmailsApiApiKeys.apiKey, this.apiKey);
   }
 
   async createContactWithDoubleOptIn(params: CreateContactParams): Promise<void> {
@@ -88,6 +99,30 @@ class BrevoService {
       }
       console.error("Errore Brevo getContact:", error.response?.body || error.message);
       throw new Error("Errore nel recupero del contatto");
+    }
+  }
+
+  async sendTransactionalEmail(params: SendEmailParams): Promise<void> {
+    const sendSmtpEmail = new SendSmtpEmail();
+    
+    sendSmtpEmail.to = params.to;
+    sendSmtpEmail.subject = params.subject;
+    sendSmtpEmail.htmlContent = params.htmlContent;
+    
+    if (params.sender) {
+      sendSmtpEmail.sender = params.sender;
+    } else {
+      sendSmtpEmail.sender = {
+        email: process.env.BREVO_SENDER_EMAIL || "noreply@maggiolini.com",
+        name: process.env.BREVO_SENDER_NAME || "Maggiolini Real Estate"
+      };
+    }
+
+    try {
+      await this.emailApiInstance.sendTransacEmail(sendSmtpEmail);
+    } catch (error: any) {
+      console.error("Errore Brevo sendTransactionalEmail:", error.response?.body || error.message);
+      throw new Error("Errore nell'invio dell'email");
     }
   }
 

@@ -876,32 +876,129 @@ export async function registerRoutes(app: Express): Promise<Server> {
     }
   });
 
-  // TODO: Integrare l'invio reale in Fase 7 (Brevo/MailerLite)
-  // Endpoint stub per notifica newsletter quando un post viene pubblicato
-  // Attualmente registra solo un log, ma sarà sostituito con l'invio reale via provider email
   app.post("/api/admin/notify-post", requireAdmin, async (req, res) => {
     try {
-      const { id, title, slug, tags } = req.body;
+      const { id } = req.body;
       
-      // Validazione base dei dati
-      if (!id || !title || !slug) {
-        return res.status(400).json({ message: "Dati incompleti: id, title e slug sono obbligatori" });
+      if (!id) {
+        return res.status(400).json({ message: "ID del post obbligatorio" });
       }
 
-      // Log dell'admin che ha richiesto l'invio (se disponibile nell'estensione della sessione)
-      const timestamp = new Date().toISOString();
-      
-      // Stub: per ora solo log, nessun invio reale
-      console.log(`[${timestamp}] Richiesta invio newsletter registrata per post: ${title}`);
-      console.log(`  - ID: ${id}`);
-      console.log(`  - Slug: ${slug}`);
-      console.log(`  - Tags: ${tags?.join(", ") || "nessun tag"}`);
-      console.log(`  - Admin session: ${req.session.isAdmin ? "authenticated" : "not authenticated"}`);
+      // Recupera il post dal database
+      const post = await storage.getPostById(id);
+      if (!post) {
+        return res.status(404).json({ message: "Post non trovato" });
+      }
 
-      res.json({ ok: true });
-    } catch (error) {
+      // Recupera gli iscritti confermati con blog_updates=true
+      const subscribers = await storage.getConfirmedBlogSubscribers();
+      
+      if (subscribers.length === 0) {
+        console.log(`[${new Date().toISOString()}] Nessun iscritto con blog_updates=true per il post: ${post.titolo}`);
+        return res.json({ 
+          ok: true, 
+          message: "Nessun iscritto da notificare",
+          sent: 0 
+        });
+      }
+
+      // Crea il link al post
+      const baseUrl = process.env.REPLIT_DOMAINS 
+        ? `https://${process.env.REPLIT_DOMAINS.split(',')[0]}`
+        : 'http://localhost:5000';
+      const postUrl = `${baseUrl}/blog/${post.slug}`;
+
+      // Crea l'anteprima del post (primi 200 caratteri senza HTML)
+      const plainContent = post.contenuto.replace(/<[^>]*>/g, '').replace(/\s+/g, ' ').trim();
+      const preview = plainContent.length > 200 
+        ? plainContent.substring(0, 200) + '...' 
+        : plainContent;
+
+      // Subject dell'email
+      const subject = `Nuovo articolo: ${post.titolo}`;
+
+      // HTML dell'email
+      const htmlContent = `
+        <!DOCTYPE html>
+        <html>
+        <head>
+          <meta charset="utf-8">
+          <meta name="viewport" content="width=device-width, initial-scale=1.0">
+        </head>
+        <body style="font-family: Arial, sans-serif; line-height: 1.6; color: #333; max-width: 600px; margin: 0 auto; padding: 20px;">
+          <div style="background-color: #f8f9fa; padding: 30px; border-radius: 8px;">
+            <h1 style="color: #2c3e50; margin-bottom: 20px;">${post.titolo}</h1>
+            ${post.sottotitolo ? `<h2 style="color: #7f8c8d; font-size: 18px; font-weight: normal; margin-bottom: 20px;">${post.sottotitolo}</h2>` : ''}
+            ${post.cover ? `<img src="${post.cover}" alt="${post.titolo}" style="width: 100%; height: auto; border-radius: 8px; margin-bottom: 20px;" />` : ''}
+            <p style="font-size: 16px; color: #555; margin-bottom: 20px;">${preview}</p>
+            <a href="${postUrl}" style="display: inline-block; background-color: #3498db; color: white; padding: 12px 30px; text-decoration: none; border-radius: 5px; font-weight: bold;">Leggi l'articolo completo</a>
+          </div>
+          <div style="margin-top: 30px; padding-top: 20px; border-top: 1px solid #e0e0e0; text-align: center; font-size: 12px; color: #999;">
+            <p>Ricevi questa email perché sei iscritto agli aggiornamenti del blog Maggiolini.</p>
+            <p><a href="${baseUrl}/preferenze" style="color: #3498db; text-decoration: none;">Gestisci le tue preferenze</a></p>
+          </div>
+        </body>
+        </html>
+      `;
+
+      // Invia email tramite Brevo
+      let sentCount = 0;
+      let errorCount = 0;
+      const errors: string[] = [];
+
+      try {
+        const brevo = getBrevoService();
+        
+        // Prepara i destinatari
+        const recipients = subscribers.map(sub => ({
+          email: sub.email,
+          name: sub.nome || undefined
+        }));
+
+        // Invia email
+        await brevo.sendTransactionalEmail({
+          to: recipients,
+          subject,
+          htmlContent
+        });
+
+        sentCount = recipients.length;
+        console.log(`[${new Date().toISOString()}] Email inviata con successo a ${sentCount} iscritti per il post: ${post.titolo}`);
+
+      } catch (brevoError: any) {
+        console.error("Errore Brevo durante l'invio newsletter:", brevoError);
+        errors.push(brevoError.message || "Errore sconosciuto");
+        errorCount = subscribers.length;
+
+        // Se Brevo non è configurato o c'è un errore critico
+        if (brevoError.message?.includes("non configurata")) {
+          return res.status(503).json({ 
+            message: "Servizio email non configurato",
+            error: "BREVO_API_KEY non configurata" 
+          });
+        }
+
+        return res.status(500).json({ 
+          message: "Errore nell'invio delle email",
+          sent: 0,
+          failed: errorCount,
+          errors 
+        });
+      }
+
+      res.json({ 
+        ok: true,
+        message: `Email inviata a ${sentCount} iscritti`,
+        sent: sentCount,
+        failed: errorCount
+      });
+
+    } catch (error: any) {
       console.error("Error in notify-post endpoint:", error);
-      res.status(500).json({ message: "Errore nella registrazione della richiesta di invio" });
+      res.status(500).json({ 
+        message: "Errore nel processo di notifica",
+        error: error.message 
+      });
     }
   });
 
