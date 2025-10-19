@@ -85,17 +85,3 @@ export function subscriptionRateLimit() {
     }
   });
 }
-
-// Rate limiter per notifiche listing (1 notifica per immobile ogni 30 minuti)
-export function listingNotificationRateLimit() {
-  return rateLimit({
-    windowMs: 30 * 60 * 1000, // 30 minuti
-    maxRequests: 1,
-    message: "Notifica già inviata di recente per questo immobile. Attendi prima di inviare nuovamente.",
-    keyGenerator: (req: Request) => {
-      // Rate limit basato sull'ID dell'immobile
-      const propertyId = req.body?.id || 'no-id';
-      return `listing-notification:${propertyId}`;
-    }
-  });
-}

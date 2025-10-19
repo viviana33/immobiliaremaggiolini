@@ -2,7 +2,7 @@ import type { Express } from "express";
 import { createServer, type Server } from "http";
 import { storage } from "./storage";
 import { requireAdmin } from "./middleware/auth";
-import { subscriptionRateLimit, listingNotificationRateLimit } from "./middleware/rateLimit";
+import { subscriptionRateLimit } from "./middleware/rateLimit";
 import multer from "multer";
 import { uploadService } from "./uploadService";
 import { insertSubscriptionSchema, updateSubscriptionSchema, insertPropertySchema, propertyFiltersSchema, insertPostSchema, postFiltersSchema } from "@shared/schema";
@@ -1038,13 +1038,42 @@ export async function registerRoutes(app: Express): Promise<Server> {
     }
   });
 
-  app.post("/api/admin/notify-listing", requireAdmin, listingNotificationRateLimit(), async (req, res) => {
+  app.post("/api/admin/notify-listing", requireAdmin, async (req, res) => {
     try {
       const { id } = req.body;
       
       if (!id) {
         return res.status(400).json({ message: "ID dell'immobile obbligatorio" });
       }
+
+      // Rate limiting per immobile specifico (1 notifica ogni 30 minuti per immobile)
+      const rateLimitKey = `listing-notification:${id}`;
+      const rateLimitStore = (global as any).listingNotificationStore || {};
+      (global as any).listingNotificationStore = rateLimitStore;
+      
+      const now = Date.now();
+      const windowMs = 30 * 60 * 1000; // 30 minuti
+      
+      if (rateLimitStore[rateLimitKey] && rateLimitStore[rateLimitKey].resetTime > now) {
+        const retryAfter = Math.ceil((rateLimitStore[rateLimitKey].resetTime - now) / 1000);
+        return res.status(429).json({
+          success: false,
+          message: "Notifica già inviata di recente per questo immobile. Attendi prima di inviare nuovamente.",
+          retryAfter
+        });
+      }
+      
+      // Registra il rate limit
+      rateLimitStore[rateLimitKey] = {
+        resetTime: now + windowMs
+      };
+      
+      // Pulizia periodica dello store
+      Object.keys(rateLimitStore).forEach(key => {
+        if (rateLimitStore[key].resetTime < now) {
+          delete rateLimitStore[key];
+        }
+      });
 
       // Recupera l'immobile dal database
       const property = await storage.getPropertyById(id);
