@@ -60,8 +60,22 @@ Preferred communication style: Simple, everyday language.
   - **Consent Tracking**: Records consent IP (`consent_ip`), consent timestamp (`consent_ts`), source (`source`)
   - **Frontend Components**:
     - `Footer.tsx`: Simplified newsletter form in footer (email only, defaults: blog_updates=true, new_listings=false, source="footer")
-    - `SubscriptionBox.tsx`: Full subscription form in blog page with email, name (optional), new_listings checkbox (defaults: blog_updates=true, source="blog")
+    - `SubscriptionBox.tsx`: Full subscription form in blog page with email, name (optional), new_listings checkbox (defaults: blog_updates=true, source="blog"), displayed as dedicated section at bottom of blog page
   - **Error Handling**: All components show success/error alerts, handle loading states, reset forms on success
+  - **Thank You Page with Upgrade Flow** (`/grazie`) (Step 8.5, October 2025):
+    - **Redirect Flow**: After successful subscription submission, all forms redirect to `/grazie?lead=ok&source={source}&email={email}&blogUpdates={true/false}&newListings={true/false}`
+    - **Context-Aware Upgrade Logic**:
+      - If user subscribed to only `blogUpdates` → offers `newListings` upgrade
+      - If user subscribed to only `newListings` → offers `blogUpdates` upgrade
+      - If user subscribed to both or neither → no upgrade card shown
+    - **UI Components**:
+      - Confirmation message with email verification reminder
+      - Context-aware upgrade card with description based on missing preference
+      - "Sì, aggiungi!" button that calls PUT `/api/subscribe` to add missing flag
+      - Success alert after upgrade, upgrade card disappears
+      - "Torna alla Home" button for navigation
+    - **Error Handling**: Invalid access (missing lead=ok param) shows "Pagina non trovata" message
+    - **Integration**: ContactForm only redirects if user selected at least one newsletter preference, otherwise shows toast and stays on page
   - **Preferences Page** (`/preferenze`) (October 2025):
     - **Frontend**: Email input with load/save preferences, two toggles (blog_updates, new_listings), success/error alerts, unsubscribe link to Brevo
     - **Backend**: GET `/api/subscribe/:email` to retrieve preferences, PUT `/api/subscribe` to update (both with rate limiting)
