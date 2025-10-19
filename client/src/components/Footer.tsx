@@ -1,4 +1,4 @@
-import { Link } from "wouter";
+import { Link, useLocation } from "wouter";
 import { Building2, Mail, Phone, MapPin, Facebook, Instagram, Linkedin, Loader2, CheckCircle2, AlertCircle } from "lucide-react";
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
@@ -8,24 +8,23 @@ import { useMutation } from "@tanstack/react-query";
 import { apiRequest } from "@/lib/queryClient";
 
 export default function Footer() {
+  const [, setLocation] = useLocation();
   const [email, setEmail] = useState("");
   const [submitStatus, setSubmitStatus] = useState<"idle" | "success" | "error">("idle");
   const [errorMessage, setErrorMessage] = useState<string>("");
 
   const subscribeMutation = useMutation({
-    mutationFn: async (email: string) => {
+    mutationFn: async (emailToSubmit: string) => {
       const response = await apiRequest("POST", "/api/subscribe", {
-        email,
+        email: emailToSubmit,
         blogUpdates: true,
         newListings: false,
         source: "footer"
       });
       return response.json();
     },
-    onSuccess: () => {
-      setSubmitStatus("success");
-      setErrorMessage("");
-      setEmail("");
+    onSuccess: (data, emailToSubmit) => {
+      setLocation(`/grazie?lead=ok&source=footer&email=${encodeURIComponent(emailToSubmit)}`);
     },
     onError: (error: any) => {
       setSubmitStatus("error");
