@@ -31,6 +31,8 @@ const contactFormSchema = z.object({
   preferenzaContatto: z.enum(["email", "telefono", "whatsapp"], {
     required_error: "Seleziona una preferenza di contatto",
   }),
+  blogUpdates: z.boolean().default(false),
+  newListings: z.boolean().default(false),
   website: z.string().optional(),
 });
 
@@ -53,6 +55,8 @@ export default function ContactForm({ source, contextId }: ContactFormProps) {
       messaggio: "",
       privacy: false,
       preferenzaContatto: "email",
+      blogUpdates: false,
+      newListings: false,
       website: "",
     },
   });
@@ -62,11 +66,28 @@ export default function ContactForm({ source, contextId }: ContactFormProps) {
       const response = await apiRequest("POST", "/api/lead", data);
       return await response.json();
     },
-    onSuccess: (data) => {
+    onSuccess: async (data, variables) => {
       toast({
         title: "Messaggio inviato!",
         description: data.message || "Ti contatteremo presto.",
       });
+      
+      // Se l'utente ha selezionato almeno una preferenza newsletter, invia subscription
+      if (variables.blogUpdates || variables.newListings) {
+        try {
+          await apiRequest("POST", "/api/subscribe", {
+            email: variables.email,
+            nome: variables.nome,
+            blogUpdates: variables.blogUpdates,
+            newListings: variables.newListings,
+            source: "contact_form",
+          });
+        } catch (subscribeError) {
+          console.error("Errore subscription:", subscribeError);
+          // Non mostriamo errore all'utente, la lead è stata comunque salvata
+        }
+      }
+      
       form.reset();
     },
     onError: (error: any) => {
@@ -93,8 +114,10 @@ export default function ContactForm({ source, contextId }: ContactFormProps) {
       messaggio: messaggioCompleto,
       fonte: source,
       contextId: contextId || undefined,
-      newsletter: false,
+      newsletter: data.blogUpdates || data.newListings,
       website: data.website || "",
+      blogUpdates: data.blogUpdates,
+      newListings: data.newListings,
     };
     
     submitLead.mutate(leadData);
@@ -228,6 +251,63 @@ export default function ContactForm({ source, contextId }: ContactFormProps) {
               </FormItem>
             )}
           />
+
+          <div className="space-y-4 border-t pt-4">
+            <div className="space-y-3">
+              <p className="text-sm font-medium">Rimani aggiornato (opzionale)</p>
+              <p className="text-sm text-muted-foreground">
+                Riceverai un'email di conferma per attivare le tue preferenze (double opt-in)
+              </p>
+              
+              <FormField
+                control={form.control}
+                name="blogUpdates"
+                render={({ field }) => (
+                  <FormItem className="flex flex-row items-start space-x-3 space-y-0">
+                    <FormControl>
+                      <Checkbox
+                        checked={field.value}
+                        onCheckedChange={field.onChange}
+                        data-testid="checkbox-blog-updates"
+                      />
+                    </FormControl>
+                    <div className="space-y-1 leading-none">
+                      <FormLabel className="font-normal cursor-pointer">
+                        Nuovi articoli del blog
+                      </FormLabel>
+                      <p className="text-sm text-muted-foreground">
+                        Ricevi aggiornamenti sui nostri ultimi contenuti
+                      </p>
+                    </div>
+                  </FormItem>
+                )}
+              />
+              
+              <FormField
+                control={form.control}
+                name="newListings"
+                render={({ field }) => (
+                  <FormItem className="flex flex-row items-start space-x-3 space-y-0">
+                    <FormControl>
+                      <Checkbox
+                        checked={field.value}
+                        onCheckedChange={field.onChange}
+                        data-testid="checkbox-new-listings"
+                      />
+                    </FormControl>
+                    <div className="space-y-1 leading-none">
+                      <FormLabel className="font-normal cursor-pointer">
+                        Nuovi immobili in vendita/affitto
+                      </FormLabel>
+                      <p className="text-sm text-muted-foreground">
+                        Sii il primo a scoprire le nuove opportunità
+                      </p>
+                    </div>
+                  </FormItem>
+                )}
+              />
+            </div>
+          </div>
 
           <FormField
             control={form.control}
