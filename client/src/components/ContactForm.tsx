@@ -2,6 +2,7 @@ import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { z } from "zod";
 import { useMutation } from "@tanstack/react-query";
+import { useLocation } from "wouter";
 import { apiRequest } from "@/lib/queryClient";
 import { useToast } from "@/hooks/use-toast";
 import { Button } from "@/components/ui/button";
@@ -44,6 +45,7 @@ interface ContactFormProps {
 }
 
 export default function ContactForm({ source, contextId }: ContactFormProps) {
+  const [, setLocation] = useLocation();
   const { toast } = useToast();
   
   const form = useForm<ContactFormData>({
@@ -67,13 +69,10 @@ export default function ContactForm({ source, contextId }: ContactFormProps) {
       return await response.json();
     },
     onSuccess: async (data, variables) => {
-      toast({
-        title: "Messaggio inviato!",
-        description: data.message || "Ti contatteremo presto.",
-      });
+      const hasNewsletterPreference = variables.blogUpdates || variables.newListings;
       
       // Se l'utente ha selezionato almeno una preferenza newsletter, invia subscription
-      if (variables.blogUpdates || variables.newListings) {
+      if (hasNewsletterPreference) {
         try {
           await apiRequest("POST", "/api/subscribe", {
             email: variables.email,
@@ -82,13 +81,26 @@ export default function ContactForm({ source, contextId }: ContactFormProps) {
             newListings: variables.newListings,
             source: "contact_form",
           });
+          
+          // Redirect a pagina grazie con parametri
+          setLocation(`/grazie?lead=ok&source=contact_form&email=${encodeURIComponent(variables.email)}`);
         } catch (subscribeError) {
           console.error("Errore subscription:", subscribeError);
-          // Non mostriamo errore all'utente, la lead è stata comunque salvata
+          // Se la subscription fallisce, mostra solo il toast
+          toast({
+            title: "Messaggio inviato!",
+            description: data.message || "Ti contatteremo presto.",
+          });
+          form.reset();
         }
+      } else {
+        // Nessuna preferenza newsletter, mostra solo toast
+        toast({
+          title: "Messaggio inviato!",
+          description: data.message || "Ti contatteremo presto.",
+        });
+        form.reset();
       }
-      
-      form.reset();
     },
     onError: (error: any) => {
       toast({
