@@ -1,4 +1,5 @@
 import PostCard from "@/components/blog/PostCard";
+import SubscriptionBox from "@/components/blog/SubscriptionBox";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { Input } from "@/components/ui/input";
@@ -421,6 +422,12 @@ export default function Blog() {
               )}
             </>
           )}
+        </div>
+      </section>
+
+      <section className="py-12 md:py-16 bg-secondary">
+        <div className="max-w-3xl mx-auto px-6 md:px-8">
+          <SubscriptionBox />
         </div>
       </section>
     </div>
