@@ -7,7 +7,7 @@ import { Switch } from "@/components/ui/switch";
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
 import { Alert, AlertDescription } from "@/components/ui/alert";
-import { Loader2, CheckCircle2, AlertCircle, Mail, ExternalLink } from "lucide-react";
+import { Loader2, CheckCircle2, AlertCircle, Mail, ExternalLink, Plus } from "lucide-react";
 import { apiRequest } from "@/lib/queryClient";
 import type { Subscription } from "@shared/schema";
 
@@ -26,9 +26,10 @@ export default function Preferenze() {
   const [isLoaded, setIsLoaded] = useState(false);
   const [saveStatus, setSaveStatus] = useState<"idle" | "success" | "error">("idle");
   const [errorMessage, setErrorMessage] = useState("");
+  const [showQuickAdd, setShowQuickAdd] = useState(false);
 
   useEffect(() => {
-    const params = new URLSearchParams(location.split('?')[1] || '');
+    const params = new URLSearchParams(window.location.search);
     const emailParam = params.get('email');
     const confirmedParam = params.get('confirmed');
     
@@ -55,10 +56,20 @@ export default function Preferenze() {
       setBlogUpdates(data.data.blogUpdates);
       setNewListings(data.data.newListings);
       setIsLoaded(true);
-      setSaveStatus("idle");
-      setErrorMessage("");
+      
+      // Mostra suggerimento se l'utente ha solo una lista attiva
+      const hasOnlyOne = (data.data.blogUpdates && !data.data.newListings) || 
+                         (!data.data.blogUpdates && data.data.newListings);
+      setShowQuickAdd(hasOnlyOne);
+      
+      // Non sovrascrivere il messaggio di conferma se presente
+      const params = new URLSearchParams(window.location.search);
+      if (params.get('confirmed') !== 'true') {
+        setSaveStatus("idle");
+        setErrorMessage("");
+      }
     }
-  }, [data]);
+  }, [data, location]);
 
   useEffect(() => {
     if (error && !isLoading) {
@@ -84,6 +95,11 @@ export default function Preferenze() {
         setIsLoaded(true);
         setSaveStatus("idle");
         setErrorMessage("");
+        
+        // Mostra suggerimento se l'utente ha solo una lista attiva
+        const hasOnlyOne = (data.data.blogUpdates && !data.data.newListings) || 
+                           (!data.data.blogUpdates && data.data.newListings);
+        setShowQuickAdd(hasOnlyOne);
       }
     },
     onError: (error: any) => {
@@ -105,11 +121,39 @@ export default function Preferenze() {
     onSuccess: () => {
       setSaveStatus("success");
       setErrorMessage("Preferenze aggiornate con successo!");
+      setShowQuickAdd(false);
     },
     onError: (error: any) => {
       setSaveStatus("error");
       setErrorMessage(
         error?.message || "Errore nell'aggiornamento delle preferenze. Riprova più tardi."
+      );
+    },
+  });
+
+  const quickAddMutation = useMutation({
+    mutationFn: async (addBlog: boolean) => {
+      const response = await apiRequest("PUT", "/api/subscribe", {
+        email,
+        blogUpdates: addBlog ? true : blogUpdates,
+        newListings: addBlog ? newListings : true,
+      });
+      return response.json();
+    },
+    onSuccess: (_, addBlog) => {
+      if (addBlog) {
+        setBlogUpdates(true);
+      } else {
+        setNewListings(true);
+      }
+      setSaveStatus("success");
+      setErrorMessage("Iscrizione aggiunta con successo!");
+      setShowQuickAdd(false);
+    },
+    onError: (error: any) => {
+      setSaveStatus("error");
+      setErrorMessage(
+        error?.message || "Errore nell'aggiunta dell'iscrizione. Riprova più tardi."
       );
     },
   });
@@ -158,6 +202,43 @@ export default function Preferenze() {
             {errorMessage}
           </AlertDescription>
         </Alert>
+      )}
+
+      {isLoaded && showQuickAdd && (
+        <Card className="mb-6 border-primary/30 bg-primary/5" data-testid="card-quick-add">
+          <CardHeader>
+            <CardTitle className="text-lg">Ti interessa anche l'altra lista?</CardTitle>
+            <CardDescription>
+              {blogUpdates && !newListings && 
+                "Puoi ricevere notifiche anche quando aggiungiamo nuovi immobili in vendita o affitto"
+              }
+              {!blogUpdates && newListings && 
+                "Puoi ricevere notifiche anche quando pubblichiamo nuovi articoli sul blog"
+              }
+            </CardDescription>
+          </CardHeader>
+          <CardContent>
+            <Button
+              onClick={() => quickAddMutation.mutate(!blogUpdates)}
+              disabled={quickAddMutation.isPending}
+              className="w-full"
+              data-testid="button-aggiungi-altra-lista"
+            >
+              {quickAddMutation.isPending ? (
+                <>
+                  <Loader2 className="mr-2 h-4 w-4 animate-spin" />
+                  Aggiunta in corso...
+                </>
+              ) : (
+                <>
+                  <Plus className="mr-2 h-4 w-4" />
+                  {blogUpdates && !newListings && "Aggiungi Nuovi Immobili"}
+                  {!blogUpdates && newListings && "Aggiungi Nuovi Articoli"}
+                </>
+              )}
+            </Button>
+          </CardContent>
+        </Card>
       )}
 
       <Card className="mb-6">

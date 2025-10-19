@@ -67,6 +67,12 @@ Preferred communication style: Simple, everyday language.
     - **Backend**: GET `/api/subscribe/:email` to retrieve preferences, PUT `/api/subscribe` to update (both with rate limiting)
     - **Features**: Auto-load from URL param `?email=`, state management with React Query, TypeScript strict typing with shared schema types
     - **UX**: Clear success/error messages, "Cambia Email" button, external unsubscribe link, loading states
+    - **Quick-Add Suggestion** (Step 7.3, October 2025): One-click subscription upgrade feature
+      - **Trigger**: Displays when user has exactly ONE subscription active (blogUpdates XOR newListings)
+      - **UI**: Prominent card (border-primary/30 bg-primary/5) with context-aware description and "Aggiungi" button
+      - **Behavior**: Calls PUT `/api/subscribe` to add missing flag, shows success message, card disappears after addition
+      - **URL Integration**: Brevo DOI redirect includes email parameter (`/preferenze?confirmed=true&email=...`) for auto-load
+      - **Implementation**: Uses window.location.search for query params, React state management for conditional rendering
 - **Type Safety**: Zod schemas generated from Drizzle, shared types via `/shared` directory, TypeScript strict mode.
 - **Database Migrations**: Managed via Drizzle Kit.
 

@@ -112,7 +112,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
           email: validatedData.email,
           attributes,
           listIds: [brevo.getDefaultListId()],
-          redirectionUrl: `${process.env.REPLIT_DOMAINS ? `https://${process.env.REPLIT_DOMAINS.split(',')[0]}` : 'http://localhost:5000'}/preferenze?confirmed=true`
+          redirectionUrl: `${process.env.REPLIT_DOMAINS ? `https://${process.env.REPLIT_DOMAINS.split(',')[0]}` : 'http://localhost:5000'}/preferenze?confirmed=true&email=${encodeURIComponent(validatedData.email)}`
         });
         
         res.json({
