@@ -75,6 +75,7 @@ export interface IStorage {
   getSubscriptionByEmail(email: string): Promise<Subscription | undefined>;
   getSubscriptionByToken(token: string): Promise<Subscription | undefined>;
   getConfirmedBlogSubscribers(): Promise<Subscription[]>;
+  getConfirmedListingSubscribers(): Promise<Subscription[]>;
   createSubscription(subscription: InsertSubscription): Promise<Subscription>;
   updateSubscription(email: string, subscription: Partial<Subscription>): Promise<Subscription | undefined>;
 }
@@ -400,6 +401,18 @@ export class DbStorage implements IStorage {
         and(
           eq(subscriptions.confirmed, true),
           eq(subscriptions.blogUpdates, true)
+        )
+      );
+  }
+
+  async getConfirmedListingSubscribers(): Promise<Subscription[]> {
+    return db
+      .select()
+      .from(subscriptions)
+      .where(
+        and(
+          eq(subscriptions.confirmed, true),
+          eq(subscriptions.newListings, true)
         )
       );
   }
