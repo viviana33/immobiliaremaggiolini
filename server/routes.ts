@@ -2,7 +2,7 @@ import type { Express } from "express";
 import { createServer, type Server } from "http";
 import { storage } from "./storage";
 import { requireAdmin } from "./middleware/auth";
-import { subscriptionRateLimit } from "./middleware/rateLimit";
+import { subscriptionRateLimit, listingNotificationRateLimit } from "./middleware/rateLimit";
 import multer from "multer";
 import { uploadService } from "./uploadService";
 import { insertSubscriptionSchema, updateSubscriptionSchema, insertPropertySchema, propertyFiltersSchema, insertPostSchema, postFiltersSchema } from "@shared/schema";
@@ -369,6 +369,21 @@ export async function registerRoutes(app: Express): Promise<Server> {
         await Promise.all(uploadPromises);
       }
       
+      // Invia notifica se l'immobile è disponibile
+      if (property.stato === 'disponibile') {
+        // Chiamata asincrona non bloccante
+        fetch(`http://localhost:${process.env.PORT || 5000}/api/admin/notify-listing`, {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json',
+            'Cookie': req.headers.cookie || ''
+          },
+          body: JSON.stringify({ id: property.id })
+        }).catch(err => {
+          console.error('Errore invio notifica listing:', err);
+        });
+      }
+      
       res.status(201).json(property);
     } catch (error: any) {
       console.error("Error creating property:", error);
@@ -381,6 +396,12 @@ export async function registerRoutes(app: Express): Promise<Server> {
 
   app.put("/api/admin/properties/:id", requireAdmin, upload.array("images", 15), async (req, res) => {
     try {
+      // Recupera lo stato precedente
+      const existingProperty = await storage.getPropertyById(req.params.id);
+      if (!existingProperty) {
+        return res.status(404).json({ message: "Immobile non trovato" });
+      }
+      
       const formData: any = { ...req.body };
       
       if (req.body.mq) formData.mq = parseInt(req.body.mq);
@@ -413,6 +434,21 @@ export async function registerRoutes(app: Express): Promise<Server> {
       
       if (updatedProperty.stato === "venduto" || updatedProperty.stato === "affittato") {
         await storage.archivePropertyImages(updatedProperty.id, 3);
+      }
+      
+      // Invia notifica se lo stato è cambiato a 'disponibile'
+      if (existingProperty.stato !== 'disponibile' && updatedProperty.stato === 'disponibile') {
+        // Chiamata asincrona non bloccante
+        fetch(`http://localhost:${process.env.PORT || 5000}/api/admin/notify-listing`, {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json',
+            'Cookie': req.headers.cookie || ''
+          },
+          body: JSON.stringify({ id: updatedProperty.id })
+        }).catch(err => {
+          console.error('Errore invio notifica listing:', err);
+        });
       }
       
       res.json(updatedProperty);
@@ -995,6 +1031,158 @@ export async function registerRoutes(app: Express): Promise<Server> {
 
     } catch (error: any) {
       console.error("Error in notify-post endpoint:", error);
+      res.status(500).json({ 
+        message: "Errore nel processo di notifica",
+        error: error.message 
+      });
+    }
+  });
+
+  app.post("/api/admin/notify-listing", requireAdmin, listingNotificationRateLimit(), async (req, res) => {
+    try {
+      const { id } = req.body;
+      
+      if (!id) {
+        return res.status(400).json({ message: "ID dell'immobile obbligatorio" });
+      }
+
+      // Recupera l'immobile dal database
+      const property = await storage.getPropertyById(id);
+      if (!property) {
+        return res.status(404).json({ message: "Immobile non trovato" });
+      }
+
+      // Recupera gli iscritti confermati con new_listings=true
+      const subscribers = await storage.getConfirmedListingSubscribers();
+      
+      if (subscribers.length === 0) {
+        console.log(`[${new Date().toISOString()}] Nessun iscritto con new_listings=true per l'immobile: ${property.titolo}`);
+        return res.json({ 
+          ok: true, 
+          message: "Nessun iscritto da notificare",
+          sent: 0 
+        });
+      }
+
+      // Crea il link all'immobile
+      const baseUrl = process.env.REPLIT_DOMAINS 
+        ? `https://${process.env.REPLIT_DOMAINS.split(',')[0]}`
+        : 'http://localhost:5000';
+      const propertyUrl = `${baseUrl}/immobili/${property.slug}`;
+
+      // Formatta il prezzo
+      const formattedPrice = new Intl.NumberFormat('it-IT', {
+        style: 'currency',
+        currency: 'EUR',
+        minimumFractionDigits: 0,
+        maximumFractionDigits: 0
+      }).format(parseFloat(property.prezzo));
+
+      // Recupera la prima immagine dell'immobile
+      const images = await storage.getPropertyImages(property.id);
+      const coverImage = images.length > 0 ? images[0].urlHot : '';
+
+      // Crea una descrizione breve
+      const shortDescription = property.descrizione && property.descrizione.length > 200 
+        ? property.descrizione.substring(0, 200) + '...' 
+        : property.descrizione || '';
+
+      // Tipo immobile in italiano
+      const tipoMap: Record<string, string> = {
+        'vendita': 'In Vendita',
+        'affitto': 'In Affitto'
+      };
+      const tipoLabel = tipoMap[property.tipo] || property.tipo;
+
+      // Subject dell'email
+      const subject = `Nuovo immobile disponibile: ${property.titolo}`;
+
+      // HTML dell'email
+      const htmlContent = `
+        <!DOCTYPE html>
+        <html>
+        <head>
+          <meta charset="utf-8">
+          <meta name="viewport" content="width=device-width, initial-scale=1.0">
+        </head>
+        <body style="font-family: Arial, sans-serif; line-height: 1.6; color: #333; max-width: 600px; margin: 0 auto; padding: 20px;">
+          <div style="background-color: #f8f9fa; padding: 30px; border-radius: 8px;">
+            <h1 style="color: #2c3e50; margin-bottom: 10px;">${property.titolo}</h1>
+            <p style="color: #7f8c8d; font-size: 16px; margin-bottom: 20px;">${tipoLabel} - ${property.zona || ''}</p>
+            ${coverImage ? `<img src="${coverImage}" alt="${property.titolo}" style="width: 100%; height: auto; border-radius: 8px; margin-bottom: 20px;" />` : ''}
+            <div style="background-color: white; padding: 20px; border-radius: 8px; margin-bottom: 20px;">
+              <h2 style="color: #3498db; font-size: 28px; margin-bottom: 10px;">${formattedPrice}</h2>
+              <p style="font-size: 16px; color: #555; margin-bottom: 15px;">${shortDescription}</p>
+              <div style="display: flex; flex-wrap: wrap; gap: 15px; margin-bottom: 20px;">
+                ${property.mq ? `<div style="flex: 0 0 auto;"><strong>📐 Superficie:</strong> ${property.mq} m²</div>` : ''}
+                ${property.stanze ? `<div style="flex: 0 0 auto;"><strong>🛏️ Stanze:</strong> ${property.stanze}</div>` : ''}
+                ${property.bagni ? `<div style="flex: 0 0 auto;"><strong>🚿 Bagni:</strong> ${property.bagni}</div>` : ''}
+              </div>
+            </div>
+            <a href="${propertyUrl}" style="display: inline-block; background-color: #3498db; color: white; padding: 12px 30px; text-decoration: none; border-radius: 5px; font-weight: bold;">Scopri di più</a>
+          </div>
+          <div style="margin-top: 30px; padding-top: 20px; border-top: 1px solid #e0e0e0; text-align: center; font-size: 12px; color: #999;">
+            <p>Ricevi questa email perché sei iscritto alle notifiche per nuovi immobili Maggiolini.</p>
+            <p><a href="${baseUrl}/preferenze" style="color: #3498db; text-decoration: none;">Gestisci le tue preferenze</a></p>
+          </div>
+        </body>
+        </html>
+      `;
+
+      // Invia email tramite Brevo
+      let sentCount = 0;
+      let errorCount = 0;
+      const errors: string[] = [];
+
+      try {
+        const brevo = getBrevoService();
+        
+        // Prepara i destinatari
+        const recipients = subscribers.map(sub => ({
+          email: sub.email,
+          name: sub.nome || undefined
+        }));
+
+        // Invia email
+        await brevo.sendTransactionalEmail({
+          to: recipients,
+          subject,
+          htmlContent
+        });
+
+        sentCount = recipients.length;
+        console.log(`[${new Date().toISOString()}] Email inviata con successo a ${sentCount} iscritti per l'immobile: ${property.titolo}`);
+
+      } catch (brevoError: any) {
+        console.error("Errore Brevo durante l'invio notifica immobile:", brevoError);
+        errors.push(brevoError.message || "Errore sconosciuto");
+        errorCount = subscribers.length;
+
+        // Se Brevo non è configurato o c'è un errore critico
+        if (brevoError.message?.includes("non configurata")) {
+          return res.status(503).json({ 
+            message: "Servizio email non configurato",
+            error: "BREVO_API_KEY non configurata" 
+          });
+        }
+
+        return res.status(500).json({ 
+          message: "Errore nell'invio delle email",
+          sent: 0,
+          failed: errorCount,
+          errors 
+        });
+      }
+
+      res.json({ 
+        ok: true,
+        message: `Email inviata a ${sentCount} iscritti`,
+        sent: sentCount,
+        failed: errorCount
+      });
+
+    } catch (error: any) {
+      console.error("Error in notify-listing endpoint:", error);
       res.status(500).json({ 
         message: "Errore nel processo di notifica",
         error: error.message 

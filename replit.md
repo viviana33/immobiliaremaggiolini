@@ -73,6 +73,22 @@ Preferred communication style: Simple, everyday language.
       - **Behavior**: Calls PUT `/api/subscribe` to add missing flag, shows success message, card disappears after addition
       - **URL Integration**: Brevo DOI redirect includes email parameter (`/preferenze?confirmed=true&email=...`) for auto-load
       - **Implementation**: Uses window.location.search for query params, React state management for conditional rendering
+  - **Property Listing Notifications** (Step 7.5, October 2025): Automatic email notifications for new available properties
+    - **Backend**:
+      - `getConfirmedListingSubscribers()` in storage: Retrieves confirmed subscribers with `new_listings=true`
+      - POST `/api/admin/notify-listing`: Protected endpoint to send emails about available properties to listing subscribers
+      - **Rate Limiting**: 1 notification per property every 30 minutes to prevent spam
+      - **Email Template**: Property details with cover image, price, size, rooms, bathrooms, description excerpt, call-to-action link
+      - **Automatic Trigger**: Notifications sent when:
+        - New property created with status 'disponibile' (POST `/api/admin/properties`)
+        - Existing property status changes to 'disponibile' (PUT `/api/admin/properties/:id`)
+      - **Non-blocking**: Notification calls are asynchronous and don't block property creation/update responses
+      - **Brevo Integration**: Uses `sendTransactionalEmail()` with graceful error handling
+    - **Implementation Details**:
+      - Email includes: property title, type, zone, formatted price, cover image, description, property features (m², rooms, bathrooms)
+      - Link to property detail page (`/immobili/:slug`)
+      - Preferences management link in footer
+      - Logs sent count and errors for monitoring
 - **Type Safety**: Zod schemas generated from Drizzle, shared types via `/shared` directory, TypeScript strict mode.
 - **Database Migrations**: Managed via Drizzle Kit.
 
