@@ -8,6 +8,7 @@ import { uploadService } from "./uploadService";
 import { insertSubscriptionSchema, updateSubscriptionSchema, insertPropertySchema, propertyFiltersSchema, insertPostSchema, postFiltersSchema, insertLeadSchema } from "@shared/schema";
 import { getBrevoService } from "./brevoService";
 import { registerSubscriptionConfirmRoutes } from "./routes-subscription-confirm";
+import { getAdminLeadNotificationTemplate, getUserLeadConfirmationTemplate } from "./emailTemplates";
 import crypto from "crypto";
 
 export async function registerRoutes(app: Express): Promise<Server> {
@@ -79,6 +80,40 @@ export async function registerRoutes(app: Express): Promise<Server> {
       const lead = await storage.createLead(leadData);
       
       console.log(`[LEAD] Nuovo contatto ricevuto - ID: ${lead.id}, Email: ${lead.email}, Fonte: ${lead.fonte || 'N/A'}`);
+      
+      // Invio email (non bloccante - se fallisce il lead è comunque salvato)
+      const adminEmail = process.env.ADMIN_EMAIL;
+      
+      if (adminEmail) {
+        try {
+          const brevo = getBrevoService();
+          
+          // 1. Email all'agenzia con i dettagli del lead
+          await brevo.sendTransactionalEmail({
+            to: [{ email: adminEmail, name: "Amministrazione Maggiolini" }],
+            subject: `🏠 Nuovo Lead: ${lead.nome}`,
+            htmlContent: getAdminLeadNotificationTemplate(lead)
+          });
+          
+          console.log(`[LEAD-EMAIL] Email di notifica inviata all'admin: ${adminEmail}`);
+          
+          // 2. Email di cortesia all'utente
+          await brevo.sendTransactionalEmail({
+            to: [{ email: lead.email, name: lead.nome }],
+            subject: "Abbiamo ricevuto il tuo messaggio - Immobiliare Maggiolini",
+            htmlContent: getUserLeadConfirmationTemplate(lead.nome)
+          });
+          
+          console.log(`[LEAD-EMAIL] Email di conferma inviata all'utente: ${lead.email}`);
+          
+        } catch (emailError: any) {
+          // Log dell'errore ma non blocchiamo la risposta
+          console.error(`[LEAD-EMAIL] Errore invio email per lead ${lead.id}:`, emailError.message);
+          console.error("[LEAD-EMAIL] Stack trace:", emailError.stack);
+        }
+      } else {
+        console.warn("[LEAD-EMAIL] ADMIN_EMAIL non configurata - email di notifica non inviate");
+      }
       
       return res.status(200).json({
         success: true,
