@@ -52,7 +52,9 @@ export default function SubscriptionBox() {
       return response.json();
     },
     onSuccess: (data, variables) => {
-      setLocation(`/grazie?lead=ok&source=blog&email=${encodeURIComponent(variables.email)}`);
+      const blogUpdates = variables.blogUpdates ?? true;
+      const newListings = variables.newListings ?? false;
+      setLocation(`/grazie?lead=ok&source=blog&email=${encodeURIComponent(variables.email)}&blogUpdates=${blogUpdates}&newListings=${newListings}`);
     },
     onError: (error: any) => {
       setSubmitStatus("error");

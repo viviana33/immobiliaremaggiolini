@@ -9,7 +9,13 @@ import { CheckCircle2, Mail, Home, Loader2 } from "lucide-react";
 
 export default function Grazie() {
   const [, setLocation] = useLocation();
-  const [params, setParams] = useState<{lead?: string, source?: string, email?: string}>({});
+  const [params, setParams] = useState<{
+    lead?: string, 
+    source?: string, 
+    email?: string,
+    blogUpdates?: boolean,
+    newListings?: boolean
+  }>({});
   const [showUpgrade, setShowUpgrade] = useState(false);
   const [upgradeTarget, setUpgradeTarget] = useState<"newListings" | "blogUpdates" | null>(null);
   const [upgradeSuccess, setUpgradeSuccess] = useState(false);
@@ -19,25 +25,27 @@ export default function Grazie() {
     const lead = searchParams.get("lead") || undefined;
     const source = searchParams.get("source") || undefined;
     const email = searchParams.get("email") || undefined;
+    const blogUpdates = searchParams.get("blogUpdates") === "true";
+    const newListings = searchParams.get("newListings") === "true";
     
-    setParams({ lead, source, email });
+    setParams({ lead, source, email, blogUpdates, newListings });
 
-    // Determina se mostrare l'invito a sottoscrivere l'altra lista
-    if (lead === "ok" && source) {
-      if (source === "footer") {
-        // Footer sottoscrive solo blogUpdates, offri newListings
+    // Determina se mostrare l'invito a sottoscrivere l'altra lista in base alle preferenze correnti
+    if (lead === "ok" && email) {
+      // Se ha solo blogUpdates, offri newListings
+      if (blogUpdates && !newListings) {
         setShowUpgrade(true);
         setUpgradeTarget("newListings");
-      } else if (source === "blog") {
-        // Blog può sottoscrivere solo blogUpdates o entrambi
-        // Assumiamo che se viene da blog senza newListings, offriamo newListings
+      }
+      // Se ha solo newListings, offri blogUpdates
+      else if (!blogUpdates && newListings) {
         setShowUpgrade(true);
-        setUpgradeTarget("newListings");
-      } else if (source === "contact_form") {
-        // Contact form può avere varie combinazioni
-        // Per ora offriamo sempre newListings come upgrade generico
-        setShowUpgrade(true);
-        setUpgradeTarget("newListings");
+        setUpgradeTarget("blogUpdates");
+      }
+      // Se ha entrambi o nessuno dei due, non mostrare upgrade
+      else {
+        setShowUpgrade(false);
+        setUpgradeTarget(null);
       }
     }
   }, []);

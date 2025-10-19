@@ -83,7 +83,9 @@ export default function ContactForm({ source, contextId }: ContactFormProps) {
           });
           
           // Redirect a pagina grazie con parametri
-          setLocation(`/grazie?lead=ok&source=contact_form&email=${encodeURIComponent(variables.email)}`);
+          const blogUpdates = variables.blogUpdates ?? false;
+          const newListings = variables.newListings ?? false;
+          setLocation(`/grazie?lead=ok&source=contact_form&email=${encodeURIComponent(variables.email)}&blogUpdates=${blogUpdates}&newListings=${newListings}`);
         } catch (subscribeError) {
           console.error("Errore subscription:", subscribeError);
           // Se la subscription fallisce, mostra solo il toast

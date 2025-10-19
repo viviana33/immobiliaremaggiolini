@@ -24,7 +24,7 @@ export default function Footer() {
       return response.json();
     },
     onSuccess: (data, emailToSubmit) => {
-      setLocation(`/grazie?lead=ok&source=footer&email=${encodeURIComponent(emailToSubmit)}`);
+      setLocation(`/grazie?lead=ok&source=footer&email=${encodeURIComponent(emailToSubmit)}&blogUpdates=true&newListings=false`);
     },
     onError: (error: any) => {
       setSubmitStatus("error");
