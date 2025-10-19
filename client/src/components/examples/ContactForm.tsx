@@ -4,7 +4,7 @@ import { Toaster } from "@/components/ui/toaster";
 export default function ContactFormExample() {
   return (
     <div className="p-8 max-w-2xl">
-      <ContactForm />
+      <ContactForm source="contatti" />
       <Toaster />
     </div>
   );
