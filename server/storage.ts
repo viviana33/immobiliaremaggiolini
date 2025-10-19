@@ -7,6 +7,7 @@ import {
   posts,
   postsImages,
   subscriptions,
+  leads,
   type User, 
   type InsertUser,
   type Property,
@@ -20,7 +21,9 @@ import {
   type InsertPostImage,
   type PostFilters,
   type Subscription,
-  type InsertSubscription
+  type InsertSubscription,
+  type Lead,
+  type InsertLead
 } from "@shared/schema";
 
 export interface PaginatedProperties {
@@ -78,6 +81,8 @@ export interface IStorage {
   getConfirmedListingSubscribers(): Promise<Subscription[]>;
   createSubscription(subscription: InsertSubscription): Promise<Subscription>;
   updateSubscription(email: string, subscription: Partial<Subscription>): Promise<Subscription | undefined>;
+  
+  createLead(lead: InsertLead): Promise<Lead>;
 }
 
 export class DbStorage implements IStorage {
@@ -432,6 +437,14 @@ export class DbStorage implements IStorage {
       .where(eq(subscriptions.email, email))
       .returning();
     return updated;
+  }
+
+  async createLead(insertLead: InsertLead): Promise<Lead> {
+    const [lead] = await db
+      .insert(leads)
+      .values(insertLead)
+      .returning();
+    return lead;
   }
 }
 

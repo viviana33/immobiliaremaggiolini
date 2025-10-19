@@ -1,6 +1,9 @@
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { z } from "zod";
+import { useMutation } from "@tanstack/react-query";
+import { apiRequest } from "@/lib/queryClient";
+import { useToast } from "@/hooks/use-toast";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
@@ -28,6 +31,7 @@ const contactFormSchema = z.object({
   preferenzaContatto: z.enum(["email", "telefono", "whatsapp"], {
     required_error: "Seleziona una preferenza di contatto",
   }),
+  website: z.string().optional(),
 });
 
 type ContactFormData = z.infer<typeof contactFormSchema>;
@@ -38,6 +42,8 @@ interface ContactFormProps {
 }
 
 export default function ContactForm({ source, contextId }: ContactFormProps) {
+  const { toast } = useToast();
+  
   const form = useForm<ContactFormData>({
     resolver: zodResolver(contactFormSchema),
     defaultValues: {
@@ -47,16 +53,54 @@ export default function ContactForm({ source, contextId }: ContactFormProps) {
       messaggio: "",
       privacy: false,
       preferenzaContatto: "email",
+      website: "",
+    },
+  });
+
+  const submitLead = useMutation({
+    mutationFn: async (data: any) => {
+      const response = await apiRequest("POST", "/api/lead", data);
+      return await response.json();
+    },
+    onSuccess: (data) => {
+      toast({
+        title: "Messaggio inviato!",
+        description: data.message || "Ti contatteremo presto.",
+      });
+      form.reset();
+    },
+    onError: (error: any) => {
+      toast({
+        variant: "destructive",
+        title: "Errore",
+        description: error.message || "Si è verificato un errore. Riprova più tardi.",
+      });
     },
   });
 
   const onSubmit = (data: ContactFormData) => {
-    const submissionData = {
-      ...data,
-      source,
-      ...(contextId && { contextId }),
+    let messaggioCompleto = data.messaggio;
+    
+    if (data.telefono) {
+      messaggioCompleto += `\n\nTelefono: ${data.telefono}`;
+    }
+    
+    messaggioCompleto += `\nPreferenza di contatto: ${data.preferenzaContatto}`;
+    
+    if (contextId) {
+      messaggioCompleto += `\nRif. ID: ${contextId}`;
+    }
+    
+    const leadData = {
+      nome: data.nome,
+      email: data.email,
+      messaggio: messaggioCompleto,
+      fonte: source,
+      newsletter: false,
+      website: data.website || "",
     };
-    console.log("Form submitted:", submissionData);
+    
+    submitLead.mutate(leadData);
   };
 
   return (
@@ -219,12 +263,31 @@ export default function ContactForm({ source, contextId }: ContactFormProps) {
             )}
           />
 
+          <FormField
+            control={form.control}
+            name="website"
+            render={({ field }) => (
+              <FormItem className="absolute opacity-0 pointer-events-none" aria-hidden="true">
+                <FormLabel>Website</FormLabel>
+                <FormControl>
+                  <Input
+                    type="text"
+                    tabIndex={-1}
+                    autoComplete="off"
+                    {...field}
+                  />
+                </FormControl>
+              </FormItem>
+            )}
+          />
+
           <Button
             type="submit"
             className="w-full"
+            disabled={submitLead.isPending}
             data-testid="button-submit-contact"
           >
-            Invia Messaggio
+            {submitLead.isPending ? "Invio in corso..." : "Invia Messaggio"}
           </Button>
         </form>
       </Form>

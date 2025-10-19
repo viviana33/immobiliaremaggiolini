@@ -85,3 +85,19 @@ export function subscriptionRateLimit() {
     }
   });
 }
+
+// Rate limiter specifico per lead/contatti (3 richieste ogni 10 minuti per IP)
+export function leadRateLimit() {
+  return rateLimit({
+    windowMs: 10 * 60 * 1000, // 10 minuti
+    maxRequests: 3,
+    message: "Troppe richieste di contatto. Riprova tra qualche minuto.",
+    keyGenerator: (req: Request) => {
+      const forwarded = req.headers['x-forwarded-for'];
+      const ip = forwarded 
+        ? (Array.isArray(forwarded) ? forwarded[0] : forwarded.split(',')[0])
+        : req.socket.remoteAddress || 'unknown';
+      return `lead:${ip}`;
+    }
+  });
+}

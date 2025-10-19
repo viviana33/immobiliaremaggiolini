@@ -2,10 +2,10 @@ import type { Express } from "express";
 import { createServer, type Server } from "http";
 import { storage } from "./storage";
 import { requireAdmin } from "./middleware/auth";
-import { subscriptionRateLimit } from "./middleware/rateLimit";
+import { subscriptionRateLimit, leadRateLimit } from "./middleware/rateLimit";
 import multer from "multer";
 import { uploadService } from "./uploadService";
-import { insertSubscriptionSchema, updateSubscriptionSchema, insertPropertySchema, propertyFiltersSchema, insertPostSchema, postFiltersSchema } from "@shared/schema";
+import { insertSubscriptionSchema, updateSubscriptionSchema, insertPropertySchema, propertyFiltersSchema, insertPostSchema, postFiltersSchema, insertLeadSchema } from "@shared/schema";
 import { getBrevoService } from "./brevoService";
 import { registerSubscriptionConfirmRoutes } from "./routes-subscription-confirm";
 import crypto from "crypto";
@@ -44,6 +44,62 @@ export async function registerRoutes(app: Express): Promise<Server> {
 
   app.get("/api/auth/status", (req, res) => {
     res.json({ isAuthenticated: !!req.session.isAdmin });
+  });
+
+  // Lead/Contact form endpoint
+  app.post("/api/lead", leadRateLimit(), async (req, res) => {
+    try {
+      // Honeypot check - se il campo "website" è compilato, è probabilmente un bot
+      if (req.body.website) {
+        console.log("[HONEYPOT] Bot rilevato:", req.body);
+        return res.status(400).json({
+          success: false,
+          message: "Richiesta non valida"
+        });
+      }
+
+      // Rimuovi il campo honeypot prima della validazione
+      const { website, ...leadPayload } = req.body;
+
+      // Valida i dati con Zod
+      const validatedData = insertLeadSchema.parse(leadPayload);
+      
+      // Estrai IP del client
+      const forwarded = req.headers['x-forwarded-for'];
+      const clientIp = forwarded 
+        ? (Array.isArray(forwarded) ? forwarded[0] : forwarded.split(',')[0])
+        : req.socket.remoteAddress || 'unknown';
+      
+      // Salva lead nel database
+      const leadData = {
+        ...validatedData,
+        ip: clientIp,
+      };
+      
+      const lead = await storage.createLead(leadData);
+      
+      console.log(`[LEAD] Nuovo contatto ricevuto - ID: ${lead.id}, Email: ${lead.email}, Fonte: ${lead.fonte || 'N/A'}`);
+      
+      return res.status(200).json({
+        success: true,
+        message: "Messaggio inviato con successo. Ti contatteremo presto!"
+      });
+    } catch (error: any) {
+      console.error("Errore salvataggio lead:", error);
+      
+      if (error.name === 'ZodError') {
+        return res.status(400).json({
+          success: false,
+          message: "Dati non validi",
+          errors: error.errors
+        });
+      }
+      
+      return res.status(500).json({
+        success: false,
+        message: "Errore nell'invio del messaggio. Riprova più tardi."
+      });
+    }
   });
 
   app.post("/api/subscribe", subscriptionRateLimit(), async (req, res) => {
