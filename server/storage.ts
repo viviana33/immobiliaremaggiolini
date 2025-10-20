@@ -86,6 +86,12 @@ export interface IStorage {
   
   getAvailablePropertySlugs(): Promise<string[]>;
   getPublishedPostSlugs(): Promise<string[]>;
+  
+  getOldSoldOrRentedProperties(daysOld: number): Promise<Property[]>;
+  getOrphanPropertyImages(): Promise<PropertyImage[]>;
+  getOrphanPostImages(): Promise<PostImage[]>;
+  deletePropertyImages(ids: string[]): Promise<void>;
+  deletePostImages(ids: string[]): Promise<void>;
 }
 
 export class DbStorage implements IStorage {
@@ -466,6 +472,54 @@ export class DbStorage implements IStorage {
       .where(eq(posts.stato, "pubblicato"))
       .orderBy(desc(posts.publishedAt));
     return publishedPosts.map(p => p.slug);
+  }
+
+  async getOldSoldOrRentedProperties(daysOld: number): Promise<Property[]> {
+    const cutoffDate = new Date();
+    cutoffDate.setDate(cutoffDate.getDate() - daysOld);
+
+    return db
+      .select()
+      .from(properties)
+      .where(
+        and(
+          or(
+            eq(properties.stato, "venduto"),
+            eq(properties.stato, "affittato")
+          ),
+          lte(properties.updatedAt, cutoffDate)
+        )
+      );
+  }
+
+  async getOrphanPropertyImages(): Promise<PropertyImage[]> {
+    const allImages = await db.select().from(propertiesImages);
+    const allPropertyIds = (await db.select({ id: properties.id }).from(properties)).map(p => p.id);
+    
+    return allImages.filter(img => !allPropertyIds.includes(img.propertyId));
+  }
+
+  async getOrphanPostImages(): Promise<PostImage[]> {
+    const allImages = await db.select().from(postsImages);
+    const allPostIds = (await db.select({ id: posts.id }).from(posts)).map(p => p.id);
+    
+    return allImages.filter(img => !allPostIds.includes(img.postId));
+  }
+
+  async deletePropertyImages(ids: string[]): Promise<void> {
+    if (ids.length === 0) return;
+    
+    for (const id of ids) {
+      await db.delete(propertiesImages).where(eq(propertiesImages.id, id));
+    }
+  }
+
+  async deletePostImages(ids: string[]): Promise<void> {
+    if (ids.length === 0) return;
+    
+    for (const id of ids) {
+      await db.delete(postsImages).where(eq(postsImages.id, id));
+    }
   }
 }
 
