@@ -1,5 +1,5 @@
 import { Link, useLocation } from "wouter";
-import { Building2, Mail, Phone, MapPin, Facebook, Instagram, Linkedin, Loader2, CheckCircle2, AlertCircle } from "lucide-react";
+import { Building2, Mail, Phone, MapPin, Instagram, Loader2, CheckCircle2, AlertCircle } from "lucide-react";
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
 import { Alert, AlertDescription } from "@/components/ui/alert";
@@ -58,15 +58,16 @@ export default function Footer() {
               Un rapporto di fiducia che dura nel tempo.
             </p>
             <div className="flex gap-3 pt-2">
-              <Button variant="ghost" size="icon" className="hover-elevate" data-testid="button-social-facebook">
-                <Facebook className="w-5 h-5" />
-              </Button>
-              <Button variant="ghost" size="icon" className="hover-elevate" data-testid="button-social-instagram">
-                <Instagram className="w-5 h-5" />
-              </Button>
-              <Button variant="ghost" size="icon" className="hover-elevate" data-testid="button-social-linkedin">
-                <Linkedin className="w-5 h-5" />
-              </Button>
+              <a 
+                href="https://www.instagram.com/immobiliaremaggiolini?igsh=NGx4ZHpwbWlscDV2" 
+                target="_blank" 
+                rel="noopener noreferrer"
+                aria-label="Seguici su Instagram"
+              >
+                <Button variant="ghost" size="icon" className="hover-elevate" data-testid="button-social-instagram">
+                  <Instagram className="w-5 h-5" />
+                </Button>
+              </a>
             </div>
           </div>
 
