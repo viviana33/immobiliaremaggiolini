@@ -572,6 +572,19 @@ export async function registerRoutes(app: Express): Promise<Server> {
     }
   });
 
+  app.post("/api/admin/properties/:id/images/restore", requireAdmin, async (req, res) => {
+    try {
+      const updatedImages = await storage.regeneratePropertyImageUrls(req.params.id);
+      res.json({ 
+        message: `${updatedImages.length} immagini ripristinate con successo`,
+        images: updatedImages 
+      });
+    } catch (error) {
+      console.error("Error restoring property images:", error);
+      res.status(500).json({ message: "Errore nel ripristino delle immagini" });
+    }
+  });
+
   const uploadPostImage = multer({
     storage: multer.memoryStorage(),
     limits: {
@@ -1000,6 +1013,19 @@ export async function registerRoutes(app: Express): Promise<Server> {
     } catch (error) {
       console.error("Error reordering post images:", error);
       res.status(500).json({ message: "Errore nell'aggiornamento dell'ordine" });
+    }
+  });
+
+  app.post("/api/admin/posts/:id/images/restore", requireAdmin, async (req, res) => {
+    try {
+      const updatedImages = await storage.regeneratePostImageUrls(req.params.id);
+      res.json({ 
+        message: `${updatedImages.length} immagini ripristinate con successo`,
+        images: updatedImages 
+      });
+    } catch (error) {
+      console.error("Error restoring post images:", error);
+      res.status(500).json({ message: "Errore nel ripristino delle immagini" });
     }
   });
 
