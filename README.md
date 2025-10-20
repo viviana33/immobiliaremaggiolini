@@ -1,5 +1,226 @@
 # Progetto Maggiolini
 
+## QA Checklist Completa
+
+### Immobili
+
+#### CRUD
+- [ ] Creazione nuovo immobile con tutti i campi obbligatori
+- [ ] Lettura/visualizzazione dettagli immobile
+- [ ] Modifica immobile esistente
+- [ ] Eliminazione immobile (soft delete consigliato)
+
+#### Filtri
+- [ ] Filtro per tipo (vendita/affitto)
+- [ ] Filtro per categoria
+- [ ] Filtro per prezzo (min/max)
+- [ ] Filtro per superficie (min/max)
+- [ ] Filtro per numero locali
+- [ ] Filtro per città
+- [ ] Combinazione multipla filtri
+
+#### Ordinamento
+- [ ] Ordinamento per prezzo (crescente/decrescente)
+- [ ] Ordinamento per superficie
+- [ ] Ordinamento per data pubblicazione
+- [ ] Ordinamento per featured/hot
+
+#### Status
+- [ ] Cambio status: available → sold
+- [ ] Cambio status: available → rented
+- [ ] Cambio status: sold/rented → available
+- [ ] Featured flag (evidenziazione)
+- [ ] Hot flag (occasione)
+- [ ] Visibilità corretta in base allo status
+
+#### Gallery
+- [ ] Upload multiplo immagini
+- [ ] Riordinamento immagini (drag & drop o manuale)
+- [ ] Eliminazione singola immagine
+- [ ] Immagine principale selezionabile
+- [ ] Visualizzazione gallery in dettaglio immobile
+- [ ] Ottimizzazione e resize automatico immagini
+
+#### Video
+- [ ] Upload video (se supportato locale)
+- [ ] URL video esterno (YouTube/Vimeo)
+- [ ] Visualizzazione video in dettaglio immobile
+- [ ] Fallback se video non disponibile
+
+---
+
+### Blog
+
+#### Bozza → Publish
+- [ ] Creazione post come bozza (draft)
+- [ ] Salvataggio bozza senza pubblicazione
+- [ ] Pubblicazione bozza → post pubblico
+- [ ] Cambio da published → draft
+- [ ] Verifica visibilità: draft non visibile pubblicamente
+- [ ] Verifica visibilità: published visibile pubblicamente
+
+#### Editor
+- [ ] Editor Markdown/Rich text funzionante
+- [ ] Anteprima formattazione
+- [ ] Salvataggio automatico (se implementato)
+- [ ] Inserimento link
+- [ ] Formattazione testo (bold, italic, liste, ecc.)
+
+#### Immagini
+- [ ] Upload immagine featured
+- [ ] Upload immagini nel contenuto
+- [ ] Visualizzazione corretta immagini nel post
+- [ ] Ottimizzazione immagini
+
+#### Slug
+- [ ] Generazione automatica slug da titolo
+- [ ] Slug unico (no duplicati)
+- [ ] Slug modificabile manualmente
+- [ ] URL del post corretto con slug
+
+#### Notify
+- [ ] Pubblicazione nuovo post → invio notifica iscritti newsletter blog
+- [ ] Notifica non inviata per bozze
+- [ ] Notifica non inviata per aggiornamenti post esistente
+- [ ] Template email notifica corretto
+- [ ] Link al post funzionante nella email
+
+---
+
+### Newsletter
+
+#### Opt-in
+- [ ] Iscrizione da form /contatti con checkbox newsletter
+- [ ] Iscrizione da dettaglio immobile con checkbox newsletter
+- [ ] Iscrizione da post blog con checkbox newsletter
+- [ ] Double opt-in (se implementato)
+- [ ] Conferma iscrizione (messaggio/email)
+- [ ] Email di benvenuto (se prevista)
+
+#### Preferenze
+- [ ] Pagina /preferenze accessibile tramite link da email
+- [ ] Modifica preferenze immobili (flag attivo/disattivo)
+- [ ] Modifica preferenze blog (flag attivo/disattivo)
+- [ ] Salvataggio preferenze corretto
+- [ ] Unsubscribe totale funzionante
+- [ ] Link unsubscribe in ogni email inviata
+
+#### Invii
+- [ ] Nuovo post pubblicato → invio a iscritti blog
+- [ ] Nuovo immobile available → invio a iscritti immobili (se implementato)
+- [ ] Invio solo a utenti con flag preferenza attivo
+- [ ] Nessun invio a utenti unsubscribed
+- [ ] Template email corretto e responsive
+- [ ] Personalizzazione contenuto email (nome, link, etc.)
+
+---
+
+### Lead (Gestione Contatti)
+
+#### Contatti da 3 Sorgenti
+- [ ] Contatto da form /contatti → salvataggio lead con source "contact"
+- [ ] Contatto da dettaglio immobile → salvataggio lead con source "property" e propertyId
+- [ ] Contatto da post blog → salvataggio lead con source "blog" e postId
+- [ ] Context corretto per ogni tipo di contatto
+- [ ] Tutti i campi necessari salvati (nome, email, messaggio, telefono)
+
+#### Email In
+- [ ] Ricezione email da form /contatti
+- [ ] Ricezione email da immobile con contesto immobile
+- [ ] Ricezione email da post con contesto post
+- [ ] Template email ricevute corretto
+- [ ] Indirizzo destinatario corretto (admin/proprietario)
+
+#### Email Out
+- [ ] Conferma invio al cliente (auto-reply)
+- [ ] Email contiene recap del messaggio inviato
+- [ ] Email contiene link al contesto (immobile/post se applicabile)
+- [ ] From address corretto e autenticato
+- [ ] Template responsive e professionale
+
+---
+
+### SEO
+
+#### Sitemap
+- [ ] Sitemap XML generata correttamente
+- [ ] Sitemap accessibile a /sitemap.xml
+- [ ] Sitemap contiene tutte le pagine pubbliche
+- [ ] Sitemap contiene immobili available
+- [ ] Sitemap contiene post blog pubblicati
+- [ ] Sitemap con lastmod e priority corretti
+- [ ] Sitemap registrata in Google Search Console
+
+#### RSS
+- [ ] Feed RSS generato correttamente
+- [ ] Feed accessibile a /rss.xml o /feed
+- [ ] Feed contiene ultimi post blog
+- [ ] Feed con metadata corretti (title, description, pubDate)
+- [ ] Feed validato (https://validator.w3.org/feed/)
+
+#### Meta/OG (Open Graph)
+- [ ] Meta title univoco per ogni pagina
+- [ ] Meta description univoca per ogni pagina
+- [ ] OG tags per condivisioni social (og:title, og:description, og:image)
+- [ ] OG:image presente e corretto
+- [ ] Twitter Card tags (se implementati)
+- [ ] Canonical URL corretto per ogni pagina
+
+#### JSON-LD (Structured Data)
+- [ ] Schema.org RealEstateAgent/Organization per homepage
+- [ ] Schema.org Product/Offer per immobili
+- [ ] Schema.org BlogPosting per post blog
+- [ ] Structured data validati (https://search.google.com/test/rich-results)
+- [ ] BreadcrumbList schema (se implementato)
+
+---
+
+### Accessibilità (A11y)
+
+#### Note Principali
+- [ ] Contrasto colori sufficiente (WCAG AA minimum)
+- [ ] Testo alternativo per tutte le immagini
+- [ ] Focus visibile su elementi interattivi
+- [ ] Navigazione da tastiera funzionante
+- [ ] Form con label corrette e associate
+- [ ] Messaggi di errore chiari e leggibili
+- [ ] Struttura heading gerarchica (h1 → h2 → h3)
+- [ ] ARIA labels dove necessario
+- [ ] No text in images (o alt text completo)
+
+---
+
+### Performance
+
+#### Note Principali
+- [ ] Immagini ottimizzate e compresse
+- [ ] Lazy loading immagini
+- [ ] Caching browser configurato
+- [ ] Minificazione CSS/JS
+- [ ] Dimensioni bundle ragionevoli
+- [ ] First Contentful Paint < 2s
+- [ ] Time to Interactive < 4s
+- [ ] Lighthouse score > 80 (performance)
+- [ ] Database queries ottimizzate (no N+1)
+
+---
+
+### Cron Jobs
+
+#### Cleanup Immagini Hot
+- [ ] Endpoint /api/cron/cleanup-hot protetto con token
+- [ ] Token validato correttamente (da query o header)
+- [ ] Richiesta senza token → 401 Unauthorized
+- [ ] Richiesta con token errato → 401 Unauthorized
+- [ ] Richiesta con token corretto → 200 OK
+- [ ] Job elimina immagini immobili sold/rented > 30 giorni
+- [ ] Job elimina immagini orfane (no immobile associato)
+- [ ] Job eseguito secondo schedule configurato
+- [ ] Log/verifica esecuzione job disponibile
+- [ ] Configurazione Vercel cron job completa
+
+---
+
 ## Test Fase 7
 
 1. **Iscrizione da post (flag immobili)**: Verificare che un utente possa iscriversi a ricevere notifiche direttamente da un post, selezionando il flag per gli immobili.
