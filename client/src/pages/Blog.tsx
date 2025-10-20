@@ -203,7 +203,7 @@ export default function Blog() {
               placeholder="Cerca per titolo o sottotitolo..."
               value={searchInput}
               onChange={(e) => setSearchInput(e.target.value)}
-              className="pl-10 pr-20"
+              className="pl-10 pr-10"
               data-testid="input-search-posts"
             />
             {searchInput && (
@@ -212,20 +212,12 @@ export default function Blog() {
                 variant="ghost"
                 size="sm"
                 onClick={clearSearch}
-                className="absolute right-14 top-1/2 -translate-y-1/2 h-7 px-2"
+                className="absolute right-1 top-1/2 -translate-y-1/2 h-7 px-2"
                 data-testid="button-clear-search"
               >
                 <X className="h-4 w-4" />
               </Button>
             )}
-            <Button
-              type="submit"
-              size="sm"
-              className="absolute right-1 top-1/2 -translate-y-1/2"
-              data-testid="button-submit-search"
-            >
-              Cerca
-            </Button>
           </form>
 
           {!isLoading && allCategories.length > 0 && (
