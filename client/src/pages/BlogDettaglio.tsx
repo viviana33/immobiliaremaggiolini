@@ -145,10 +145,11 @@ export default function BlogDettaglio() {
       jsonLd["keywords"] = post.tag.join(', ');
     }
 
-    let scriptTag = document.querySelector('script[type="application/ld+json"]');
+    let scriptTag = document.getElementById('article-schema');
     if (!scriptTag) {
       scriptTag = document.createElement('script');
       scriptTag.setAttribute('type', 'application/ld+json');
+      scriptTag.setAttribute('id', 'article-schema');
       document.head.appendChild(scriptTag);
     }
     scriptTag.textContent = JSON.stringify(jsonLd);
@@ -156,7 +157,7 @@ export default function BlogDettaglio() {
     // Cleanup function per rimuovere i tag quando il componente viene smontato
     return () => {
       document.title = 'Maggiolini Immobiliare';
-      const tagsToRemove = document.querySelectorAll('meta[property^="og:"], meta[property^="article:"], meta[name^="twitter:"], script[type="application/ld+json"]');
+      const tagsToRemove = document.querySelectorAll('meta[property^="og:"], meta[property^="article:"], meta[name^="twitter:"], script[id="article-schema"]');
       tagsToRemove.forEach(tag => tag.remove());
     };
   }, [post]);

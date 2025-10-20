@@ -159,3 +159,26 @@ Preferred communication style: Simple, everyday language.
   - **Update Frequencies**: Daily for listings, weekly for properties/home, monthly for blog posts/static pages
   - **HTTP Headers**: `Content-Type: application/xml; charset=utf-8`
   - **HTML Reference**: `<link rel="sitemap">` tag in `client/index.html` for search engine discovery
+- **JSON-LD Structured Data Schemas** (Step 9.1, October 2025):
+  - **Organization/RealEstateAgent Schema** (Layout-level):
+    - **Component**: `OrganizationSchema.tsx` mounted in `App.tsx` for all public pages
+    - **Script ID**: `organization-schema`
+    - **Type**: `@type: "RealEstateAgent"` (schema.org)
+    - **Fields**: name, description, url, logo, contactPoint (telephone, email, areaServed, availableLanguage), address
+    - **Presence**: All public pages (/, /immobili, /blog, /chi-siamo, /contatti, etc.)
+    - **Purpose**: Establishes site-wide business entity for search engines
+  - **Article Schema** (Blog detail pages):
+    - **Location**: `BlogDettaglio.tsx` via useEffect hook
+    - **Script ID**: `article-schema`
+    - **Type**: `@type: "Article"` (schema.org)
+    - **Fields**: headline, description, author (Person), datePublished, dateModified, publisher (Organization), image, articleSection, keywords
+    - **Presence**: Only on `/blog/:slug` pages for published posts
+    - **Cleanup**: Removed on component unmount (navigation away from blog post)
+  - **Property Schema** (Property detail pages):
+    - **Location**: `ImmobileDettaglio.tsx` via useEffect hook
+    - **Script ID**: `property-schema`
+    - **Type**: `@type: "Product"` (for vendita) or `@type: "RentAction"` (for affitto)
+    - **Fields**: name, description, url, image, offers (Offer with price, priceCurrency, availability, seller), or priceSpecification (UnitPriceSpecification for rentals), additionalProperty array (area, rooms, bathrooms, energy class, floor, zone)
+    - **Presence**: Only on `/immobile/:slug` pages for properties
+    - **Cleanup**: Removed on component unmount (navigation away from property detail)
+  - **Schema Isolation**: Each schema uses a unique script ID to prevent conflicts; multiple schemas coexist on detail pages (e.g., Organization + Article on blog posts, Organization + Property on property details)
