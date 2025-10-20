@@ -50,6 +50,9 @@ Preferred communication style: Simple, everyday language.
 - **JSON-LD Structured Data**: Implements schemas for `RealEstateAgent` (site-wide), `Article` (blog posts), and `Product`/`RentAction` (property details) to enhance search engine understanding.
 - **Meta Tags Helper**: Centralized SEO utility (`client/src/lib/seo.ts`) with `usePageMeta` hook for setting default meta tags, Open Graph tags, and Twitter Cards. Applied to all pages including Home, Chi Siamo, Contatti, Immobili, Blog, Grazie, Preferenze, Not Found, and Proprieta. Individual property and blog post pages have custom meta tags with dynamic content.
 
+### Analytics & Monitoring
+- **Vercel Analytics**: Integrated for privacy-friendly web analytics. No cookies, GDPR-compliant, lightweight tracking of page views and web vitals. Configured in `client/src/App.tsx`.
+
 ## External Dependencies
 
 ### Core & Runtime
@@ -75,3 +78,6 @@ Preferred communication style: Simple, everyday language.
 
 ### SEO
 - Implemented with sitemap.xml and JSON-LD structured data.
+
+### Analytics
+- `@vercel/analytics` (privacy-friendly, GDPR-compliant, no cookies).
