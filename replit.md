@@ -143,3 +143,19 @@ Preferred communication style: Simple, everyday language.
 - `sharp` (image processing), `@aws-sdk/client-s3` (Cloudflare R2), `multer` (file uploads).
 - **Dual-Storage Architecture**: Cloudflare R2 for cold storage, Cloudinary for hot delivery with `f_auto,q_auto,w_1600` transformations.
 - **Image Limits**: Cover images 1KB min, 8MB max; JPEG/PNG/WebP/GIF; auto-resize to 2560px max longest side.
+
+### SEO & Discoverability
+- **Sitemap XML** (Step 9.0, October 2025):
+  - **Endpoint**: GET `/api/sitemap.xml` (with redirect from `/sitemap.xml` in production)
+  - **Storage Methods**: 
+    - `getAvailablePropertySlugs()`: Returns slugs of all properties with status "disponibile"
+    - `getPublishedPostSlugs()`: Returns slugs of all posts with status "pubblicato"
+  - **Included URLs**:
+    - Static pages: `/` (home), `/immobili`, `/blog`, `/chi-siamo`, `/contatti`
+    - Dynamic property pages: `/immobile/:slug` for each available property
+    - Dynamic blog pages: `/blog/:slug` for each published post
+  - **XML Format**: Standard sitemap.org schema with `<loc>`, `<changefreq>`, `<priority>` tags
+  - **Priorities**: Home (1.0), Properties list (0.9), Blog list (0.8), Property details (0.8), Blog posts (0.7), Static pages (0.7)
+  - **Update Frequencies**: Daily for listings, weekly for properties/home, monthly for blog posts/static pages
+  - **HTTP Headers**: `Content-Type: application/xml; charset=utf-8`
+  - **HTML Reference**: `<link rel="sitemap">` tag in `client/index.html` for search engine discovery

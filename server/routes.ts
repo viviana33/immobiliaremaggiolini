@@ -1370,6 +1370,70 @@ ${rssItems}
     }
   });
 
+  // Redirect da /sitemap.xml a /api/sitemap.xml
+  app.get("/sitemap.xml", (req, res) => {
+    res.redirect(301, '/api/sitemap.xml');
+  });
+
+  // Sitemap XML endpoint
+  app.get("/api/sitemap.xml", async (req, res) => {
+    try {
+      const siteUrl = process.env.REPLIT_DOMAINS 
+        ? `https://${process.env.REPLIT_DOMAINS.split(',')[0]}`
+        : 'https://immobiliare-maggiolini.replit.app';
+
+      // Recupera slug degli immobili disponibili
+      const propertySlugs = await storage.getAvailablePropertySlugs();
+      
+      // Recupera slug dei post pubblicati
+      const postSlugs = await storage.getPublishedPostSlugs();
+
+      // Pagine statiche
+      const staticPages = [
+        { url: '/', priority: '1.0', changefreq: 'weekly' },
+        { url: '/immobili', priority: '0.9', changefreq: 'daily' },
+        { url: '/blog', priority: '0.8', changefreq: 'daily' },
+        { url: '/chi-siamo', priority: '0.7', changefreq: 'monthly' },
+        { url: '/contatti', priority: '0.7', changefreq: 'monthly' },
+      ];
+
+      // Genera URL per immobili
+      const propertyUrls = propertySlugs.map(slug => ({
+        url: `/immobile/${slug}`,
+        priority: '0.8',
+        changefreq: 'weekly'
+      }));
+
+      // Genera URL per blog posts
+      const postUrls = postSlugs.map(slug => ({
+        url: `/blog/${slug}`,
+        priority: '0.7',
+        changefreq: 'monthly'
+      }));
+
+      // Combina tutte le URL
+      const allUrls = [...staticPages, ...propertyUrls, ...postUrls];
+
+      // Genera XML
+      const urlEntries = allUrls.map(({ url, priority, changefreq }) => `  <url>
+    <loc>${siteUrl}${url}</loc>
+    <changefreq>${changefreq}</changefreq>
+    <priority>${priority}</priority>
+  </url>`).join('\n');
+
+      const sitemapXml = `<?xml version="1.0" encoding="UTF-8"?>
+<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">
+${urlEntries}
+</urlset>`;
+
+      res.setHeader('Content-Type', 'application/xml; charset=utf-8');
+      res.send(sitemapXml);
+    } catch (error) {
+      console.error("Error generating sitemap:", error);
+      res.status(500).send('Errore nella generazione del sitemap');
+    }
+  });
+
   const httpServer = createServer(app);
 
   return httpServer;

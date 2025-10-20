@@ -83,6 +83,9 @@ export interface IStorage {
   updateSubscription(email: string, subscription: Partial<Subscription>): Promise<Subscription | undefined>;
   
   createLead(lead: InsertLead): Promise<Lead>;
+  
+  getAvailablePropertySlugs(): Promise<string[]>;
+  getPublishedPostSlugs(): Promise<string[]>;
 }
 
 export class DbStorage implements IStorage {
@@ -445,6 +448,24 @@ export class DbStorage implements IStorage {
       .values(insertLead)
       .returning();
     return lead;
+  }
+
+  async getAvailablePropertySlugs(): Promise<string[]> {
+    const availableProperties = await db
+      .select({ slug: properties.slug })
+      .from(properties)
+      .where(eq(properties.stato, "disponibile"))
+      .orderBy(desc(properties.createdAt));
+    return availableProperties.map(p => p.slug);
+  }
+
+  async getPublishedPostSlugs(): Promise<string[]> {
+    const publishedPosts = await db
+      .select({ slug: posts.slug })
+      .from(posts)
+      .where(eq(posts.stato, "pubblicato"))
+      .orderBy(desc(posts.publishedAt));
+    return publishedPosts.map(p => p.slug);
   }
 }
 
