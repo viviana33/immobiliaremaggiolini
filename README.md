@@ -646,3 +646,437 @@ Se in futuro decidessi di utilizzare un provider diverso da Brevo (es. SendGrid,
 3. **DMARC**: La configurazione rimane identica indipendentemente dal provider
    - Usa sempre `p=none` inizialmente
    - Monitora con `rua=` per almeno 2-4 settimane
+
+---
+
+## Backup e Migrazione in Produzione
+
+### 1. Esportare il Database (Supabase Dump)
+
+#### Metodo 1: Supabase CLI (Consigliato)
+
+**Installazione CLI:**
+```bash
+npm install -g supabase
+```
+
+**Collegamento al progetto:**
+```bash
+supabase link --project-ref TUO_PROJECT_REF
+```
+
+**Esportazione completa (schema + dati):**
+```bash
+supabase db dump --linked -f backup_completo.sql
+```
+
+**Esportazione separata (per flessibilità):**
+
+**Solo schema (struttura tabelle):**
+```bash
+supabase db dump --linked -f schema.sql --schema public
+```
+
+**Solo dati:**
+```bash
+supabase db dump --linked -f data.sql --data-only --use-copy
+```
+
+**Solo ruoli/permessi:**
+```bash
+supabase db dump --linked -f roles.sql --role-only
+```
+
+#### Metodo 2: pg_dump (Alternativa)
+
+**Prerequisiti:**
+- Installare PostgreSQL client sul tuo sistema
+  - **Windows**: [Download PostgreSQL](https://www.enterprisedb.com)
+  - **Mac**: `brew install postgresql`
+  - **Linux**: `sudo apt-get install postgresql-client`
+
+**Ottenere la stringa di connessione:**
+1. Dashboard Supabase → **Project Settings** → **Database**
+2. Tab **Connection String** → copia **Direct Connection**
+3. Formato: `postgresql://postgres.[PROJECT-REF]:[PASSWORD]@aws-0-us-east-1.pooler.supabase.com:5432/postgres`
+
+**Esportazione formato SQL:**
+```bash
+pg_dump "postgresql://postgres.[PROJECT-REF]:[PASSWORD]@aws-0-us-east-1.pooler.supabase.com:5432/postgres" > backup.sql
+```
+
+**Esportazione formato compresso (consigliato per DB grandi):**
+```bash
+pg_dump "postgresql://postgres.[PROJECT-REF]:[PASSWORD]@aws-0-us-east-1.pooler.supabase.com:5432/postgres" -F c -b -v -f backup.dump
+```
+
+**Parametri:**
+- `-F c`: Formato custom compresso
+- `-b`: Include large objects
+- `-v`: Output verbose
+- `-n public`: Solo schema public (se necessario)
+
+#### Metodo 3: Download backup automatici (Dashboard)
+
+Supabase crea backup automatici giornalieri:
+
+1. Dashboard → **Database** → **Backups** → **Scheduled backups**
+2. Clicca **Download** sul backup desiderato
+3. **Disponibilità backup:**
+   - **Pro Plan**: Ultimi 7 giorni
+   - **Team Plan**: Ultimi 14 giorni
+   - **Enterprise**: Fino a 30 giorni
+
+**Nota**: I backup PITR (Point-in-Time Recovery) non sono scaricabili direttamente. Usa CLI o pg_dump per backup manuali.
+
+#### Restore del Database
+
+**Da file SQL:**
+```bash
+psql "postgresql://postgres.[PROJECT-REF]:[PASSWORD]@aws-0-us-east-1.pooler.supabase.com:5432/postgres" < backup.sql
+```
+
+**Da file .dump (formato compresso):**
+```bash
+pg_restore -d "postgresql://postgres.[PROJECT-REF]:[PASSWORD]@aws-0-us-east-1.pooler.supabase.com:5432/postgres" backup.dump
+```
+
+#### Backup Automatizzato (GitHub Actions)
+
+Crea `.github/workflows/backup-db.yml`:
+
+```yaml
+name: Database Backup
+on:
+  schedule:
+    - cron: '0 2 * * *'  # Ogni giorno alle 2:00 AM
+  workflow_dispatch:
+
+jobs:
+  backup:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v3
+      
+      - uses: supabase/setup-cli@v1
+        with:
+          version: latest
+      
+      - name: Backup schema
+        run: supabase db dump --db-url "${{ secrets.SUPABASE_DB_URL }}" -f schema.sql
+      
+      - name: Backup data
+        run: supabase db dump --db-url "${{ secrets.SUPABASE_DB_URL }}" -f data.sql --data-only --use-copy
+      
+      - name: Backup roles
+        run: supabase db dump --db-url "${{ secrets.SUPABASE_DB_URL }}" -f roles.sql --role-only
+      
+      - uses: stefanzweifel/git-auto-commit-action@v4
+        with:
+          commit_message: "Automated DB backup"
+```
+
+Configura `SUPABASE_DB_URL` nei **GitHub Secrets** del repository.
+
+---
+
+### 2. Backup dei Bucket (Cloudflare R2 / S3)
+
+#### Metodo 1: Rclone (Consigliato)
+
+**Installazione:**
+```bash
+sudo -v ; curl https://rclone.org/install.sh | sudo bash
+```
+
+**Configurazione R2 in rclone:**
+
+Crea/modifica `~/.config/rclone/rclone.conf`:
+
+```ini
+[R2]
+type = s3
+provider = Cloudflare
+access_key_id = TUO_ACCESS_KEY_ID
+secret_access_key = TUA_SECRET_ACCESS_KEY
+region = auto
+endpoint = https://TUO_ACCOUNT_ID.r2.cloudflarestorage.com
+acl = private
+no_check_bucket = true
+```
+
+**Ottenere le credenziali:**
+- Dashboard Cloudflare → **R2** → **Manage R2 API Tokens**
+- Crea un token con permessi di lettura per il backup
+
+**Comandi di backup:**
+
+**R2 → Locale (download completo bucket):**
+```bash
+rclone copy R2:nome-bucket /percorso/backup/locale --progress
+```
+
+**R2 → Altro bucket R2 (replica cross-bucket):**
+```bash
+rclone copy R2:bucket-produzione R2:bucket-backup --progress
+```
+
+**R2 → Altro cloud provider (es. AWS S3):**
+```bash
+rclone copy R2:bucket-produzione S3:bucket-backup --progress
+```
+
+**Sync vs Copy:**
+- **`rclone copy`**: Copia file senza eliminare destinazione (sicuro per backup)
+- **`rclone sync`**: Specchia sorgente a destinazione (elimina file non in sorgente)
+
+**Sempre testare prima con `--dry-run`:**
+```bash
+rclone copy R2:bucket /backup --dry-run
+```
+
+**Comandi utili:**
+
+```bash
+# Listare bucket
+rclone lsf R2:
+
+# Verificare dimensione bucket
+rclone size R2:nome-bucket
+
+# Eliminare backup vecchi (es. oltre 30 giorni)
+rclone delete --min-age 30d R2:bucket-backup
+
+# Copia con esclusioni
+rclone copy R2:source /dest --exclude "*.tmp" --exclude ".cache/*"
+```
+
+#### Script Bash per Backup Automatico
+
+Crea `backup-r2.sh`:
+
+```bash
+#!/bin/bash
+
+# Configurazione
+BUCKET_NAME="nome-tuo-bucket"
+BACKUP_DIR="/percorso/backup/r2"
+DATE=$(date +%Y-%m-%d)
+RETENTION_DAYS=30
+
+# Crea cartella backup con data
+mkdir -p "$BACKUP_DIR/$DATE"
+
+# Backup con rclone
+echo "Inizio backup bucket R2: $BUCKET_NAME"
+rclone copy R2:$BUCKET_NAME "$BACKUP_DIR/$DATE" --progress
+
+# Comprimi backup
+echo "Compressione backup..."
+tar -czf "$BACKUP_DIR/r2-backup-$DATE.tar.gz" -C "$BACKUP_DIR" "$DATE"
+
+# Rimuovi cartella non compressa
+rm -rf "$BACKUP_DIR/$DATE"
+
+# Elimina backup vecchi
+echo "Pulizia backup oltre $RETENTION_DAYS giorni..."
+find "$BACKUP_DIR" -name "r2-backup-*.tar.gz" -mtime +$RETENTION_DAYS -delete
+
+echo "Backup completato: $BACKUP_DIR/r2-backup-$DATE.tar.gz"
+```
+
+**Rendere eseguibile:**
+```bash
+chmod +x backup-r2.sh
+```
+
+**Schedulare con cron (ogni giorno alle 3 AM):**
+```bash
+crontab -e
+# Aggiungi:
+0 3 * * * /percorso/backup-r2.sh >> /var/log/r2-backup.log 2>&1
+```
+
+#### Metodo 2: AWS CLI (Alternativa)
+
+**Installazione:**
+```bash
+curl "https://awscli.amazonaws.com/awscli-exe-linux-x86_64.zip" -o "awscliv2.zip"
+unzip awscliv2.zip
+sudo ./aws/install
+```
+
+**Configurazione:**
+```bash
+aws configure --profile r2
+# Inserire access key, secret key, region = auto
+```
+
+**Backup:**
+```bash
+aws s3 sync s3://bucket-r2 /percorso/locale/backup \
+  --endpoint-url https://ACCOUNT_ID.r2.cloudflarestorage.com \
+  --profile r2
+```
+
+#### Lifecycle Rules (Gestione automatica retention)
+
+Configura regole nel Dashboard R2:
+
+1. Dashboard Cloudflare → **R2** → Seleziona bucket
+2. **Settings** → **Object Lifecycle Rules** → **Add Rule**
+3. Esempio: **Delete objects older than 30 days**
+4. **Terminate incomplete multipart uploads** dopo 1 giorno
+
+---
+
+### 3. Migrare Variabili ENV in Produzione (Replit)
+
+#### Step 1: Configurare Secrets in Development
+
+1. Nel workspace Replit, apri **Tools** → **Secrets** (icona lucchetto nella sidebar)
+2. Aggiungi le variabili d'ambiente:
+   - `DATABASE_URL`
+   - `R2_ACCOUNT_ID`
+   - `R2_ACCESS_KEY_ID`
+   - `R2_SECRET_ACCESS_KEY`
+   - `R2_BUCKET_NAME`
+   - `R2_PUBLIC_URL`
+   - `BREVO_API_KEY`
+   - `CRON_TOKEN`
+   - etc.
+
+3. Le variabili sono automaticamente accessibili in `process.env.NOME_VARIABILE`
+
+#### Step 2: Deploy in Produzione
+
+Quando fai il deploy, Replit gestisce le variabili in due modi:
+
+**Opzione A: Migrazione Automatica**
+- Le variabili configurate in development vengono **automaticamente replicate in produzione** durante il deploy
+- Non serve rientrarle manualmente
+
+**Opzione B: Configurazione Manuale durante Deploy**
+1. Clicca **Deploy** (in alto a destra)
+2. Seleziona **Release** → **Deploy**
+3. Nella schermata di configurazione:
+   - Verifica le variabili pre-popolate
+   - Aggiungi/modifica variabili specifiche per produzione
+4. Clicca **Deploy**
+
+#### Step 3: Modificare Secrets Post-Deploy
+
+Se devi aggiornare variabili dopo il deploy:
+
+1. Dashboard deployment → **Settings**
+2. Sezione **Environment Variables**
+3. Modifica/aggiungi variabili
+4. **Rideploy** per applicare le modifiche
+
+#### Variabili Specifiche per Produzione
+
+**Database:**
+- `DATABASE_URL`: Usa la connection string di **produzione** di Supabase
+  - ⚠️ Non usare mai il DB di development in produzione!
+  - Supabase: Project Settings → Database → Connection Pooler (consigliato per produzione)
+
+**R2 Bucket:**
+- Considera bucket separati per dev/prod:
+  - Development: `maggiolini-dev`
+  - Production: `maggiolini-prod`
+- `R2_BUCKET_NAME`: Nome bucket produzione
+- `R2_PUBLIC_URL`: URL pubblico bucket produzione (se configurato)
+
+**Email (Brevo):**
+- Puoi usare la stessa `BREVO_API_KEY` o crearne una dedicata per produzione
+
+**Cron Token:**
+- `CRON_TOKEN`: Genera un token differente per produzione (maggiore sicurezza)
+
+#### Checklist Migrazione ENV
+
+✅ Verificare che tutte le variabili development siano documentate  
+✅ Creare credenziali **separate** per produzione (DB, R2, API keys)  
+✅ Configurare variabili in Replit Secrets prima del deploy  
+✅ Verificare variabili durante il processo di deploy  
+✅ Testare l'applicazione in produzione per confermare connessioni DB/R2/email  
+✅ Non committare mai file `.env` nel repository  
+✅ Documentare le variabili richieste nel README (senza valori sensibili)
+
+#### Variabili d'Ambiente Richieste
+
+**Database:**
+```
+DATABASE_URL=postgresql://user:password@host:5432/database
+```
+
+**Cloudflare R2:**
+```
+R2_ACCOUNT_ID=tuo_account_id
+R2_ACCESS_KEY_ID=tua_access_key
+R2_SECRET_ACCESS_KEY=tua_secret_key
+R2_BUCKET_NAME=nome-bucket-prod
+R2_PUBLIC_URL=https://pub-xyz.r2.dev
+```
+
+**Email (Brevo):**
+```
+BREVO_API_KEY=xkeysib-xxxxxxxx
+```
+
+**Cron Jobs:**
+```
+CRON_TOKEN=token_sicuro_casuale_per_autenticazione
+```
+
+**Altri (opzionali):**
+```
+NODE_ENV=production
+PORT=5000
+```
+
+---
+
+### Best Practices Backup e Sicurezza
+
+#### Strategia 3-2-1
+
+1. **3 copie** dei dati (originale + 2 backup)
+2. **2 media differenti** (es. locale + cloud)
+3. **1 copia offsite** (geograficamente separata)
+
+#### Frequenza Backup
+
+- **Database**: Giornaliero (automatico via Supabase + export settimanale manuale)
+- **Bucket R2**: Settimanale o mensile (dipende dalla frequenza modifiche)
+- **Codice**: Continuo (Git + GitHub)
+
+#### Sicurezza Credenziali
+
+- ✅ Usa **token API con privilegi minimi** per i backup (solo lettura)
+- ✅ **Ruota le credenziali** periodicamente (ogni 90 giorni)
+- ✅ **Cripta i backup** sensibili prima dello storage
+- ✅ Non condividere mai credenziali di produzione in chat/email
+
+#### Test di Restore
+
+- 🔄 Testa il **restore** almeno una volta ogni 3 mesi
+- 🔄 Verifica l'**integrità** dei backup regolarmente
+- 🔄 Documenta la **procedura di recovery** in caso di disaster
+
+---
+
+### Link Utili
+
+**Database:**
+- [Supabase Backup Docs](https://supabase.com/docs/guides/platform/backups)
+- [Supabase CLI Reference](https://supabase.com/docs/reference/cli/supabase-db-dump)
+
+**R2/S3:**
+- [Rclone Documentation](https://rclone.org/docs/)
+- [Cloudflare R2 Docs](https://developers.cloudflare.com/r2/)
+- [Rclone + R2 Examples](https://developers.cloudflare.com/r2/examples/rclone/)
+
+**Replit:**
+- [Replit Secrets Management](https://docs.replit.com/replit-workspace/workspace-features/secrets)
+- [Replit Deployments](https://docs.replit.com/replit-app/configuration)
