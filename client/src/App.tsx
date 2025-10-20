@@ -24,6 +24,7 @@ import AdminBlog from "@/pages/AdminBlog";
 import AdminBlogForm from "@/pages/AdminBlogForm";
 import NotFound from "@/pages/not-found";
 import { ProtectedRoute } from "@/components/ProtectedRoute";
+import OrganizationSchema from "@/components/OrganizationSchema";
 
 function Router() {
   return (
@@ -69,6 +70,7 @@ function Router() {
       <Route>
         {() => (
           <div className="min-h-screen flex flex-col">
+            <OrganizationSchema />
             <Navbar />
             <main className="flex-1">
               <Switch>
