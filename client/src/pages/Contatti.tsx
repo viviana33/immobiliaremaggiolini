@@ -6,13 +6,13 @@ import { usePageMeta } from "@/lib/seo";
 export default function Contatti() {
   usePageMeta({
     title: 'Contattaci',
-    description: 'Contatta Immobiliare Maggiolini per una consulenza personalizzata. Siamo disponibili in Via Roma 123, Milano. Telefono: +39 02 1234 5678. Email: info@maggiolini.it',
+    description: 'Contatta Immobiliare Maggiolini per una consulenza personalizzata. Siamo disponibili in Via Paolo Castelnovo, 14, 20015 Parabiago (MI). Telefono: +39 02 1234 5678. Email: info@maggiolini.it',
   });
   const contactInfo = [
     {
       icon: MapPin,
       title: "Indirizzo",
-      details: ["Via Roma 123", "20121 Milano (MI)"],
+      details: ["Via Paolo Castelnovo, 14", "20015 Parabiago (MI)"],
     },
     {
       icon: Phone,
@@ -27,7 +27,7 @@ export default function Contatti() {
     {
       icon: Clock,
       title: "Orari",
-      details: ["Lun-Ven: 9:00 - 19:00", "Sab: 9:00 - 13:00"],
+      details: ["Lun-Ven 9:30-13:00/14:30-18:00"],
     },
   ];
 
@@ -107,7 +107,7 @@ export default function Contatti() {
                 <div className="text-center text-muted-foreground">
                   <MapPin className="w-12 h-12 mx-auto mb-3 text-primary" />
                   <p className="font-semibold text-foreground">Mappa della Nostra Sede</p>
-                  <p className="text-sm mt-2">Via Roma 123, Milano</p>
+                  <p className="text-sm mt-2">Via Paolo Castelnovo, 14, Parabiago</p>
                 </div>
               </div>
             </div>
@@ -126,11 +126,7 @@ export default function Contatti() {
           <div className="flex flex-col sm:flex-row gap-4 justify-center pt-4">
             <div className="bg-primary-foreground/10 backdrop-blur-sm border border-primary-foreground/20 rounded-md px-6 py-3">
               <p className="text-sm text-primary-foreground/80">Lunedì - Venerdì</p>
-              <p className="font-semibold text-lg">9:00 - 19:00</p>
-            </div>
-            <div className="bg-primary-foreground/10 backdrop-blur-sm border border-primary-foreground/20 rounded-md px-6 py-3">
-              <p className="text-sm text-primary-foreground/80">Sabato</p>
-              <p className="font-semibold text-lg">9:00 - 13:00</p>
+              <p className="font-semibold text-lg">9:30-13:00 / 14:30-18:00</p>
             </div>
           </div>
         </div>

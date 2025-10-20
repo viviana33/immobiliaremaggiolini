@@ -96,7 +96,7 @@ export default function Footer() {
             <ul className="space-y-3">
               <li className="flex items-start gap-2 text-muted-foreground text-sm">
                 <MapPin className="w-4 h-4 mt-0.5 flex-shrink-0" />
-                <span>Via Roma 123, 20121 Milano</span>
+                <span>Via Paolo Castelnovo, 14, 20015 Parabiago (MI)</span>
               </li>
               <li className="flex items-center gap-2 text-muted-foreground text-sm">
                 <Phone className="w-4 h-4 flex-shrink-0" />
@@ -109,8 +109,7 @@ export default function Footer() {
             </ul>
             <div className="pt-2 text-sm text-muted-foreground">
               <p className="font-semibold">Orari:</p>
-              <p>Lun-Ven: 9:00 - 19:00</p>
-              <p>Sab: 9:00 - 13:00</p>
+              <p>Lun-Ven 9:30-13:00/14:30-18:00</p>
             </div>
           </div>
 
