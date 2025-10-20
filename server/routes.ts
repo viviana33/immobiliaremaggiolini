@@ -1,7 +1,7 @@
 import type { Express } from "express";
 import { createServer, type Server } from "http";
 import { storage } from "./storage";
-import { requireAdmin } from "./middleware/auth";
+import { requireAdmin, requireCronToken } from "./middleware/auth";
 import { subscriptionRateLimit, leadRateLimit } from "./middleware/rateLimit";
 import multer from "multer";
 import { uploadService } from "./uploadService";
@@ -1367,6 +1367,101 @@ ${rssItems}
     } catch (error) {
       console.error("Error generating RSS feed:", error);
       res.status(500).send('Errore nella generazione del feed RSS');
+    }
+  });
+
+  // CRON: Cleanup hot images
+  app.post("/api/cron/cleanup-hot", requireCronToken, async (req, res) => {
+    try {
+      console.log("[CRON] Starting cleanup-hot job...");
+      
+      const summary = {
+        propertiesProcessed: 0,
+        propertyImagesDeleted: 0,
+        orphanPropertyImagesDeleted: 0,
+        orphanPostImagesDeleted: 0,
+        cloudinaryDeletedCount: 0,
+        cloudinaryFailedCount: 0,
+      };
+
+      // 1. Find properties sold/rented from >30 days ago
+      const oldProperties = await storage.getOldSoldOrRentedProperties(30);
+      console.log(`[CRON] Found ${oldProperties.length} properties sold/rented >30 days ago`);
+
+      // 2. For each property, keep max 3 hot images, delete others
+      for (const property of oldProperties) {
+        const images = await storage.getPropertyImages(property.id);
+        const nonArchivedImages = images.filter(img => !img.archiviato);
+
+        if (nonArchivedImages.length > 3) {
+          const imagesToDelete = nonArchivedImages
+            .sort((a, b) => new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime())
+            .slice(3);
+
+          console.log(`[CRON] Property ${property.slug}: deleting ${imagesToDelete.length} excess images`);
+
+          for (const img of imagesToDelete) {
+            const deleted = await uploadService.deleteFromCloudinary(img.urlHot);
+            if (deleted) {
+              summary.cloudinaryDeletedCount++;
+            } else {
+              summary.cloudinaryFailedCount++;
+            }
+          }
+
+          await storage.deletePropertyImages(imagesToDelete.map(img => img.id));
+          summary.propertyImagesDeleted += imagesToDelete.length;
+        }
+
+        summary.propertiesProcessed++;
+      }
+
+      // 3. Find and delete orphan property images
+      const orphanPropertyImages = await storage.getOrphanPropertyImages();
+      console.log(`[CRON] Found ${orphanPropertyImages.length} orphan property images`);
+
+      for (const img of orphanPropertyImages) {
+        const deleted = await uploadService.deleteFromCloudinary(img.urlHot);
+        if (deleted) {
+          summary.cloudinaryDeletedCount++;
+        } else {
+          summary.cloudinaryFailedCount++;
+        }
+      }
+
+      if (orphanPropertyImages.length > 0) {
+        await storage.deletePropertyImages(orphanPropertyImages.map(img => img.id));
+        summary.orphanPropertyImagesDeleted = orphanPropertyImages.length;
+      }
+
+      // 4. Find and delete orphan post images
+      const orphanPostImages = await storage.getOrphanPostImages();
+      console.log(`[CRON] Found ${orphanPostImages.length} orphan post images`);
+
+      if (orphanPostImages.length > 0) {
+        await storage.deletePostImages(orphanPostImages.map(img => img.id));
+        summary.orphanPostImagesDeleted = orphanPostImages.length;
+      }
+
+      console.log("[CRON] Cleanup-hot job completed:");
+      console.log(`  - Properties processed: ${summary.propertiesProcessed}`);
+      console.log(`  - Property images deleted: ${summary.propertyImagesDeleted}`);
+      console.log(`  - Orphan property images deleted: ${summary.orphanPropertyImagesDeleted}`);
+      console.log(`  - Orphan post images deleted: ${summary.orphanPostImagesDeleted}`);
+      console.log(`  - Cloudinary deletions: ${summary.cloudinaryDeletedCount} succeeded, ${summary.cloudinaryFailedCount} failed`);
+
+      res.json({
+        success: true,
+        message: "Cleanup completato con successo",
+        summary,
+      });
+    } catch (error: any) {
+      console.error("[CRON] Error in cleanup-hot job:", error);
+      res.status(500).json({
+        success: false,
+        message: "Errore durante il cleanup",
+        error: error.message,
+      });
     }
   });
 
