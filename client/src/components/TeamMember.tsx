@@ -44,14 +44,18 @@ export default function TeamMember({
         <div className="pt-3 border-t border-border space-y-2">
           {email && (
             <div className="flex items-center gap-2 text-sm text-muted-foreground justify-center">
-              <Mail className="w-4 h-4" />
-              <span>{email}</span>
+              <Mail className="w-4 h-4" aria-hidden="true" />
+              <a href={`mailto:${email}`} className="hover:text-foreground transition-colors">
+                {email}
+              </a>
             </div>
           )}
           {phone && (
             <div className="flex items-center gap-2 text-sm text-muted-foreground justify-center">
-              <Phone className="w-4 h-4" />
-              <span>{phone}</span>
+              <Phone className="w-4 h-4" aria-hidden="true" />
+              <a href={`tel:${phone}`} className="hover:text-foreground transition-colors">
+                {phone}
+              </a>
             </div>
           )}
         </div>

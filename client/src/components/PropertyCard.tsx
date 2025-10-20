@@ -54,21 +54,21 @@ export default function PropertyCard({
           {title}
         </h3>
         <div className="flex items-center gap-2 text-muted-foreground">
-          <MapPin className="w-4 h-4" />
+          <MapPin className="w-4 h-4" aria-hidden="true" />
           <span className="text-sm">{location}</span>
         </div>
         <div className="flex items-center gap-4 pt-2 border-t border-border">
           <div className="flex items-center gap-1.5 text-muted-foreground">
-            <Bed className="w-4 h-4" />
-            <span className="text-sm">{bedrooms}</span>
+            <Bed className="w-4 h-4" aria-hidden="true" />
+            <span className="text-sm" aria-label={`${bedrooms} camere da letto`}>{bedrooms}</span>
           </div>
           <div className="flex items-center gap-1.5 text-muted-foreground">
-            <Bath className="w-4 h-4" />
-            <span className="text-sm">{bathrooms}</span>
+            <Bath className="w-4 h-4" aria-hidden="true" />
+            <span className="text-sm" aria-label={`${bathrooms} bagni`}>{bathrooms}</span>
           </div>
           <div className="flex items-center gap-1.5 text-muted-foreground">
-            <Maximize className="w-4 h-4" />
-            <span className="text-sm">{area}m²</span>
+            <Maximize className="w-4 h-4" aria-hidden="true" />
+            <span className="text-sm" aria-label={`${area} metri quadrati`}>{area}m²</span>
           </div>
         </div>
       </div>

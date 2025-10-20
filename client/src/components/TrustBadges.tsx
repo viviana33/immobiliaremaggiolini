@@ -34,7 +34,7 @@ export default function TrustBadges() {
               className="flex flex-col items-center text-center space-y-3 p-6 rounded-md hover-elevate active-elevate-2 transition-all"
               data-testid={`badge-${badge.label.toLowerCase().replace(/\s+/g, "-")}`}
             >
-              <badge.icon className="w-10 h-10 text-primary" />
+              <badge.icon className="w-10 h-10 text-primary" aria-hidden="true" />
               <div className="font-serif font-bold text-3xl md:text-4xl text-foreground">
                 {badge.value}
               </div>

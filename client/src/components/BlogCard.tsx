@@ -47,11 +47,11 @@ export default function BlogCard({
         </p>
         <div className="flex items-center gap-4 pt-3 border-t border-border text-muted-foreground text-sm">
           <div className="flex items-center gap-1.5">
-            <Calendar className="w-4 h-4" />
+            <Calendar className="w-4 h-4" aria-hidden="true" />
             <span>{date}</span>
           </div>
           <div className="flex items-center gap-1.5">
-            <Clock className="w-4 h-4" />
+            <Clock className="w-4 h-4" aria-hidden="true" />
             <span>{readTime}</span>
           </div>
         </div>
