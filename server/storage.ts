@@ -1,5 +1,6 @@
 import { eq, desc, asc, and, gte, lte, count, or, ilike, arrayContains, sql } from "drizzle-orm";
 import { db } from "./db";
+import { uploadService } from "./uploadService";
 import { 
   users, 
   properties, 
@@ -60,6 +61,7 @@ export interface IStorage {
   createPropertyImage(image: InsertPropertyImage): Promise<PropertyImage>;
   deletePropertyImage(id: string): Promise<void>;
   archivePropertyImages(propertyId: string, keepCount: number): Promise<void>;
+  regeneratePropertyImageUrls(propertyId: string): Promise<PropertyImage[]>;
   
   getAllPosts(): Promise<Post[]>;
   getPublishedPosts(filters: PostFilters): Promise<PaginatedPosts>;
@@ -74,6 +76,7 @@ export interface IStorage {
   createPostImage(image: InsertPostImage): Promise<PostImage>;
   deletePostImage(id: string): Promise<void>;
   updatePostImagePositions(updates: { id: string; position: number }[]): Promise<void>;
+  regeneratePostImageUrls(postId: string): Promise<PostImage[]>;
   
   getSubscriptionByEmail(email: string): Promise<Subscription | undefined>;
   getSubscriptionByToken(token: string): Promise<Subscription | undefined>;
@@ -262,6 +265,37 @@ export class DbStorage implements IStorage {
     }
   }
 
+  async regeneratePropertyImageUrls(propertyId: string): Promise<PropertyImage[]> {
+    const images = await this.getPropertyImages(propertyId);
+    const updatedImages: PropertyImage[] = [];
+
+    for (const img of images) {
+      if (!img.urlCold) {
+        console.warn(`Image ${img.id} has no urlCold, skipping regeneration`);
+        updatedImages.push(img);
+        continue;
+      }
+
+      try {
+        const newUrlHot = uploadService.generateCloudinaryFetchUrl(img.urlCold, "f_auto,q_auto,w_1600");
+        
+        const [updated] = await db
+          .update(propertiesImages)
+          .set({ urlHot: newUrlHot })
+          .where(eq(propertiesImages.id, img.id))
+          .returning();
+        
+        updatedImages.push(updated);
+        console.log(`Regenerated urlHot for property image ${img.id}`);
+      } catch (error) {
+        console.error(`Failed to regenerate urlHot for image ${img.id}:`, error);
+        updatedImages.push(img);
+      }
+    }
+
+    return updatedImages;
+  }
+
   async getAllPosts(): Promise<Post[]> {
     return db.select().from(posts).orderBy(desc(posts.updatedAt));
   }
@@ -389,6 +423,48 @@ export class DbStorage implements IStorage {
         .set({ position: update.position })
         .where(eq(postsImages.id, update.id));
     }
+  }
+
+  async regeneratePostImageUrls(postId: string): Promise<PostImage[]> {
+    const images = await this.getPostImages(postId);
+    const updatedImages: PostImage[] = [];
+
+    for (const img of images) {
+      if (!img.coldKey) {
+        console.warn(`Post image ${img.id} has no coldKey, skipping regeneration`);
+        updatedImages.push(img);
+        continue;
+      }
+
+      try {
+        const bucketName = process.env.R2_BUCKET_NAME;
+        const publicUrl = process.env.R2_PUBLIC_URL;
+        
+        if (!bucketName) {
+          throw new Error("R2_BUCKET_NAME not configured");
+        }
+
+        const coldUrl = publicUrl 
+          ? `${publicUrl}/${img.coldKey}`
+          : `https://${bucketName}.r2.dev/${img.coldKey}`;
+
+        const newHotUrl = uploadService.generateCloudinaryFetchUrl(coldUrl, "f_auto,q_auto,w_1600");
+        
+        const [updated] = await db
+          .update(postsImages)
+          .set({ hotUrl: newHotUrl })
+          .where(eq(postsImages.id, img.id))
+          .returning();
+        
+        updatedImages.push(updated);
+        console.log(`Regenerated hotUrl for post image ${img.id}`);
+      } catch (error) {
+        console.error(`Failed to regenerate hotUrl for post image ${img.id}:`, error);
+        updatedImages.push(img);
+      }
+    }
+
+    return updatedImages;
   }
 
   async getSubscriptionByEmail(email: string): Promise<Subscription | undefined> {
