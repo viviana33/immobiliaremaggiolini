@@ -1400,17 +1400,22 @@ ${rssItems}
 
           console.log(`[CRON] Property ${property.slug}: deleting ${imagesToDelete.length} excess images`);
 
+          const successfullyDeletedIds: string[] = [];
           for (const img of imagesToDelete) {
             const deleted = await uploadService.deleteFromCloudinary(img.urlHot);
             if (deleted) {
               summary.cloudinaryDeletedCount++;
+              successfullyDeletedIds.push(img.id);
             } else {
               summary.cloudinaryFailedCount++;
+              console.warn(`[CRON] Failed to delete from Cloudinary: ${img.urlHot}, keeping DB record`);
             }
           }
 
-          await storage.deletePropertyImages(imagesToDelete.map(img => img.id));
-          summary.propertyImagesDeleted += imagesToDelete.length;
+          if (successfullyDeletedIds.length > 0) {
+            await storage.deletePropertyImages(successfullyDeletedIds);
+            summary.propertyImagesDeleted += successfullyDeletedIds.length;
+          }
         }
 
         summary.propertiesProcessed++;
@@ -1420,18 +1425,21 @@ ${rssItems}
       const orphanPropertyImages = await storage.getOrphanPropertyImages();
       console.log(`[CRON] Found ${orphanPropertyImages.length} orphan property images`);
 
+      const successfullyDeletedOrphanIds: string[] = [];
       for (const img of orphanPropertyImages) {
         const deleted = await uploadService.deleteFromCloudinary(img.urlHot);
         if (deleted) {
           summary.cloudinaryDeletedCount++;
+          successfullyDeletedOrphanIds.push(img.id);
         } else {
           summary.cloudinaryFailedCount++;
+          console.warn(`[CRON] Failed to delete orphan image from Cloudinary: ${img.urlHot}, keeping DB record`);
         }
       }
 
-      if (orphanPropertyImages.length > 0) {
-        await storage.deletePropertyImages(orphanPropertyImages.map(img => img.id));
-        summary.orphanPropertyImagesDeleted = orphanPropertyImages.length;
+      if (successfullyDeletedOrphanIds.length > 0) {
+        await storage.deletePropertyImages(successfullyDeletedOrphanIds);
+        summary.orphanPropertyImagesDeleted = successfullyDeletedOrphanIds.length;
       }
 
       // 4. Find and delete orphan post images
