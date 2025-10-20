@@ -24,7 +24,7 @@ import {
   SelectValue,
 } from "@/components/ui/select";
 import { useToast } from "@/hooks/use-toast";
-import { ArrowLeft, Upload, X } from "lucide-react";
+import { ArrowLeft, Upload, X, RefreshCw } from "lucide-react";
 import { insertPropertySchema, type Property, type PropertyImage } from "@shared/schema";
 import { z } from "zod";
 
@@ -185,6 +185,27 @@ export default function AdminImmobileForm() {
       toast({
         title: "Immagine eliminata",
         description: "L'immagine è stata eliminata con successo",
+      });
+    },
+  });
+
+  const restoreImagesMutation = useMutation({
+    mutationFn: async () => {
+      const res = await apiRequest("POST", `/api/admin/properties/${id}/images/restore`);
+      return res.json();
+    },
+    onSuccess: (data) => {
+      queryClient.invalidateQueries({ queryKey: ["/api/admin/properties", id] });
+      toast({
+        title: "Immagini ripristinate",
+        description: data.message || "Le immagini sono state ripristinate con successo",
+      });
+    },
+    onError: () => {
+      toast({
+        title: "Errore",
+        description: "Errore nel ripristino delle immagini",
+        variant: "destructive",
       });
     },
   });
@@ -534,8 +555,21 @@ export default function AdminImmobileForm() {
           </Card>
 
           <Card>
-            <CardHeader>
+            <CardHeader className="flex flex-row items-center justify-between gap-2">
               <CardTitle>Immagini (max 15)</CardTitle>
+              {isEdit && existingImages.length > 0 && (
+                <Button
+                  type="button"
+                  variant="outline"
+                  size="sm"
+                  onClick={() => restoreImagesMutation.mutate()}
+                  disabled={restoreImagesMutation.isPending}
+                  data-testid="button-ripristina-immagini"
+                >
+                  <RefreshCw className={`h-4 w-4 mr-2 ${restoreImagesMutation.isPending ? 'animate-spin' : ''}`} />
+                  {restoreImagesMutation.isPending ? "Ripristino..." : "Ripristina immagini"}
+                </Button>
+              )}
             </CardHeader>
             <CardContent className="space-y-4">
               {existingImages.length > 0 && (
