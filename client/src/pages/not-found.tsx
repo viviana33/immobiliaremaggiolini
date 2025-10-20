@@ -1,7 +1,12 @@
 import { Card, CardContent } from "@/components/ui/card";
 import { AlertCircle } from "lucide-react";
+import { usePageMeta } from "@/lib/seo";
 
 export default function NotFound() {
+  usePageMeta({
+    title: 'Pagina Non Trovata',
+    description: 'La pagina che stai cercando non esiste o è stata spostata. Torna alla home di Immobiliare Maggiolini.',
+  });
   return (
     <div className="min-h-screen w-full flex items-center justify-center bg-gray-50">
       <Card className="w-full max-w-md mx-4">

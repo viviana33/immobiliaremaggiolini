@@ -10,6 +10,7 @@ import { Alert, AlertDescription } from "@/components/ui/alert";
 import { Loader2, CheckCircle2, AlertCircle, Mail, ExternalLink, Plus } from "lucide-react";
 import { apiRequest } from "@/lib/queryClient";
 import type { Subscription } from "@shared/schema";
+import { usePageMeta } from "@/lib/seo";
 
 type SubscriptionResponse = {
   success: boolean;
@@ -18,6 +19,11 @@ type SubscriptionResponse = {
 };
 
 export default function Preferenze() {
+  usePageMeta({
+    title: 'Preferenze Newsletter',
+    description: 'Gestisci le tue preferenze di iscrizione alle newsletter di Immobiliare Maggiolini. Scegli di ricevere notifiche sui nuovi immobili o articoli del blog.',
+  });
+
   const [location] = useLocation();
   const [email, setEmail] = useState("");
   const [emailToLoad, setEmailToLoad] = useState<string | null>(null);

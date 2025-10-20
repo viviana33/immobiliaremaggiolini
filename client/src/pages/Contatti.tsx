@@ -1,8 +1,13 @@
 import ContactForm from "@/components/ContactForm";
 import { Card } from "@/components/ui/card";
 import { MapPin, Phone, Mail, Clock } from "lucide-react";
+import { usePageMeta } from "@/lib/seo";
 
 export default function Contatti() {
+  usePageMeta({
+    title: 'Contattaci',
+    description: 'Contatta Immobiliare Maggiolini per una consulenza personalizzata. Siamo disponibili in Via Roma 123, Milano. Telefono: +39 02 1234 5678. Email: info@maggiolini.it',
+  });
   const contactInfo = [
     {
       icon: MapPin,

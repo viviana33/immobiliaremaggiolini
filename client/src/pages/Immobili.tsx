@@ -5,6 +5,7 @@ import FiltersBar from "@/components/FiltersBar";
 import SortingControls from "@/components/SortingControls";
 import PaginationControls from "@/components/PaginationControls";
 import { useLocation } from "wouter";
+import { usePageMeta } from "@/lib/seo";
 
 interface Property {
   id: string;
@@ -29,6 +30,11 @@ interface PropertiesResponse {
 }
 
 export default function Immobili() {
+  usePageMeta({
+    title: 'Immobili in Vendita e Affitto',
+    description: 'Trova il tuo immobile ideale tra le nostre proprietà selezionate in vendita e affitto a Milano, Monza e Brianza. Appartamenti, ville, attici e molto altro.',
+  });
+
   const [location] = useLocation();
   const queryParams = location.includes('?') ? location.split('?')[1] : '';
 

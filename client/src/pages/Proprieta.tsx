@@ -7,8 +7,13 @@ import { useState } from "react";
 import apartmentImage from "@assets/generated_images/Apartment_interior_property_image_66b8a52c.png";
 import countrysideImage from "@assets/generated_images/Countryside_property_image_dddb1072.png";
 import penthouseImage from "@assets/generated_images/Penthouse_terrace_property_image_6980bf5a.png";
+import { usePageMeta } from "@/lib/seo";
 
 export default function Proprieta() {
+  usePageMeta({
+    title: 'Proprietà in Vendita e Affitto',
+    description: 'Esplora le nostre proprietà selezionate in vendita e affitto. Trova casa a Milano, Monza e Brianza con Immobiliare Maggiolini.',
+  });
   const [searchQuery, setSearchQuery] = useState("");
   const [typeFilter, setTypeFilter] = useState("all");
   const [priceFilter, setPriceFilter] = useState("all");

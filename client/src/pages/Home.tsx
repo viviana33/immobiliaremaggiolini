@@ -10,8 +10,13 @@ import countrysideImage from "@assets/generated_images/Countryside_property_imag
 import penthouseImage from "@assets/generated_images/Penthouse_terrace_property_image_6980bf5a.png";
 import blogImage1 from "@assets/generated_images/Blog_lifestyle_image_1_9c81ebb5.png";
 import blogImage2 from "@assets/generated_images/Blog_lifestyle_image_2_e0f97e8e.png";
+import { usePageMeta } from "@/lib/seo";
 
 export default function Home() {
+  usePageMeta({
+    title: 'Vendita e Affitto Immobili a Milano, Monza e Brianza',
+    description: 'Agenzia immobiliare specializzata in vendita e affitto di proprietà a Milano, Monza e Brianza. Professionalità, esperienza e servizio personalizzato dal 1985.',
+  });
   const featuredProperties = [
     {
       id: "1",

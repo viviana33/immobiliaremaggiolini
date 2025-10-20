@@ -48,6 +48,7 @@ Preferred communication style: Simple, everyday language.
 ### SEO & Discoverability
 - **Sitemap XML**: Dynamically generated for static pages, available properties, and published blog posts, adhering to sitemap.org schema with prioritized URLs and update frequencies.
 - **JSON-LD Structured Data**: Implements schemas for `RealEstateAgent` (site-wide), `Article` (blog posts), and `Product`/`RentAction` (property details) to enhance search engine understanding.
+- **Meta Tags Helper**: Centralized SEO utility (`client/src/lib/seo.ts`) with `usePageMeta` hook for setting default meta tags, Open Graph tags, and Twitter Cards. Applied to all pages including Home, Chi Siamo, Contatti, Immobili, Blog, Grazie, Preferenze, Not Found, and Proprieta. Individual property and blog post pages have custom meta tags with dynamic content.
 
 ## External Dependencies
 

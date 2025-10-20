@@ -9,6 +9,7 @@ import type { Post } from "@shared/schema";
 import { Loader2, AlertCircle, Search, X, FileText, ChevronLeft, ChevronRight } from "lucide-react";
 import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert";
 import { useLocation } from "wouter";
+import { usePageMeta } from "@/lib/seo";
 
 /**
  * SCELTA PAGINAZIONE: URL-based pagination (page param)
@@ -43,6 +44,11 @@ interface PostsResponse {
 }
 
 export default function Blog() {
+  usePageMeta({
+    title: 'Blog Immobiliare',
+    description: 'Consigli, guide e novità dal mondo immobiliare. Scopri i nostri articoli su mercato, tendenze, quartieri e tutto ciò che riguarda la casa e gli investimenti immobiliari.',
+  });
+
   const [location, setLocation] = useLocation();
   
   const queryParams = useMemo(() => {

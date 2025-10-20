@@ -6,8 +6,13 @@ import { Button } from "@/components/ui/button";
 import { Card } from "@/components/ui/card";
 import { Alert, AlertDescription } from "@/components/ui/alert";
 import { CheckCircle2, Mail, Home, Loader2 } from "lucide-react";
+import { usePageMeta } from "@/lib/seo";
 
 export default function Grazie() {
+  usePageMeta({
+    title: 'Grazie per averci contattato',
+    description: 'Grazie per aver contattato Immobiliare Maggiolini. Ti abbiamo inviato una email di conferma. Ti risponderemo entro 24 ore.',
+  });
   const [, setLocation] = useLocation();
   const [params, setParams] = useState<{
     lead?: string, 

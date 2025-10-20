@@ -4,8 +4,13 @@ import teamPhoto from "@assets/generated_images/Real_estate_team_photo_7f941344.
 import member1 from "@assets/generated_images/Team_member_portrait_1_976007be.png";
 import member2 from "@assets/generated_images/Team_member_portrait_2_a454b6da.png";
 import member3 from "@assets/generated_images/Team_member_portrait_3_3620def7.png";
+import { usePageMeta } from "@/lib/seo";
 
 export default function ChiSiamo() {
+  usePageMeta({
+    title: 'Chi Siamo',
+    description: '20 anni di fiducia e amicizia nel settore immobiliare. Scopri la storia di Immobiliare Maggiolini, i nostri valori e il team che ti accompagnerà nella ricerca della casa perfetta.',
+  });
   const teamMembers = [
     {
       name: "Maria Rossi",
