@@ -174,6 +174,75 @@ class UploadService {
     return `https://res.cloudinary.com/${process.env.CLOUDINARY_CLOUD_NAME}/image/fetch/${transformations}/${coldUrl}`;
   }
 
+  extractPublicIdFromUrl(cloudinaryUrl: string): string | null {
+    if (!cloudinaryUrl || !cloudinaryUrl.includes('cloudinary.com')) {
+      return null;
+    }
+
+    if (cloudinaryUrl.includes('/image/fetch/')) {
+      return null;
+    }
+
+    const urlPattern = /\/upload\/(?:v\d+\/)?(.+?)(?:\.[a-z]+)?$/i;
+    const match = cloudinaryUrl.match(urlPattern);
+    
+    if (match && match[1]) {
+      return match[1];
+    }
+
+    return null;
+  }
+
+  async deleteFromCloudinary(cloudinaryUrl: string): Promise<boolean> {
+    try {
+      if (!process.env.CLOUDINARY_CLOUD_NAME || 
+          !process.env.CLOUDINARY_API_KEY || 
+          !process.env.CLOUDINARY_API_SECRET) {
+        console.warn("Cloudinary credentials not configured, skipping deletion");
+        return false;
+      }
+
+      const publicId = this.extractPublicIdFromUrl(cloudinaryUrl);
+      
+      if (!publicId) {
+        console.warn(`Could not extract public_id from URL: ${cloudinaryUrl}`);
+        return false;
+      }
+
+      const timestamp = Math.round(Date.now() / 1000);
+      const stringToSign = `public_id=${publicId}&timestamp=${timestamp}${process.env.CLOUDINARY_API_SECRET}`;
+      const signature = crypto
+        .createHash("sha1")
+        .update(stringToSign)
+        .digest("hex");
+
+      const formData = new FormData();
+      formData.append("public_id", publicId);
+      formData.append("timestamp", timestamp.toString());
+      formData.append("api_key", process.env.CLOUDINARY_API_KEY);
+      formData.append("signature", signature);
+
+      const response = await fetch(
+        `https://api.cloudinary.com/v1_1/${process.env.CLOUDINARY_CLOUD_NAME}/image/destroy`,
+        {
+          method: "POST",
+          body: formData,
+        }
+      );
+
+      if (!response.ok) {
+        console.error(`Cloudinary deletion failed for ${publicId}: ${response.statusText}`);
+        return false;
+      }
+
+      const data = await response.json();
+      return data.result === "ok";
+    } catch (error: any) {
+      console.error(`Error deleting from Cloudinary: ${error.message}`);
+      return false;
+    }
+  }
+
   async uploadPostImage(buffer: Buffer, filename: string): Promise<PostImageUploadResult> {
     const resizedBuffer = await this.resizeImage(buffer, 2560);
     const fileHash = this.calculateFileHash(resizedBuffer);
