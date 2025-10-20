@@ -4,7 +4,7 @@ import { queryClient, apiRequest } from "@/lib/queryClient";
 import { Button } from "@/components/ui/button";
 import { Card } from "@/components/ui/card";
 import { useToast } from "@/hooks/use-toast";
-import { Upload, X, ChevronLeft, ChevronRight } from "lucide-react";
+import { Upload, X, ChevronLeft, ChevronRight, RefreshCw } from "lucide-react";
 import type { PostImage } from "@shared/schema";
 
 interface PostGalleryProps {
@@ -107,6 +107,30 @@ export function PostGallery({ postId }: PostGalleryProps) {
     },
   });
 
+  const restoreImagesMutation = useMutation({
+    mutationFn: async () => {
+      const res = await apiRequest("POST", `/api/admin/posts/${postId}/images/restore`);
+      if (!res.ok) {
+        throw new Error("Errore nel ripristino");
+      }
+      return res.json();
+    },
+    onSuccess: (data) => {
+      queryClient.invalidateQueries({ queryKey: [`/api/admin/posts/${postId}/images`] });
+      toast({
+        title: "Immagini ripristinate",
+        description: data.message || "Le immagini sono state ripristinate con successo",
+      });
+    },
+    onError: () => {
+      toast({
+        variant: "destructive",
+        title: "Errore",
+        description: "Errore nel ripristino delle immagini",
+      });
+    },
+  });
+
   const handleFileSelect = async (e: React.ChangeEvent<HTMLInputElement>) => {
     const files = e.target.files;
     if (!files || files.length === 0) return;
@@ -164,18 +188,33 @@ export function PostGallery({ postId }: PostGalleryProps) {
             {images.length}/10 immagini (opzionale)
           </p>
         </div>
-        {images.length < 10 && (
-          <Button
-            type="button"
-            variant="outline"
-            onClick={() => fileInputRef.current?.click()}
-            disabled={isUploading}
-            data-testid="button-add-images"
-          >
-            <Upload className="mr-2 h-4 w-4" />
-            {isUploading ? "Caricamento..." : "Aggiungi Immagini"}
-          </Button>
-        )}
+        <div className="flex gap-2">
+          {images.length > 0 && (
+            <Button
+              type="button"
+              variant="outline"
+              size="sm"
+              onClick={() => restoreImagesMutation.mutate()}
+              disabled={restoreImagesMutation.isPending}
+              data-testid="button-ripristina-immagini-post"
+            >
+              <RefreshCw className={`h-4 w-4 mr-2 ${restoreImagesMutation.isPending ? 'animate-spin' : ''}`} />
+              {restoreImagesMutation.isPending ? "Ripristino..." : "Ripristina"}
+            </Button>
+          )}
+          {images.length < 10 && (
+            <Button
+              type="button"
+              variant="outline"
+              onClick={() => fileInputRef.current?.click()}
+              disabled={isUploading}
+              data-testid="button-add-images"
+            >
+              <Upload className="mr-2 h-4 w-4" />
+              {isUploading ? "Caricamento..." : "Aggiungi Immagini"}
+            </Button>
+          )}
+        </div>
       </div>
 
       <input
