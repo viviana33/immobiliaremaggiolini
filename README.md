@@ -9,3 +9,13 @@
 3. **Pubblicazione post → verifica invio**: Verificare che alla pubblicazione di un nuovo post, le notifiche vengano inviate correttamente agli utenti iscritti.
 
 4. **Nuovo immobile available → verifica invio (se 7.5 attivo)**: Verificare che quando un nuovo immobile diventa disponibile, le notifiche vengano inviate agli utenti interessati (funzionalità attiva solo se il passo 7.5 è implementato).
+
+## Test Fase 8
+
+1. **invio da /contatti**
+
+2. **invio da immobile (context ok)**
+
+3. **invio da post (context ok)**
+
+4. **newsletter via checkbox → opt-in ok**
