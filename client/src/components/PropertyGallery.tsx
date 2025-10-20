@@ -57,10 +57,12 @@ export default function PropertyGallery({ images, propertyTitle }: PropertyGalle
   return (
     <>
       <div className="space-y-4">
-        <div 
-          className="relative w-full aspect-video rounded-lg overflow-hidden bg-muted cursor-pointer hover-elevate"
+        <button 
+          className="relative w-full aspect-video rounded-lg overflow-hidden bg-muted cursor-pointer hover-elevate border-0 p-0"
           onClick={() => setSelectedImage(0)}
+          onKeyDown={(e) => e.key === 'Enter' && setSelectedImage(0)}
           data-testid="image-main"
+          aria-label={`Apri galleria immagini - ${propertyTitle}`}
         >
           <img
             src={getCloudinaryUrl(mainImage.urlHot, 1200, 675)}
@@ -68,16 +70,18 @@ export default function PropertyGallery({ images, propertyTitle }: PropertyGalle
             className="w-full h-full object-cover"
             loading="eager"
           />
-        </div>
+        </button>
 
         {thumbnails.length > 0 && (
           <div className="grid grid-cols-4 md:grid-cols-6 gap-2">
             {thumbnails.map((image, index) => (
-              <div
+              <button
                 key={image.id}
-                className="relative aspect-square rounded-md overflow-hidden bg-muted cursor-pointer hover-elevate"
+                className="relative aspect-square rounded-md overflow-hidden bg-muted cursor-pointer hover-elevate border-0 p-0"
                 onClick={() => setSelectedImage(index + 1)}
+                onKeyDown={(e) => e.key === 'Enter' && setSelectedImage(index + 1)}
                 data-testid={`image-thumbnail-${index + 1}`}
+                aria-label={`Visualizza immagine ${index + 2} di ${images.length}`}
               >
                 <img
                   src={getCloudinaryUrl(image.urlHot, 300, 300)}
@@ -85,7 +89,7 @@ export default function PropertyGallery({ images, propertyTitle }: PropertyGalle
                   className="w-full h-full object-cover"
                   loading="lazy"
                 />
-              </div>
+              </button>
             ))}
           </div>
         )}
@@ -103,8 +107,9 @@ export default function PropertyGallery({ images, propertyTitle }: PropertyGalle
               className="absolute top-4 right-4 z-10 bg-black/50 hover:bg-black/70 text-white"
               onClick={() => setSelectedImage(null)}
               data-testid="button-close-gallery"
+              aria-label="Chiudi galleria"
             >
-              <X className="h-6 w-6" />
+              <X className="h-6 w-6" aria-hidden="true" />
             </Button>
 
             {selectedImage !== null && (
@@ -115,8 +120,9 @@ export default function PropertyGallery({ images, propertyTitle }: PropertyGalle
                   className="absolute left-4 top-1/2 -translate-y-1/2 z-10 bg-black/50 hover:bg-black/70 text-white"
                   onClick={handlePrevious}
                   data-testid="button-previous-image"
+                  aria-label="Immagine precedente"
                 >
-                  <ChevronLeft className="h-8 w-8" />
+                  <ChevronLeft className="h-8 w-8" aria-hidden="true" />
                 </Button>
 
                 <Button
@@ -125,8 +131,9 @@ export default function PropertyGallery({ images, propertyTitle }: PropertyGalle
                   className="absolute right-4 top-1/2 -translate-y-1/2 z-10 bg-black/50 hover:bg-black/70 text-white"
                   onClick={handleNext}
                   data-testid="button-next-image"
+                  aria-label="Immagine successiva"
                 >
-                  <ChevronRight className="h-8 w-8" />
+                  <ChevronRight className="h-8 w-8" aria-hidden="true" />
                 </Button>
 
                 <div className="flex items-center justify-center min-h-[80vh]">
