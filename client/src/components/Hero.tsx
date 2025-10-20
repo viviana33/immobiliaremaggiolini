@@ -12,7 +12,7 @@ export default function Hero() {
         role="img"
         aria-label="Villa italiana di lusso con giardino"
       >
-        <div className="absolute inset-0 bg-gradient-to-r from-black/70 via-black/50 to-transparent" />
+        <div className="absolute inset-0 bg-gradient-to-r from-black/50 via-black/30 to-transparent" />
       </div>
 
       <div className="relative z-10 max-w-7xl mx-auto px-6 md:px-8 py-20">
