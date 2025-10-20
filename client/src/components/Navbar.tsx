@@ -21,7 +21,7 @@ export default function Navbar() {
         <div className="flex items-center justify-between h-16">
           <Link href="/" data-testid="link-home">
             <div className="flex items-center gap-3 hover-elevate active-elevate-2 px-3 py-2 rounded-md transition-all cursor-pointer">
-              <Building2 className="w-7 h-7 text-primary" />
+              <Building2 className="w-7 h-7 text-primary" aria-hidden="true" />
               <span className="font-serif font-bold text-xl text-foreground">
                 Immobiliare Maggiolini
               </span>
@@ -35,14 +35,14 @@ export default function Navbar() {
                   variant={location === item.path ? "secondary" : "ghost"}
                   className="gap-2"
                 >
-                  <item.icon className="w-4 h-4" />
+                  <item.icon className="w-4 h-4" aria-hidden="true" />
                   {item.label}
                 </Button>
               </Link>
             ))}
             <Link href="/contatti">
               <Button variant="default" className="gap-2 ml-2" data-testid="button-contact">
-                <Phone className="w-4 h-4" />
+                <Phone className="w-4 h-4" aria-hidden="true" />
                 Contatti
               </Button>
             </Link>
@@ -74,7 +74,7 @@ export default function Navbar() {
                     className="w-full justify-start gap-2"
                     onClick={() => setMobileMenuOpen(false)}
                   >
-                    <item.icon className="w-4 h-4" />
+                    <item.icon className="w-4 h-4" aria-hidden="true" />
                     {item.label}
                   </Button>
                 </Link>
@@ -85,7 +85,7 @@ export default function Navbar() {
                   className="w-full justify-start gap-2"
                   onClick={() => setMobileMenuOpen(false)}
                 >
-                  <Phone className="w-4 h-4" />
+                  <Phone className="w-4 h-4" aria-hidden="true" />
                   Contatti
                 </Button>
               </Link>

@@ -73,8 +73,9 @@ export default function PaginationControls({ currentPage, totalPages, total }: P
           onClick={() => goToPage(1)}
           disabled={currentPage === 1}
           data-testid="button-page-first"
+          aria-label="Prima pagina"
         >
-          <ChevronsLeft className="w-4 h-4" />
+          <ChevronsLeft className="w-4 h-4" aria-hidden="true" />
         </Button>
         
         <Button
@@ -83,8 +84,9 @@ export default function PaginationControls({ currentPage, totalPages, total }: P
           onClick={() => goToPage(currentPage - 1)}
           disabled={currentPage === 1}
           data-testid="button-page-prev"
+          aria-label="Pagina precedente"
         >
-          <ChevronLeft className="w-4 h-4" />
+          <ChevronLeft className="w-4 h-4" aria-hidden="true" />
         </Button>
         
         <div className="flex items-center gap-1">
@@ -114,8 +116,9 @@ export default function PaginationControls({ currentPage, totalPages, total }: P
           onClick={() => goToPage(currentPage + 1)}
           disabled={currentPage === totalPages}
           data-testid="button-page-next"
+          aria-label="Pagina successiva"
         >
-          <ChevronRight className="w-4 h-4" />
+          <ChevronRight className="w-4 h-4" aria-hidden="true" />
         </Button>
         
         <Button
@@ -124,8 +127,9 @@ export default function PaginationControls({ currentPage, totalPages, total }: P
           onClick={() => goToPage(totalPages)}
           disabled={currentPage === totalPages}
           data-testid="button-page-last"
+          aria-label="Ultima pagina"
         >
-          <ChevronsRight className="w-4 h-4" />
+          <ChevronsRight className="w-4 h-4" aria-hidden="true" />
         </Button>
       </div>
       

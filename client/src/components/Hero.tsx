@@ -32,7 +32,7 @@ export default function Hero() {
                 className="gap-2 text-base"
                 data-testid="button-discover-properties"
               >
-                <Search className="w-5 h-5" />
+                <Search className="w-5 h-5" aria-hidden="true" />
                 Scopri le Proprietà
               </Button>
             </Link>
@@ -44,7 +44,7 @@ export default function Hero() {
                 data-testid="button-contact-us"
               >
                 Contattaci
-                <ArrowRight className="w-5 h-5" />
+                <ArrowRight className="w-5 h-5" aria-hidden="true" />
               </Button>
             </Link>
           </div>
