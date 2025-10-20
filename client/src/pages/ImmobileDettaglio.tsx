@@ -19,6 +19,7 @@ import {
   Mail
 } from "lucide-react";
 import type { Property, PropertyImage } from "@shared/schema";
+import { useEffect } from "react";
 
 interface PropertyDetailResponse extends Property {
   images: PropertyImage[];
@@ -47,6 +48,159 @@ export default function ImmobileDettaglio() {
     queryKey: [`/api/properties/${slug}`],
     enabled: !!slug,
   });
+
+  useEffect(() => {
+    if (!property) return;
+
+    const siteUrl = window.location.origin;
+    const pageUrl = `${siteUrl}/immobile/${property.slug}`;
+    
+    const formattedPrice = property.tipo === "affitto" 
+      ? `€ ${Number(property.prezzo).toLocaleString()}/mese`
+      : `€ ${Number(property.prezzo).toLocaleString()}`;
+
+    const metaTitle = `${property.titolo} - ${formattedPrice} | Immobiliare Maggiolini`;
+    document.title = metaTitle;
+
+    const metaDescription = `${property.titolo} in ${property.tipo} a ${property.zona}. ${property.mq} m², ${property.stanze} stanze, ${property.bagni} bagni. ${formattedPrice}.`;
+    
+    let metaDescTag = document.querySelector('meta[name="description"]');
+    if (!metaDescTag) {
+      metaDescTag = document.createElement('meta');
+      metaDescTag.setAttribute('name', 'description');
+      document.head.appendChild(metaDescTag);
+    }
+    metaDescTag.setAttribute('content', metaDescription);
+
+    const ogTags = [
+      { property: 'og:type', content: 'product' },
+      { property: 'og:title', content: metaTitle },
+      { property: 'og:description', content: metaDescription },
+      { property: 'og:url', content: pageUrl },
+      { property: 'og:site_name', content: 'Maggiolini Immobiliare' },
+    ];
+
+    const coverImage = property.images?.[0]?.urlHot || property.images?.[0]?.urlCold;
+    if (coverImage) {
+      ogTags.push({ property: 'og:image', content: coverImage });
+      ogTags.push({ property: 'og:image:alt', content: property.titolo });
+    }
+
+    ogTags.forEach(({ property: prop, content }) => {
+      let tag = document.querySelector(`meta[property="${prop}"]`);
+      if (!tag) {
+        tag = document.createElement('meta');
+        tag.setAttribute('property', prop);
+        document.head.appendChild(tag);
+      }
+      tag.setAttribute('content', content);
+    });
+
+    const twitterTags = [
+      { name: 'twitter:card', content: 'summary_large_image' },
+      { name: 'twitter:title', content: metaTitle },
+      { name: 'twitter:description', content: metaDescription },
+    ];
+
+    if (coverImage) {
+      twitterTags.push({ name: 'twitter:image', content: coverImage });
+    }
+
+    twitterTags.forEach(({ name, content }) => {
+      let tag = document.querySelector(`meta[name="${name}"]`);
+      if (!tag) {
+        tag = document.createElement('meta');
+        tag.setAttribute('name', name);
+        document.head.appendChild(tag);
+      }
+      tag.setAttribute('content', content);
+    });
+
+    const propertySchema: Record<string, any> = {
+      "@context": "https://schema.org",
+      "@type": property.tipo === "vendita" ? "Product" : "RentAction",
+      "name": property.titolo,
+      "description": property.descrizione,
+      "url": pageUrl,
+    };
+
+    if (property.tipo === "vendita") {
+      propertySchema["offers"] = {
+        "@type": "Offer",
+        "price": property.prezzo,
+        "priceCurrency": "EUR",
+        "availability": property.stato === "disponibile" ? "https://schema.org/InStock" : "https://schema.org/OutOfStock",
+        "seller": {
+          "@type": "RealEstateAgent",
+          "name": "Immobiliare Maggiolini"
+        }
+      };
+    } else {
+      propertySchema["object"] = {
+        "@type": "Product",
+        "name": property.titolo,
+        "description": property.descrizione
+      };
+      propertySchema["priceSpecification"] = {
+        "@type": "UnitPriceSpecification",
+        "price": property.prezzo,
+        "priceCurrency": "EUR",
+        "unitText": "MONTH"
+      };
+    }
+
+    if (coverImage) {
+      propertySchema["image"] = coverImage;
+    }
+
+    propertySchema["additionalProperty"] = [
+      {
+        "@type": "PropertyValue",
+        "name": "Area",
+        "value": `${property.mq} m²`
+      },
+      {
+        "@type": "PropertyValue",
+        "name": "Stanze",
+        "value": property.stanze
+      },
+      {
+        "@type": "PropertyValue",
+        "name": "Bagni",
+        "value": property.bagni
+      },
+      {
+        "@type": "PropertyValue",
+        "name": "Classe Energetica",
+        "value": property.classeEnergetica
+      },
+      {
+        "@type": "PropertyValue",
+        "name": "Piano",
+        "value": property.piano
+      },
+      {
+        "@type": "PropertyValue",
+        "name": "Zona",
+        "value": property.zona
+      }
+    ];
+
+    let scriptTag = document.querySelector('script[type="application/ld+json"][id="property-schema"]');
+    if (!scriptTag) {
+      scriptTag = document.createElement('script');
+      scriptTag.setAttribute('type', 'application/ld+json');
+      scriptTag.setAttribute('id', 'property-schema');
+      document.head.appendChild(scriptTag);
+    }
+    scriptTag.textContent = JSON.stringify(propertySchema);
+
+    return () => {
+      document.title = 'Immobiliare Maggiolini';
+      const tagsToRemove = document.querySelectorAll('meta[property^="og:"], meta[name^="twitter:"], script[id="property-schema"]');
+      tagsToRemove.forEach(tag => tag.remove());
+    };
+  }, [property]);
 
   if (isLoading) {
     return (
