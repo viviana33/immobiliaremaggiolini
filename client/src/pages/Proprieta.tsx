@@ -16,7 +16,6 @@ export default function Proprieta() {
   });
   const [searchQuery, setSearchQuery] = useState("");
   const [typeFilter, setTypeFilter] = useState("all");
-  const [priceFilter, setPriceFilter] = useState("all");
 
   const properties = [
     {
@@ -121,17 +120,6 @@ export default function Proprieta() {
                 <SelectItem value="all">Tutti</SelectItem>
                 <SelectItem value="vendita">Vendita</SelectItem>
                 <SelectItem value="affitto">Affitto</SelectItem>
-              </SelectContent>
-            </Select>
-            <Select value={priceFilter} onValueChange={setPriceFilter}>
-              <SelectTrigger className="w-full md:w-48" data-testid="select-price-filter">
-                <SelectValue placeholder="Prezzo" />
-              </SelectTrigger>
-              <SelectContent>
-                <SelectItem value="all">Tutti i Prezzi</SelectItem>
-                <SelectItem value="low">Fino a € 300.000</SelectItem>
-                <SelectItem value="medium">€ 300.000 - € 600.000</SelectItem>
-                <SelectItem value="high">Oltre € 600.000</SelectItem>
               </SelectContent>
             </Select>
             <Button variant="outline" className="gap-2" data-testid="button-more-filters">

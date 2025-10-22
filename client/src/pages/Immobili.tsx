@@ -1,7 +1,6 @@
 import { useQuery } from "@tanstack/react-query";
 import PropertyCard from "@/components/PropertyCard";
 import PropertyCardSkeleton from "@/components/PropertyCardSkeleton";
-import FiltersBar from "@/components/FiltersBar";
 import SortingControls from "@/components/SortingControls";
 import PaginationControls from "@/components/PaginationControls";
 import { useLocation } from "wouter";
@@ -59,7 +58,6 @@ export default function Immobili() {
     return (
       <div className="container mx-auto px-4 py-8">
         <h1 className="text-4xl font-bold mb-8">Lista Immobili</h1>
-        <FiltersBar />
         <div className="text-center py-12">
           <p className="text-destructive text-lg" data-testid="text-error">
             Errore nel caricamento degli immobili. Riprova più tardi.
@@ -73,7 +71,6 @@ export default function Immobili() {
     return (
       <div className="container mx-auto px-4 py-8">
         <h1 className="text-4xl font-bold mb-8">Lista Immobili</h1>
-        <FiltersBar />
         <div className="flex flex-wrap items-center justify-between gap-4 mb-6">
           <div className="h-5 w-32 bg-muted rounded animate-pulse" />
           <div className="h-10 w-48 bg-muted rounded animate-pulse" />
@@ -88,12 +85,9 @@ export default function Immobili() {
   }
 
   if (!properties || properties.length === 0) {
-    const hasFilters = queryParams !== "";
-    
     return (
       <div className="container mx-auto px-4 py-8">
         <h1 className="text-4xl font-bold mb-8" data-testid="heading-immobili">Lista Immobili</h1>
-        <FiltersBar />
         
         <div className="flex flex-wrap items-center justify-between gap-4 mb-6">
           <div>
@@ -105,20 +99,9 @@ export default function Immobili() {
         </div>
         
         <div className="text-center py-12">
-          {hasFilters ? (
-            <div className="space-y-4">
-              <p className="text-muted-foreground text-lg" data-testid="text-no-results">
-                Nessun immobile corrisponde ai filtri selezionati.
-              </p>
-              <p className="text-sm text-muted-foreground">
-                Prova a modificare i criteri di ricerca o rimuovere alcuni filtri.
-              </p>
-            </div>
-          ) : (
-            <p className="text-muted-foreground text-lg" data-testid="text-no-properties">
-              Nessun immobile disponibile al momento.
-            </p>
-          )}
+          <p className="text-muted-foreground text-lg" data-testid="text-no-properties">
+            Nessun immobile disponibile al momento.
+          </p>
         </div>
       </div>
     );
@@ -127,8 +110,6 @@ export default function Immobili() {
   return (
     <div className="container mx-auto px-4 py-8">
       <h1 className="text-4xl font-bold mb-8" data-testid="heading-immobili">Lista Immobili</h1>
-      
-      <FiltersBar />
       
       <div className="flex flex-wrap items-center justify-between gap-4 mb-6">
         <div>
