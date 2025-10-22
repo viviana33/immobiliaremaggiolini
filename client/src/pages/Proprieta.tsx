@@ -1,8 +1,7 @@
 import PropertyCard from "@/components/PropertyCard";
 import { Input } from "@/components/ui/input";
-import { Button } from "@/components/ui/button";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
-import { Search, SlidersHorizontal } from "lucide-react";
+import { Search } from "lucide-react";
 import { useState } from "react";
 import apartmentImage from "@assets/generated_images/Apartment_interior_property_image_66b8a52c.png";
 import countrysideImage from "@assets/generated_images/Countryside_property_image_dddb1072.png";
@@ -122,10 +121,6 @@ export default function Proprieta() {
                 <SelectItem value="affitto">Affitto</SelectItem>
               </SelectContent>
             </Select>
-            <Button variant="outline" className="gap-2" data-testid="button-more-filters">
-              <SlidersHorizontal className="w-4 h-4" />
-              Filtri
-            </Button>
           </div>
         </div>
       </section>
