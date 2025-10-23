@@ -1,42 +1,12 @@
-import TeamMember from "@/components/TeamMember";
 import { Card } from "@/components/ui/card";
 import teamPhoto from "@assets/generated_images/Real_estate_team_photo_7f941344.png";
-import member1 from "@assets/generated_images/Team_member_portrait_1_976007be.png";
-import member2 from "@assets/generated_images/Team_member_portrait_2_a454b6da.png";
-import member3 from "@assets/generated_images/Team_member_portrait_3_3620def7.png";
 import { usePageMeta } from "@/lib/seo";
 
 export default function ChiSiamo() {
   usePageMeta({
     title: 'Chi Siamo',
-    description: 'Presenza nel territorio da quarant\'anni. Accordi che durano, relazioni che restano. Scopri la storia di Immobiliare Maggiolini e il team che ti accompagnerà nella ricerca della casa perfetta.',
+    description: 'Presenza nel territorio da quarant\'anni. Accordi che durano, relazioni che restano. Scopri la storia di Immobiliare Maggiolini.',
   });
-  const teamMembers = [
-    {
-      name: "Maria Rossi",
-      role: "Fondatrice & Consulente Senior",
-      image: member1,
-      quote: "Aiutare le famiglie a trovare casa è la mia passione da sempre",
-      email: "maria@maggiolini.it",
-      phone: "+39 348 123 4567",
-    },
-    {
-      name: "Luca Bianchi",
-      role: "Consulente Immobiliare",
-      image: member2,
-      quote: "Ogni cliente merita attenzione e dedizione totale",
-      email: "luca@maggiolini.it",
-      phone: "+39 348 234 5678",
-    },
-    {
-      name: "Sofia Verdi",
-      role: "Specialista Vendite",
-      image: member3,
-      quote: "La fiducia si costruisce giorno dopo giorno",
-      email: "sofia@maggiolini.it",
-      phone: "+39 348 345 6789",
-    },
-  ];
 
   const values = [
     {
@@ -141,25 +111,6 @@ export default function ChiSiamo() {
                   {value.description}
                 </p>
               </Card>
-            ))}
-          </div>
-        </div>
-      </section>
-
-      <section className="py-16 md:py-20">
-        <div className="max-w-7xl mx-auto px-6 md:px-8">
-          <div className="text-center mb-12">
-            <h2 className="font-serif font-bold text-3xl md:text-4xl text-foreground mb-4">
-              Il Nostro Team
-            </h2>
-            <p className="text-muted-foreground text-lg max-w-2xl mx-auto">
-              Professionisti appassionati pronti ad aiutarvi
-            </p>
-          </div>
-
-          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-8">
-            {teamMembers.map((member, index) => (
-              <TeamMember key={index} {...member} />
             ))}
           </div>
         </div>
