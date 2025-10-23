@@ -181,41 +181,6 @@ export default function Home() {
           </div>
         </div>
       </section>
-
-      <section className="py-20 md:py-24 bg-primary text-primary-foreground">
-        <div className="max-w-4xl mx-auto px-6 md:px-8 text-center space-y-6">
-          <h2 className="font-serif font-bold text-3xl md:text-4xl lg:text-5xl">
-            Pronti a Trovare la Vostra Casa dei Sogni?
-          </h2>
-          <p className="text-lg md:text-xl text-primary-foreground/90 leading-relaxed">
-            Contattaci oggi stesso per una consulenza gratuita. 
-            Siamo qui per aiutarvi a realizzare il vostro sogno.
-          </p>
-          <div className="flex flex-col sm:flex-row gap-4 justify-center pt-4">
-            <Link href="/contatti">
-              <Button
-                size="lg"
-                variant="outline"
-                className="gap-2 text-base bg-primary-foreground text-primary hover:bg-primary-foreground/90"
-                data-testid="button-cta-contact"
-              >
-                Contattaci Ora
-                <ArrowRight className="w-5 h-5" />
-              </Button>
-            </Link>
-            <Link href="/immobili">
-              <Button
-                size="lg"
-                variant="outline"
-                className="gap-2 text-base border-primary-foreground/30 text-primary-foreground hover:bg-primary-foreground/10"
-                data-testid="button-cta-properties"
-              >
-                Esplora Proprietà
-              </Button>
-            </Link>
-          </div>
-        </div>
-      </section>
     </div>
   );
 }
