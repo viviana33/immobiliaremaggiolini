@@ -9,7 +9,7 @@ import { usePageMeta } from "@/lib/seo";
 export default function ChiSiamo() {
   usePageMeta({
     title: 'Chi Siamo',
-    description: '20 anni di fiducia e amicizia nel settore immobiliare. Scopri la storia di Immobiliare Maggiolini, i nostri valori e il team che ti accompagnerà nella ricerca della casa perfetta.',
+    description: 'Presenza nel territorio da oltre quarant\'anni. Accordi che durano, relazioni che restano. Scopri la storia di Immobiliare Maggiolini e il team che ti accompagnerà nella ricerca della casa perfetta.',
   });
   const teamMembers = [
     {
@@ -69,7 +69,7 @@ export default function ChiSiamo() {
             Chi Siamo
           </h1>
           <p className="text-muted-foreground text-lg max-w-2xl">
-            La storia della nostra agenzia e delle persone che la rendono speciale
+            Presenza nel territorio da oltre quarant'anni
           </p>
         </div>
       </section>
@@ -79,28 +79,32 @@ export default function ChiSiamo() {
           <div className="grid grid-cols-1 lg:grid-cols-2 gap-12 items-center">
             <div className="space-y-6">
               <h2 className="font-serif font-bold text-3xl md:text-4xl text-foreground">
-                20 Anni di Fiducia e Amicizia
+                Accordi che durano, relazioni che restano
               </h2>
               <div className="space-y-4 text-muted-foreground leading-relaxed">
                 <p>
-                  Immobiliare Maggiolini nasce nel 2004 dal sogno di Maria Rossi: creare un'agenzia 
-                  immobiliare diversa, dove le persone vengono prima del business.
+                  Quando consegni le chiavi di casa tua a uno sconosciuto, o quando firmi per l'acquisto più importante della tua vita, non stai cercando solo qualcuno che compili documenti. Stai cercando qualcuno che capisca cosa c'è davvero in gioco.
                 </p>
                 <p>
-                  In questi vent'anni abbiamo accompagnato oltre 500 famiglie nella ricerca della 
-                  casa perfetta, costruendo rapporti che vanno ben oltre la semplice transazione commerciale. 
-                  Molti dei nostri clienti sono diventati amici e continuano a rivolgersi a noi per ogni necessità.
+                  Dopo quarant'anni in questo territorio, abbiamo imparato che il nostro lavoro non finisce quando si firma un contratto. Inizia molto prima – quando ascoltiamo cosa ti serve davvero, non cosa è più facile da proporre – e continua molto dopo, perché sappiamo che è nei mesi successivi che si capisce se un accordo funziona davvero.
                 </p>
                 <p>
-                  La nostra forza? La conoscenza profonda del territorio lombardo, l'esperienza maturata 
-                  sul campo e soprattutto la passione sincera per quello che facciamo. Non siamo solo 
-                  agenti immobiliari, siamo consulenti di fiducia che vi accompagnano in una delle 
-                  decisioni più importanti della vostra vita.
+                  Vediamo proprietari che ci raccontano di agenti spariti dopo aver incassato la provvigione. Inquilini che hanno scoperto "dettagli" solo dopo aver firmato. Acquirenti che si sono fidati di valutazioni gonfiate.
                 </p>
                 <p>
-                  Oggi siamo un team affiatato di professionisti, ma manteniamo intatto lo spirito 
-                  familiare che ci ha contraddistinti fin dall'inizio. Ogni cliente riceve attenzione 
-                  personalizzata, ascolto attento e supporto costante.
+                  Verifichiamo ogni dettaglio. Controlliamo documenti, referenze, situazioni. Parliamo chiaro su quello che possiamo e non possiamo garantire. Quando ti proponiamo qualcuno, sia inquilino o acquirente, sappiamo già che è affidabile.
+                </p>
+                <p>
+                  Conosciamo ogni angolo di questa zona. Non perché l'abbiamo studiato su una mappa, ma perché ci abbiamo vissuto, lavorato, costruito relazioni. Quando ti diciamo che un immobile vale una certa cifra, o che un quartiere sta cambiando, non stiamo ripetendo statistiche. Stiamo condividendo quello che abbiamo visto accadere.
+                </p>
+                <p>
+                  Molti dei nostri clienti sono diventati amici. Quando hai aiutato qualcuno a trovare la prima casa, poi l'hai seguito nell'acquisto della seconda, e magari hai sistemato l'affitto per suo figlio che va all'università, alla fine ti invitano ai compleanni. E noi ci andiamo.
+                </p>
+                <p>
+                  Facciamo questo lavoro perché ci piace vedere accordi che funzionano. Proprietari che dormono tranquilli. Inquilini che si sentono a casa. Acquirenti che dopo due anni ti fermano per strada e ti ringraziano ancora.
+                </p>
+                <p>
+                  Se cerchi qualcuno che ti ascolti, che conosca davvero questo territorio, e che sia ancora qui quando ti serve – anche mesi dopo aver firmato – allora possiamo parlare.
                 </p>
               </div>
             </div>
