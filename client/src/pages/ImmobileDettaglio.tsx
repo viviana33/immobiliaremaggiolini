@@ -265,9 +265,15 @@ export default function ImmobileDettaglio() {
             <p className="text-muted-foreground">
               L'immobile che stai cercando non esiste o non è più disponibile.
             </p>
-            <Button onClick={() => setLocation("/immobili")} data-testid="button-back-to-properties">
+            <Button 
+              onClick={() => {
+                const source = sessionStorage.getItem('propertyListSource') || '/immobili';
+                setLocation(source);
+              }} 
+              data-testid="button-back-to-properties"
+            >
               <ArrowLeft className="mr-2 h-4 w-4" />
-              Torna agli Immobili
+              Torna Indietro
             </Button>
           </CardContent>
         </Card>
@@ -314,12 +320,15 @@ export default function ImmobileDettaglio() {
       <div className="max-w-7xl mx-auto px-6 md:px-8 py-8">
         <Button
           variant="ghost"
-          onClick={() => setLocation("/immobili")}
+          onClick={() => {
+            const source = sessionStorage.getItem('propertyListSource') || '/immobili';
+            setLocation(source);
+          }}
           className="mb-6"
           data-testid="button-back"
         >
           <ArrowLeft className="mr-2 h-4 w-4" />
-          Torna agli Immobili
+          Torna Indietro
         </Button>
 
         <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">

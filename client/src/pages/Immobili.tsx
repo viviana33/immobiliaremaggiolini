@@ -5,6 +5,7 @@ import SortingControls from "@/components/SortingControls";
 import PaginationControls from "@/components/PaginationControls";
 import { useLocation } from "wouter";
 import { usePageMeta } from "@/lib/seo";
+import { useEffect } from "react";
 
 interface Property {
   id: string;
@@ -36,6 +37,10 @@ export default function Immobili() {
 
   const [location] = useLocation();
   const queryParams = location.includes('?') ? location.split('?')[1] : '';
+
+  useEffect(() => {
+    sessionStorage.setItem('propertyListSource', '/immobili');
+  }, []);
 
   const queryKey = queryParams ? ['/api/properties', queryParams] : ['/api/properties'];
   const queryUrl = queryParams ? `/api/properties?${queryParams}` : '/api/properties';

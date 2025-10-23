@@ -12,11 +12,12 @@ Preferred communication style: Simple, everyday language.
 
 ### Frontend
 - **Framework**: React 18+ with TypeScript, Vite.
-- **Routing**: Wouter.
+- **Routing**: Wouter with sessionStorage-based navigation tracking for property detail back navigation.
 - **State Management**: TanStack Query for server state, React Context API for themes/sessions.
 - **UI Framework**: shadcn/ui (Radix UI) with Tailwind CSS, custom Mediterranean color palette, responsive mobile-first design, dark mode.
 - **Component Structure**: Organized by presentation, pages, UI primitives, and custom hooks.
 - **Image Carousel**: Custom `ImageCarousel` component with keyboard navigation (Arrow keys), touch/pointer swipe support, lazy loading for non-current images, smart prefetch (only next image), aspect ratio preservation, thumbnail navigation, descriptive alt text support, and full accessibility (ARIA labels, focus rings). Supports empty state with placeholder fallback. Uses instance-scoped prefetch to prevent conflicts when multiple carousels are mounted.
+- **Navigation UX**: Property listing pages (/proprieta and /immobili) set sessionStorage to track user's origin. Property detail pages read this value to correctly navigate back to the originating list when users click "Torna Indietro", with /immobili as safe fallback for direct links.
 
 ### Backend
 - **Runtime**: Node.js with Express.js.
@@ -30,7 +31,7 @@ Preferred communication style: Simple, everyday language.
     - **Property Images**: Stores foreign keys to properties, hot/cold URLs, file hashes, and archive flags.
     - **Blog Posts**: Contains title, subtitle, slug, cover image, rich content, tags, category, author, status, SEO fields.
     - **Subscriptions**: Stores email, name, preferences (`blog_updates`, `new_listings`), consent data, and confirmation status.
-- **Property Management**: Supports URL-based filtering, detailed property pages with image galleries, video embeds, and related properties.
+- **Property Management**: Supports URL-based filtering, detailed property pages with image galleries, video embeds, and related properties. Price formatting handles numeric strings from API ("180000.00") via `parseFloat(price.replace(/[^\d.-]/g, ''))` for correct locale-formatted display.
 - **Blog Management**: Admin forms use React Hook Form with Zod validation, Markdown editor, and a dual-storage image upload system (R2 for cold, Cloudinary for hot delivery). Public blog pages feature category filtering, pagination, and SEO considerations.
 - **Newsletter System**: Manages user subscriptions with double opt-in via Brevo integration, including preference updates, confirmation flows, and rate limiting. It also includes a "Thank You" page with upgrade flows for subscription preferences and a dedicated "Preferences" page for managing subscriptions.
 - **Property Listing Notifications**: Automated email notifications for new or newly available properties sent to subscribed users, integrated with Brevo transactional emails.

@@ -1,13 +1,34 @@
 import PropertyCard from "@/components/PropertyCard";
+import PropertyCardSkeleton from "@/components/PropertyCardSkeleton";
 import { Input } from "@/components/ui/input";
-import { Button } from "@/components/ui/button";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { Search } from "lucide-react";
-import { useState } from "react";
-import apartmentImage from "@assets/generated_images/Apartment_interior_property_image_66b8a52c.png";
-import countrysideImage from "@assets/generated_images/Countryside_property_image_dddb1072.png";
-import penthouseImage from "@assets/generated_images/Penthouse_terrace_property_image_6980bf5a.png";
+import { useState, useEffect } from "react";
+import { useQuery } from "@tanstack/react-query";
+import { useLocation } from "wouter";
 import { usePageMeta } from "@/lib/seo";
+
+interface Property {
+  id: string;
+  slug: string;
+  title: string;
+  price: string;
+  for_rent: boolean;
+  area_mq: number;
+  location: string;
+}
+
+interface PaginationData {
+  total: number;
+  page: number;
+  perPage: number;
+  totalPages: number;
+}
+
+interface PropertiesResponse {
+  properties: Property[];
+  pagination: PaginationData;
+}
 
 export default function Proprieta() {
   usePageMeta({
@@ -16,75 +37,40 @@ export default function Proprieta() {
   });
   const [searchQuery, setSearchQuery] = useState("");
   const [typeFilter, setTypeFilter] = useState("all");
+  const [location] = useLocation();
 
-  const properties = [
-    {
-      id: "1",
-      title: "Elegante Appartamento Centro",
-      location: "Milano, Porta Nuova",
-      price: "€ 450.000",
-      image: apartmentImage,
-      type: "vendita" as const,
-      bedrooms: 3,
-      bathrooms: 2,
-      area: 120,
+  useEffect(() => {
+    sessionStorage.setItem('propertyListSource', '/proprieta');
+  }, []);
+
+  const queryParams = location.includes('?') ? location.split('?')[1] : '';
+  const queryKey = queryParams ? ['/api/properties', queryParams] : ['/api/properties'];
+  const queryUrl = queryParams ? `/api/properties?${queryParams}` : '/api/properties';
+
+  const { data, isLoading, error } = useQuery<PropertiesResponse>({
+    queryKey,
+    queryFn: async () => {
+      const response = await fetch(queryUrl);
+      if (!response.ok) {
+        throw new Error('Failed to fetch properties');
+      }
+      return response.json();
     },
-    {
-      id: "2",
-      title: "Villa con Giardino",
-      location: "Monza, Centro Storico",
-      price: "€ 2.800/mese",
-      image: countrysideImage,
-      type: "affitto" as const,
-      bedrooms: 4,
-      bathrooms: 3,
-      area: 200,
-    },
-    {
-      id: "3",
-      title: "Attico con Terrazza Panoramica",
-      location: "Como, Lungolago",
-      price: "€ 890.000",
-      image: penthouseImage,
-      type: "vendita" as const,
-      bedrooms: 3,
-      bathrooms: 2,
-      area: 150,
-    },
-    {
-      id: "4",
-      title: "Bilocale Moderno",
-      location: "Milano, Navigli",
-      price: "€ 1.200/mese",
-      image: apartmentImage,
-      type: "affitto" as const,
-      bedrooms: 2,
-      bathrooms: 1,
-      area: 65,
-    },
-    {
-      id: "5",
-      title: "Casa Indipendente",
-      location: "Brianza, Residenziale",
-      price: "€ 650.000",
-      image: countrysideImage,
-      type: "vendita" as const,
-      bedrooms: 5,
-      bathrooms: 3,
-      area: 250,
-    },
-    {
-      id: "6",
-      title: "Loft Industriale",
-      location: "Milano, Isola",
-      price: "€ 520.000",
-      image: penthouseImage,
-      type: "vendita" as const,
-      bedrooms: 2,
-      bathrooms: 2,
-      area: 110,
-    },
-  ];
+  });
+
+  const allProperties = data?.properties || [];
+  
+  const filteredProperties = allProperties.filter(property => {
+    const matchesSearch = searchQuery === "" || 
+      property.title.toLowerCase().includes(searchQuery.toLowerCase()) ||
+      property.location.toLowerCase().includes(searchQuery.toLowerCase());
+    
+    const matchesType = typeFilter === "all" || 
+      (typeFilter === "affitto" && property.for_rent) ||
+      (typeFilter === "vendita" && !property.for_rent);
+    
+    return matchesSearch && matchesType;
+  });
 
   return (
     <div className="min-h-screen">
@@ -128,23 +114,62 @@ export default function Proprieta() {
 
       <section className="py-12 md:py-16">
         <div className="max-w-7xl mx-auto px-6 md:px-8">
-          <div className="mb-6">
-            <p className="text-muted-foreground">
-              Mostrando <span className="font-semibold text-foreground">{properties.length}</span> proprietà
-            </p>
-          </div>
+          {isLoading ? (
+            <>
+              <div className="mb-6">
+                <div className="h-5 w-48 bg-muted rounded animate-pulse" />
+              </div>
+              <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
+                {Array.from({ length: 6 }).map((_, i) => (
+                  <PropertyCardSkeleton key={i} />
+                ))}
+              </div>
+            </>
+          ) : error ? (
+            <div className="text-center py-12">
+              <p className="text-destructive text-lg">
+                Errore nel caricamento delle proprietà. Riprova più tardi.
+              </p>
+            </div>
+          ) : filteredProperties.length === 0 ? (
+            <div className="text-center py-12">
+              <p className="text-muted-foreground text-lg">
+                Nessuna proprietà disponibile al momento.
+              </p>
+            </div>
+          ) : (
+            <>
+              <div className="mb-6">
+                <p className="text-muted-foreground">
+                  Mostrando <span className="font-semibold text-foreground">{filteredProperties.length}</span> {filteredProperties.length === 1 ? 'proprietà' : 'proprietà'}
+                </p>
+              </div>
 
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
-            {properties.map((property) => (
-              <PropertyCard key={property.id} {...property} />
-            ))}
-          </div>
-
-          <div className="mt-12 flex justify-center">
-            <Button variant="outline" size="lg" data-testid="button-load-more">
-              Carica Altre Proprietà
-            </Button>
-          </div>
+              <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
+                {filteredProperties.map((property) => {
+                  const priceNum = parseFloat(property.price.replace(/[^\d.-]/g, ''));
+                  const formattedPrice = property.for_rent 
+                    ? `€ ${priceNum.toLocaleString('it-IT')}/mese`
+                    : `€ ${priceNum.toLocaleString('it-IT')}`;
+                  
+                  return (
+                    <PropertyCard
+                      key={property.id}
+                      id={property.slug}
+                      title={property.title}
+                      location={property.location}
+                      price={formattedPrice}
+                      image="https://images.unsplash.com/photo-1568605114967-8130f3a36994?w=800&h=600&fit=crop"
+                      type={property.for_rent ? "affitto" : "vendita"}
+                      bedrooms={2}
+                      bathrooms={1}
+                      area={property.area_mq}
+                    />
+                  );
+                })}
+              </div>
+            </>
+          )}
         </div>
       </section>
     </div>
