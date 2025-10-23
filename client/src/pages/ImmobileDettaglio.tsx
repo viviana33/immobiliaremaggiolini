@@ -45,7 +45,17 @@ export default function ImmobileDettaglio() {
   const slug = params.slug;
 
   const { data: property, isLoading, error } = useQuery<PropertyDetailResponse>({
-    queryKey: [`/api/properties/${slug}`],
+    queryKey: ['/api/properties/resolve', slug],
+    queryFn: async () => {
+      const response = await fetch(`/api/properties/resolve/${encodeURIComponent(slug!)}`);
+      if (!response.ok) {
+        if (response.status === 404) {
+          throw new Error('NOT_FOUND');
+        }
+        throw new Error('Failed to fetch property');
+      }
+      return response.json();
+    },
     enabled: !!slug,
   });
 
