@@ -52,6 +52,7 @@ export interface IStorage {
   getFilteredProperties(filters: PropertyFilters): Promise<PaginatedProperties>;
   getPropertyById(id: string): Promise<Property | undefined>;
   getPropertyBySlug(slug: string): Promise<Property | undefined>;
+  getPropertyBySlugOrId(key: string): Promise<Property | undefined>;
   getSimilarProperties(propertyId: string, limit?: number): Promise<Property[]>;
   createProperty(property: InsertProperty): Promise<Property>;
   updateProperty(id: string, property: Partial<InsertProperty>): Promise<Property | undefined>;
@@ -188,6 +189,27 @@ export class DbStorage implements IStorage {
   async getPropertyBySlug(slug: string): Promise<Property | undefined> {
     const [property] = await db.select().from(properties).where(eq(properties.slug, slug));
     return property;
+  }
+
+  async getPropertyBySlugOrId(key: string): Promise<Property | undefined> {
+    // Try match by slug first
+    let property = await this.getPropertyBySlug(key);
+    if (property) return property;
+    
+    // Try match by ID
+    property = await this.getPropertyById(key);
+    if (property) return property;
+    
+    // If key looks like a slug ending with -p<id>, extract the ID and try again
+    const slugPattern = /-p([a-f0-9-]+)$/i;
+    const match = key.match(slugPattern);
+    if (match && match[1]) {
+      const extractedId = match[1];
+      property = await this.getPropertyById(extractedId);
+      if (property) return property;
+    }
+    
+    return undefined;
   }
 
   async getSimilarProperties(propertyId: string, limit: number = 3): Promise<Property[]> {

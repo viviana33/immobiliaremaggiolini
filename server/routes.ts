@@ -380,6 +380,37 @@ export async function registerRoutes(app: Express): Promise<Server> {
     }
   });
 
+  app.get("/api/properties/all", async (req, res) => {
+    try {
+      const properties = await storage.getAllProperties();
+      console.log(`[getAllProperties] Returning ${properties.length} total properties`);
+      res.json(properties);
+    } catch (error) {
+      console.error("Error fetching all properties:", error);
+      res.status(500).json({ message: "Errore nel recupero degli immobili" });
+    }
+  });
+
+  app.get("/api/properties/resolve/:key", async (req, res) => {
+    try {
+      const property = await storage.getPropertyBySlugOrId(req.params.key);
+      if (!property) {
+        return res.status(404).json({ message: "Immobile non trovato" });
+      }
+      
+      const images = await storage.getPropertyImages(property.id);
+      const activeImages = images.filter(img => !img.archiviato).slice(0, 15);
+      
+      res.json({ 
+        ...property, 
+        images: activeImages
+      });
+    } catch (error) {
+      console.error("Error resolving property:", error);
+      res.status(500).json({ message: "Errore nel recupero dell'immobile" });
+    }
+  });
+
   app.get("/api/properties/:slug", async (req, res) => {
     try {
       const property = await storage.getPropertyBySlug(req.params.slug);
