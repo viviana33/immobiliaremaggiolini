@@ -1,6 +1,7 @@
 import { Link } from "wouter";
 import { Building2, Mail, Phone, MapPin, Instagram } from "lucide-react";
 import { Button } from "@/components/ui/button";
+import logoImg from "@assets/Logo Geometrico su Fondo Rosso_1761237729319.png";
 
 export default function Footer() {
 
@@ -10,7 +11,7 @@ export default function Footer() {
         <div className="grid grid-cols-1 md:grid-cols-3 gap-8 lg:gap-12">
           <div className="space-y-4">
             <div className="flex items-center gap-3">
-              <Building2 className="w-7 h-7 text-primary" />
+              <img src={logoImg} alt="Immobiliare Maggiolini" className="w-10 h-10 object-contain" />
               <span className="font-serif font-bold text-xl text-foreground">
                 Immobiliare Maggiolini
               </span>
