@@ -1,5 +1,4 @@
 import Hero from "@/components/Hero";
-import TrustBadges from "@/components/TrustBadges";
 import PropertyCard from "@/components/PropertyCard";
 import BlogCard from "@/components/BlogCard";
 import { Button } from "@/components/ui/button";
@@ -86,7 +85,6 @@ export default function Home() {
   return (
     <div>
       <Hero />
-      <TrustBadges />
 
       <section className="py-20 md:py-24">
         <div className="max-w-7xl mx-auto px-6 md:px-8">

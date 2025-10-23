@@ -7,7 +7,7 @@ export default function Footer() {
   return (
     <footer className="bg-secondary border-t border-border">
       <div className="max-w-7xl mx-auto px-6 md:px-8 py-12 md:py-16">
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-8 mb-12">
+        <div className="grid grid-cols-1 md:grid-cols-3 gap-8 lg:gap-12">
           <div className="space-y-4">
             <div className="flex items-center gap-3">
               <Building2 className="w-7 h-7 text-primary" />
@@ -77,15 +77,8 @@ export default function Footer() {
 
         </div>
 
-        <div className="pt-8 border-t border-border">
-          <div className="flex flex-col md:flex-row justify-between items-center gap-4 text-sm text-muted-foreground">
-            <div className="flex flex-wrap gap-4 justify-center">
-              <span>🏆 20+ anni di esperienza</span>
-              <span>✓ Oltre 500 famiglie servite</span>
-              <span>💚 Sempre al tuo fianco</span>
-            </div>
-            <p>© 2024 Immobiliare Maggiolini. Tutti i diritti riservati.</p>
-          </div>
+        <div className="pt-8 mt-4 border-t border-border text-center">
+          <p className="text-sm text-muted-foreground">© 2024 Immobiliare Maggiolini. Tutti i diritti riservati.</p>
         </div>
       </div>
     </footer>
