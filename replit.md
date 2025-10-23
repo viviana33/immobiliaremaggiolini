@@ -16,7 +16,7 @@ Preferred communication style: Simple, everyday language.
 - **State Management**: TanStack Query for server state, React Context API for themes/sessions.
 - **UI Framework**: shadcn/ui (Radix UI) with Tailwind CSS, custom Mediterranean color palette, responsive mobile-first design, dark mode.
 - **Component Structure**: Organized by presentation, pages, UI primitives, and custom hooks.
-- **Image Carousel**: Custom `ImageCarousel` component with keyboard navigation (Arrow keys), touch/pointer swipe support, lazy loading for non-current images, aspect ratio preservation, thumbnail navigation, and full accessibility (ARIA labels, focus rings). Supports empty state with placeholder fallback.
+- **Image Carousel**: Custom `ImageCarousel` component with keyboard navigation (Arrow keys), touch/pointer swipe support, lazy loading for non-current images, smart prefetch (only next image), aspect ratio preservation, thumbnail navigation, descriptive alt text support, and full accessibility (ARIA labels, focus rings). Supports empty state with placeholder fallback. Uses instance-scoped prefetch to prevent conflicts when multiple carousels are mounted.
 
 ### Backend
 - **Runtime**: Node.js with Express.js.
@@ -50,6 +50,11 @@ Preferred communication style: Simple, everyday language.
 - **Sitemap XML**: Dynamically generated for static pages, available properties, and published blog posts, adhering to sitemap.org schema with prioritized URLs and update frequencies.
 - **JSON-LD Structured Data**: Implements schemas for `RealEstateAgent` (site-wide), `Article` (blog posts), and `Product`/`RentAction` (property details) to enhance search engine understanding.
 - **Meta Tags Helper**: Centralized SEO utility (`client/src/lib/seo.ts`) with `usePageMeta` hook for setting default meta tags, Open Graph tags, and Twitter Cards. Applied to all pages including Home, Chi Siamo, Contatti, Immobili, Blog, Grazie, Preferenze, Not Found, and Proprieta. Individual property and blog post pages have custom meta tags with dynamic content.
+- **Property Page SEO Optimizations**:
+  - **Meta Title**: Format `Property.title | Immobiliare Maggiolini` for consistent branding
+  - **Meta Description**: Sanitized from property description (strips HTML and Markdown: bold, italic, code, headings, links, lists, blockquotes), limited to 150-160 characters including ellipsis, truncated at word boundaries
+  - **Image Alt Text**: Descriptive format `Property.title - immagine N` for all images (carousel main, thumbnails, property cards)
+  - **Smart Image Prefetch**: Only the next image in carousel is prefetched using instance-scoped `<link rel="prefetch">` tags to optimize performance without aggressive resource loading
 
 ### Analytics & Monitoring
 - **Vercel Analytics**: Integrated for privacy-friendly web analytics. No cookies, GDPR-compliant, lightweight tracking of page views and web vitals. Configured in `client/src/App.tsx`.
