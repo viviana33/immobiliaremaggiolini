@@ -3,7 +3,7 @@ import { useQuery } from "@tanstack/react-query";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
-import PropertyGallery from "@/components/PropertyGallery";
+import ImageCarousel from "@/components/ImageCarousel";
 import YouTubeEmbed from "@/components/YouTubeEmbed";
 import PropertyCard from "@/components/PropertyCard";
 import ContactForm from "@/components/ContactForm";
@@ -293,9 +293,24 @@ export default function ImmobileDettaglio() {
 
         <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
           <div className="lg:col-span-2 space-y-6">
-            <PropertyGallery 
-              images={property.images} 
-              propertyTitle={property.titolo}
+            <div>
+              <h1 className="text-3xl md:text-4xl font-serif font-bold mb-2" data-testid="text-property-title">
+                {property.titolo}
+              </h1>
+              
+              <div className="flex items-center gap-2 text-muted-foreground mb-4">
+                <MapPin className="w-5 h-5" />
+                <span className="text-lg" data-testid="text-location">{property.zona}</span>
+              </div>
+
+              <div className="text-3xl font-bold mb-6" data-testid="text-price-main">
+                {formattedPrice}
+              </div>
+            </div>
+
+            <ImageCarousel 
+              images={property.images.map(img => img.urlHot)}
+              showThumbnails={true}
             />
 
             {property.linkVideo && (
@@ -309,115 +324,117 @@ export default function ImmobileDettaglio() {
             )}
 
             <div>
-              <h2 className="text-3xl font-serif font-bold mb-4" data-testid="text-property-title">
-                {property.titolo}
-              </h2>
-              
-              <div className="flex items-center gap-2 text-muted-foreground mb-6">
-                <MapPin className="w-5 h-5" />
-                <span className="text-lg" data-testid="text-location">{property.zona}</span>
-              </div>
+              <h2 className="text-2xl font-serif font-bold mb-4">Caratteristiche</h2>
+              <div className="grid grid-cols-2 md:grid-cols-3 gap-4">
+                <div className="flex flex-col gap-1">
+                  <div className="flex items-center gap-2 text-muted-foreground">
+                    <Maximize className="w-5 h-5" aria-hidden="true" />
+                    <span className="text-sm">Superficie</span>
+                  </div>
+                  <span className="font-semibold text-lg" data-testid="text-area">{property.mq} m²</span>
+                </div>
 
+                <div className="flex flex-col gap-1">
+                  <div className="flex items-center gap-2 text-muted-foreground">
+                    <Bed className="w-5 h-5" aria-hidden="true" />
+                    <span className="text-sm">Stanze</span>
+                  </div>
+                  <span className="font-semibold text-lg" data-testid="text-rooms">{property.stanze}</span>
+                </div>
+
+                <div className="flex flex-col gap-1">
+                  <div className="flex items-center gap-2 text-muted-foreground">
+                    <Bath className="w-5 h-5" aria-hidden="true" />
+                    <span className="text-sm">Bagni</span>
+                  </div>
+                  <span className="font-semibold text-lg" data-testid="text-bathrooms">{property.bagni}</span>
+                </div>
+
+                <div className="flex flex-col gap-1">
+                  <div className="flex items-center gap-2 text-muted-foreground">
+                    <Building2 className="w-5 h-5" aria-hidden="true" />
+                    <span className="text-sm">Piano</span>
+                  </div>
+                  <span className="font-semibold text-lg" data-testid="text-floor">{property.piano}</span>
+                </div>
+
+                <div className="flex flex-col gap-1">
+                  <div className="flex items-center gap-2 text-muted-foreground">
+                    <Zap className="w-5 h-5" aria-hidden="true" />
+                    <span className="text-sm">Classe Energetica</span>
+                  </div>
+                  <span className="font-semibold text-lg" data-testid="text-energy-class">
+                    {energyClassMap[property.classeEnergetica] || property.classeEnergetica}
+                  </span>
+                </div>
+
+                <div className="flex flex-col gap-1">
+                  <div className="flex items-center gap-2 text-muted-foreground">
+                    <Home className="w-5 h-5" aria-hidden="true" />
+                    <span className="text-sm">Stato</span>
+                  </div>
+                  <span className="font-semibold text-lg" data-testid="text-status">
+                    {statusLabel(property.stato)}
+                  </span>
+                </div>
+              </div>
+            </div>
+
+            <div>
+              <h2 className="text-2xl font-serif font-bold mb-4">Descrizione</h2>
               <div className="prose prose-slate max-w-none">
-                <h3 className="text-xl font-semibold mb-3">Descrizione</h3>
-                <p className="text-muted-foreground whitespace-pre-wrap" data-testid="text-description">
-                  {property.descrizione}
-                </p>
+                {property.descrizione.split('\n\n').map((paragraph, index) => (
+                  <p 
+                    key={index} 
+                    className="text-muted-foreground mb-4 last:mb-0" 
+                    data-testid={index === 0 ? "text-description" : undefined}
+                  >
+                    {paragraph}
+                  </p>
+                ))}
               </div>
             </div>
           </div>
 
           <div className="space-y-6">
-            <Card>
+            <Card className="sticky top-4">
               <CardHeader>
                 <div className="flex items-center justify-between gap-2 flex-wrap">
-                  <CardTitle className="text-3xl font-bold" data-testid="text-price">
-                    {formattedPrice}
-                  </CardTitle>
                   <Badge 
                     variant={property.tipo === "vendita" ? "default" : "secondary"}
                     data-testid={`badge-type-${property.tipo}`}
                   >
                     {property.tipo === "vendita" ? "Vendita" : "Affitto"}
                   </Badge>
+                  {!isAvailable && (
+                    <Badge 
+                      variant={statusBadgeVariant(property.stato)} 
+                      data-testid={`badge-status-${property.stato}`}
+                    >
+                      {statusLabel(property.stato)}
+                    </Badge>
+                  )}
                 </div>
+                <CardTitle className="text-2xl font-bold mt-2" data-testid="text-price">
+                  {formattedPrice}
+                </CardTitle>
               </CardHeader>
               <CardContent className="space-y-4">
-                {!isAvailable && (
-                  <Badge 
-                    variant={statusBadgeVariant(property.stato)} 
-                    className="w-full justify-center py-2"
-                    data-testid={`badge-status-${property.stato}`}
-                  >
-                    {statusLabel(property.stato)}
-                  </Badge>
-                )}
-
-                <div className="space-y-3 border-t pt-4">
-                  <div className="flex items-center justify-between">
-                    <div className="flex items-center gap-2 text-muted-foreground">
-                      <Maximize className="w-5 h-5" />
-                      <span>Superficie</span>
-                    </div>
-                    <span className="font-semibold" data-testid="text-area">{property.mq} m²</span>
-                  </div>
-
-                  <div className="flex items-center justify-between">
-                    <div className="flex items-center gap-2 text-muted-foreground">
-                      <Bed className="w-5 h-5" />
-                      <span>Stanze</span>
-                    </div>
-                    <span className="font-semibold" data-testid="text-rooms">{property.stanze}</span>
-                  </div>
-
-                  <div className="flex items-center justify-between">
-                    <div className="flex items-center gap-2 text-muted-foreground">
-                      <Bath className="w-5 h-5" />
-                      <span>Bagni</span>
-                    </div>
-                    <span className="font-semibold" data-testid="text-bathrooms">{property.bagni}</span>
-                  </div>
-
-                  <div className="flex items-center justify-between">
-                    <div className="flex items-center gap-2 text-muted-foreground">
-                      <Building2 className="w-5 h-5" />
-                      <span>Piano</span>
-                    </div>
-                    <span className="font-semibold" data-testid="text-floor">{property.piano}</span>
-                  </div>
-
-                  <div className="flex items-center justify-between">
-                    <div className="flex items-center gap-2 text-muted-foreground">
-                      <Zap className="w-5 h-5" />
-                      <span>Classe Energetica</span>
-                    </div>
-                    <span className="font-semibold" data-testid="text-energy-class">
-                      {energyClassMap[property.classeEnergetica] || property.classeEnergetica}
-                    </span>
-                  </div>
-
-                  <div className="flex items-center justify-between">
-                    <div className="flex items-center gap-2 text-muted-foreground">
-                      <Home className="w-5 h-5" />
-                      <span>Stato</span>
-                    </div>
-                    <span className="font-semibold" data-testid="text-status">
-                      {statusLabel(property.stato)}
-                    </span>
-                  </div>
-                </div>
-
                 <Button 
-                  className="w-full mt-4" 
+                  className="w-full" 
                   size="lg"
                   asChild
                   data-testid="button-contact"
                 >
                   <Link href={`/contatti?ref=immobile&context=${property.id}`}>
                     <Mail className="mr-2 h-5 w-5" />
-                    Richiedi Informazioni
+                    Contattaci
                   </Link>
                 </Button>
+                
+                <div className="text-sm text-muted-foreground text-center pt-2 border-t">
+                  <p>Richiedi maggiori informazioni su questo immobile</p>
+                </div>
               </CardContent>
             </Card>
           </div>
