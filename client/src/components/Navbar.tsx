@@ -17,7 +17,7 @@ export default function Navbar() {
   ];
 
   return (
-    <header className="sticky top-0 z-50" style={{ backgroundColor: 'hsl(0 75% 30%)' }}>
+    <header className="sticky top-0 z-50" style={{ backgroundColor: '#600005' }}>
       <nav className="max-w-7xl mx-auto px-6 md:px-8">
         <div className="flex items-center justify-between h-16">
           <Link href="/" data-testid="link-home">
