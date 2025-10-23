@@ -16,6 +16,7 @@ Preferred communication style: Simple, everyday language.
 - **State Management**: TanStack Query for server state, React Context API for themes/sessions.
 - **UI Framework**: shadcn/ui (Radix UI) with Tailwind CSS, custom Mediterranean color palette, responsive mobile-first design, dark mode.
 - **Component Structure**: Organized by presentation, pages, UI primitives, and custom hooks.
+- **Image Carousel**: Custom `ImageCarousel` component with keyboard navigation (Arrow keys), touch/pointer swipe support, lazy loading for non-current images, aspect ratio preservation, thumbnail navigation, and full accessibility (ARIA labels, focus rings). Supports empty state with placeholder fallback.
 
 ### Backend
 - **Runtime**: Node.js with Express.js.
