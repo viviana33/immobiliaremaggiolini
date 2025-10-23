@@ -16,6 +16,7 @@ interface Property {
   area_mq: number;
   location: string;
   annuncio?: string | null;
+  images?: string[];
 }
 
 interface PaginationData {
@@ -139,7 +140,7 @@ export default function Immobili() {
               title={property.title}
               location={property.location}
               price={`€ ${priceValue.toLocaleString('it-IT')}`}
-              image="https://images.unsplash.com/photo-1568605114967-8130f3a36994?w=800&h=600&fit=crop"
+              images={property.images}
               type={property.for_rent ? "affitto" : "vendita"}
               bedrooms={2}
               bathrooms={1}

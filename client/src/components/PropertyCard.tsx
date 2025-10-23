@@ -3,13 +3,14 @@ import { Badge } from "@/components/ui/badge";
 import { Alert } from "@/components/ui/alert";
 import { MapPin, Bed, Bath, Maximize, Info } from "lucide-react";
 import { Link } from "wouter";
+import ImageCarousel from "@/components/ImageCarousel";
 
 interface PropertyCardProps {
   id: string;
   title: string;
   location: string;
   price: string;
-  image?: string;
+  images?: string[];
   type: "vendita" | "affitto";
   bedrooms?: number;
   bathrooms?: number;
@@ -24,32 +25,33 @@ export default function PropertyCard({
   title,
   location,
   price,
-  image = DEFAULT_IMAGE,
+  images = [],
   type,
   bedrooms = 2,
   bathrooms = 1,
   area,
   annuncio,
 }: PropertyCardProps) {
+  const displayImages = images.length > 0 ? images : [DEFAULT_IMAGE];
+  
   return (
     <Link href={`/immobile/${id}`} data-testid={`link-property-${title.toLowerCase().replace(/\s+/g, "-")}`}>
       <Card
         className="overflow-hidden hover-elevate active-elevate-2 transition-all cursor-pointer group"
         data-testid={`card-property-${title.toLowerCase().replace(/\s+/g, "-")}`}
       >
-        <div className="relative aspect-[4/3] overflow-hidden">
-          <img
-            src={image}
-            alt={`${title} - immagine 1`}
-            className="w-full h-full object-cover transition-transform group-hover:scale-105 duration-300"
-            loading="lazy"
+        <div className="relative aspect-[4/3] overflow-visible">
+          <ImageCarousel 
+            images={displayImages}
+            showThumbnails={false}
+            title={title}
           />
-          <div className="absolute top-4 right-4">
+          <div className="absolute top-4 right-4 z-10">
             <Badge variant={type === "vendita" ? "default" : "secondary"} className="text-sm font-semibold">
               {type === "vendita" ? "Vendita" : "Affitto"}
             </Badge>
           </div>
-          <div className="absolute bottom-4 left-4">
+          <div className="absolute bottom-4 left-4 z-10">
             <div className="bg-primary text-primary-foreground px-4 py-2 rounded-md font-bold text-lg">
               {price}
             </div>

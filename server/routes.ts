@@ -355,15 +355,21 @@ export async function registerRoutes(app: Express): Promise<Server> {
       
       const result = await storage.getFilteredProperties(filters);
       
-      const formattedProperties = result.properties.map((p: any) => ({
-        id: p.id,
-        slug: p.slug,
-        title: p.titolo,
-        price: p.prezzo,
-        for_rent: p.tipo === "affitto",
-        area_mq: p.mq,
-        location: p.zona,
-        annuncio: p.annuncio,
+      const formattedProperties = await Promise.all(result.properties.map(async (p: any) => {
+        const images = await storage.getPropertyImages(p.id);
+        const activeImages = images.filter(img => !img.archiviato).slice(0, 15);
+        
+        return {
+          id: p.id,
+          slug: p.slug,
+          title: p.titolo,
+          price: p.prezzo,
+          for_rent: p.tipo === "affitto",
+          area_mq: p.mq,
+          location: p.zona,
+          annuncio: p.annuncio,
+          images: activeImages.map(img => img.urlHot),
+        };
       }));
       
       res.json({
