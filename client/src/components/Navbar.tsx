@@ -3,7 +3,6 @@ import { Home, Building2, FileText, Users, Phone, Menu, X } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import ThemeToggle from "@/components/ThemeToggle";
 import { useState } from "react";
-import logoImg from "@assets/Logo Geometrico su Fondo Rosso_1761237729319.png";
 
 export default function Navbar() {
   const [location] = useLocation();
@@ -22,7 +21,7 @@ export default function Navbar() {
         <div className="flex items-center justify-between h-16">
           <Link href="/" data-testid="link-home">
             <div className="flex items-center gap-3 hover-elevate active-elevate-2 px-3 py-2 rounded-md transition-all cursor-pointer">
-              <img src={logoImg} alt="Immobiliare Maggiolini" className="w-10 h-10 object-contain" aria-hidden="true" />
+              <Building2 className="w-8 h-8 text-white" aria-hidden="true" />
               <span className="font-serif font-bold text-xl text-white">
                 Immobiliare Maggiolini
               </span>
