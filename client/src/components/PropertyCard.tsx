@@ -37,8 +37,9 @@ export default function PropertyCard({
         <div className="relative aspect-[4/3] overflow-hidden">
           <img
             src={image}
-            alt={title}
+            alt={`${title} - immagine 1`}
             className="w-full h-full object-cover transition-transform group-hover:scale-105 duration-300"
+            loading="lazy"
           />
           <div className="absolute top-4 right-4">
             <Badge variant={type === "vendita" ? "default" : "secondary"} className="text-sm font-semibold">

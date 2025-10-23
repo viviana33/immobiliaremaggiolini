@@ -69,10 +69,41 @@ export default function ImmobileDettaglio() {
       ? `€ ${Number(property.prezzo).toLocaleString()}/mese`
       : `€ ${Number(property.prezzo).toLocaleString()}`;
 
-    const metaTitle = `${property.titolo} - ${formattedPrice} | Immobiliare Maggiolini`;
+    const metaTitle = `${property.titolo} | Immobiliare Maggiolini`;
     document.title = metaTitle;
 
-    const metaDescription = `${property.titolo} in ${property.tipo} a ${property.zona}. ${property.mq} m², ${property.stanze} stanze, ${property.bagni} bagni. ${formattedPrice}.`;
+    const sanitizeDescription = (text: string, maxLength: number = 160): string => {
+      const plainText = text
+        .replace(/<[^>]*>/g, '')
+        .replace(/\*\*([^*]+)\*\*/g, '$1')
+        .replace(/\*([^*]+)\*/g, '$1')
+        .replace(/_([^_]+)_/g, '$1')
+        .replace(/~~([^~]+)~~/g, '$1')
+        .replace(/`([^`]+)`/g, '$1')
+        .replace(/#{1,6}\s+/g, '')
+        .replace(/\[([^\]]+)\]\([^)]+\)/g, '$1')
+        .replace(/!\[([^\]]*)\]\([^)]+\)/g, '')
+        .replace(/>\s+/g, '')
+        .replace(/[-*+]\s+/g, '')
+        .replace(/\d+\.\s+/g, '')
+        .replace(/\n\n/g, ' ')
+        .replace(/\n/g, ' ')
+        .replace(/\s+/g, ' ')
+        .trim();
+      
+      if (plainText.length <= maxLength) return plainText;
+      
+      const ellipsis = '...';
+      const targetLength = maxLength - ellipsis.length;
+      const truncated = plainText.substring(0, targetLength);
+      const lastSpace = truncated.lastIndexOf(' ');
+      
+      return lastSpace > targetLength - 30 
+        ? truncated.substring(0, lastSpace) + ellipsis
+        : truncated + ellipsis;
+    };
+
+    const metaDescription = sanitizeDescription(property.descrizione, 160);
     
     let metaDescTag = document.querySelector('meta[name="description"]');
     if (!metaDescTag) {
@@ -311,6 +342,7 @@ export default function ImmobileDettaglio() {
             <ImageCarousel 
               images={property.images.map(img => img.urlHot)}
               showThumbnails={true}
+              title={property.titolo}
             />
 
             {property.linkVideo && (

@@ -7,17 +7,20 @@ interface ImageCarouselProps {
   images: string[];
   className?: string;
   showThumbnails?: boolean;
+  title?: string;
 }
 
 export default function ImageCarousel({ 
   images, 
   className,
-  showThumbnails = true 
+  showThumbnails = true,
+  title 
 }: ImageCarouselProps) {
   const [current, setCurrent] = useState(0);
   const [touchStart, setTouchStart] = useState<number | null>(null);
   const [touchEnd, setTouchEnd] = useState<number | null>(null);
   const carouselRef = useRef<HTMLDivElement>(null);
+  const instanceIdRef = useRef(Math.random().toString(36).substring(7));
 
   const displayImages = images.length > 0 ? images : ["/placeholder.jpg"];
   const totalImages = displayImages.length;
@@ -33,6 +36,34 @@ export default function ImageCarousel({
   const handleThumbnailClick = (index: number) => {
     setCurrent(index);
   };
+
+  useEffect(() => {
+    const nextIndex = current === totalImages - 1 ? 0 : current + 1;
+    const nextImage = displayImages[nextIndex];
+    const instanceId = instanceIdRef.current;
+    const prefetchSelector = `link[rel="prefetch"][data-carousel-id="${instanceId}"]`;
+    
+    if (nextImage && nextImage !== "/placeholder.jpg" && totalImages > 1) {
+      const existingLink = document.querySelector(prefetchSelector);
+      if (existingLink) {
+        existingLink.setAttribute('href', nextImage);
+      } else {
+        const link = document.createElement('link');
+        link.rel = 'prefetch';
+        link.href = nextImage;
+        link.setAttribute('data-carousel-id', instanceId);
+        link.as = 'image';
+        document.head.appendChild(link);
+      }
+    }
+    
+    return () => {
+      const link = document.querySelector(prefetchSelector);
+      if (link) {
+        link.remove();
+      }
+    };
+  }, [current, displayImages, totalImages]);
 
   useEffect(() => {
     const handleKeyDown = (e: KeyboardEvent) => {
@@ -136,20 +167,26 @@ export default function ImageCarousel({
             setTouchEnd(null);
           }}
         >
-          {displayImages.map((image, index) => (
-            <img
-              key={index}
-              src={image}
-              alt={`Immagine ${index + 1} di ${totalImages}`}
-              className={cn(
-                "absolute inset-0 w-full h-full object-contain transition-opacity duration-300",
-                index === current ? "opacity-100 z-10" : "opacity-0 z-0"
-              )}
-              loading={index === current ? "eager" : "lazy"}
-              style={{ aspectRatio: "16/9" }}
-              data-testid={`carousel-image-${index}`}
-            />
-          ))}
+          {displayImages.map((image, index) => {
+            const altText = title 
+              ? `${title} - immagine ${index + 1}`
+              : `Immagine ${index + 1} di ${totalImages}`;
+            
+            return (
+              <img
+                key={index}
+                src={image}
+                alt={altText}
+                className={cn(
+                  "absolute inset-0 w-full h-full object-contain transition-opacity duration-300",
+                  index === current ? "opacity-100 z-10" : "opacity-0 z-0"
+                )}
+                loading={index === current ? "eager" : "lazy"}
+                style={{ aspectRatio: "16/9" }}
+                data-testid={`carousel-image-${index}`}
+              />
+            );
+          })}
         </div>
 
         {totalImages > 1 && (
@@ -185,28 +222,34 @@ export default function ImageCarousel({
 
       {showThumbnails && totalImages > 1 && (
         <div className="flex gap-2 overflow-x-auto pb-2 scrollbar-thin">
-          {displayImages.map((image, index) => (
-            <button
-              key={index}
-              onClick={() => handleThumbnailClick(index)}
-              className={cn(
-                "relative flex-shrink-0 w-20 h-20 rounded-md overflow-hidden border-2 transition-all hover-elevate",
-                index === current
-                  ? "border-primary ring-2 ring-primary/20"
-                  : "border-transparent"
-              )}
-              aria-label={`Vai all'immagine ${index + 1}`}
-              aria-pressed={index === current}
-              data-testid={`thumbnail-${index}`}
-            >
-              <img
-                src={image}
-                alt={`Miniatura ${index + 1}`}
-                className="w-full h-full object-cover"
-                loading="lazy"
-              />
-            </button>
-          ))}
+          {displayImages.map((image, index) => {
+            const altText = title 
+              ? `${title} - immagine ${index + 1}`
+              : `Miniatura ${index + 1}`;
+            
+            return (
+              <button
+                key={index}
+                onClick={() => handleThumbnailClick(index)}
+                className={cn(
+                  "relative flex-shrink-0 w-20 h-20 rounded-md overflow-hidden border-2 transition-all hover-elevate",
+                  index === current
+                    ? "border-primary ring-2 ring-primary/20"
+                    : "border-transparent"
+                )}
+                aria-label={`Vai all'immagine ${index + 1}`}
+                aria-pressed={index === current}
+                data-testid={`thumbnail-${index}`}
+              >
+                <img
+                  src={image}
+                  alt={altText}
+                  className="w-full h-full object-cover"
+                  loading="lazy"
+                />
+              </button>
+            );
+          })}
         </div>
       )}
     </div>
