@@ -6,17 +6,17 @@ import logoImg from "@assets/Logo Geometrico su Fondo Rosso_1761237729319.png";
 export default function Footer() {
 
   return (
-    <footer className="bg-secondary border-t border-border">
+    <footer style={{ backgroundColor: '#600005' }}>
       <div className="max-w-7xl mx-auto px-6 md:px-8 py-12 md:py-16">
         <div className="grid grid-cols-1 md:grid-cols-3 gap-8 lg:gap-12">
           <div className="space-y-4">
             <div className="flex items-center gap-3">
               <img src={logoImg} alt="Immobiliare Maggiolini" className="w-10 h-10 object-contain" />
-              <span className="font-serif font-bold text-xl text-foreground">
+              <span className="font-serif font-bold text-xl text-white">
                 Immobiliare Maggiolini
               </span>
             </div>
-            <p className="text-muted-foreground text-sm leading-relaxed">
+            <p className="text-white/80 text-sm leading-relaxed">
               Da oltre 20 anni al vostro fianco per trovare la casa dei vostri sogni. 
               Un rapporto di fiducia che dura nel tempo.
             </p>
@@ -27,7 +27,7 @@ export default function Footer() {
                 rel="noopener noreferrer"
                 aria-label="Seguici su Instagram"
               >
-                <Button variant="ghost" size="icon" className="hover-elevate" data-testid="button-social-instagram">
+                <Button variant="ghost" size="icon" className="hover-elevate text-white" data-testid="button-social-instagram">
                   <Instagram className="w-5 h-5" />
                 </Button>
               </a>
@@ -35,7 +35,7 @@ export default function Footer() {
           </div>
 
           <div className="space-y-4">
-            <h3 className="font-serif font-semibold text-lg text-foreground">Link Veloci</h3>
+            <h3 className="font-serif font-semibold text-lg text-white">Link Veloci</h3>
             <ul className="space-y-2">
               {[
                 { path: "/", label: "Home" },
@@ -45,7 +45,7 @@ export default function Footer() {
               ].map((link) => (
                 <li key={link.path}>
                   <Link href={link.path}>
-                    <span className="text-muted-foreground hover:text-primary text-sm transition-colors cursor-pointer">
+                    <span className="text-white/80 hover:text-white text-sm transition-colors cursor-pointer">
                       {link.label}
                     </span>
                   </Link>
@@ -55,22 +55,22 @@ export default function Footer() {
           </div>
 
           <div className="space-y-4">
-            <h3 className="font-serif font-semibold text-lg text-foreground">Contatti</h3>
+            <h3 className="font-serif font-semibold text-lg text-white">Contatti</h3>
             <ul className="space-y-3">
-              <li className="flex items-start gap-2 text-muted-foreground text-sm">
+              <li className="flex items-start gap-2 text-white/80 text-sm">
                 <MapPin className="w-4 h-4 mt-0.5 flex-shrink-0" />
                 <span>Via Paolo Castelnovo, 14, 20015 Parabiago (MI)</span>
               </li>
-              <li className="flex items-center gap-2 text-muted-foreground text-sm">
+              <li className="flex items-center gap-2 text-white/80 text-sm">
                 <Phone className="w-4 h-4 flex-shrink-0" />
                 <span>+39 02 1234 5678</span>
               </li>
-              <li className="flex items-center gap-2 text-muted-foreground text-sm">
+              <li className="flex items-center gap-2 text-white/80 text-sm">
                 <Mail className="w-4 h-4 flex-shrink-0" />
                 <span>info@maggiolini.it</span>
               </li>
             </ul>
-            <div className="pt-2 text-sm text-muted-foreground">
+            <div className="pt-2 text-sm text-white/80">
               <p className="font-semibold">Orari:</p>
               <p>Lun-Ven 9:30-13:00/14:30-18:00</p>
             </div>
@@ -78,8 +78,8 @@ export default function Footer() {
 
         </div>
 
-        <div className="pt-8 mt-4 border-t border-border text-center">
-          <p className="text-sm text-muted-foreground">© 2024 Immobiliare Maggiolini. Tutti i diritti riservati.</p>
+        <div className="pt-8 mt-4 border-t border-white/20 text-center">
+          <p className="text-sm text-white/70">© 2024 Immobiliare Maggiolini. Tutti i diritti riservati.</p>
         </div>
       </div>
     </footer>
