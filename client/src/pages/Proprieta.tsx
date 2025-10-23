@@ -16,6 +16,7 @@ interface Property {
   for_rent: boolean;
   area_mq: number;
   location: string;
+  annuncio?: string | null;
 }
 
 interface PaginationData {
@@ -164,6 +165,7 @@ export default function Proprieta() {
                       bedrooms={2}
                       bathrooms={1}
                       area={property.area_mq}
+                      annuncio={property.annuncio}
                     />
                   );
                 })}

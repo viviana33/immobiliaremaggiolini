@@ -16,7 +16,8 @@ import {
   Zap, 
   Home,
   ArrowLeft,
-  Mail
+  Mail,
+  Info
 } from "lucide-react";
 import type { Property, PropertyImage } from "@shared/schema";
 import { useEffect } from "react";
@@ -346,6 +347,13 @@ export default function ImmobileDettaglio() {
               <div className="text-3xl font-bold mb-6" data-testid="text-price-main">
                 {formattedPrice}
               </div>
+
+              {property.annuncio && (
+                <div className="flex items-start gap-3 bg-yellow-50 dark:bg-yellow-950/20 border border-yellow-200 dark:border-yellow-900 text-yellow-900 dark:text-yellow-200 px-4 py-3 rounded-md mb-6" data-testid="text-annuncio-detail">
+                  <Info className="w-5 h-5 mt-0.5 flex-shrink-0" />
+                  <p className="flex-1 text-sm font-medium">{property.annuncio}</p>
+                </div>
+              )}
             </div>
 
             <ImageCarousel 
