@@ -164,18 +164,6 @@ export default function ChiSiamo() {
           </div>
         </div>
       </section>
-
-      <section className="py-16 md:py-20 bg-primary text-primary-foreground">
-        <div className="max-w-4xl mx-auto px-6 md:px-8 text-center space-y-6">
-          <h2 className="font-serif font-bold text-3xl md:text-4xl lg:text-5xl">
-            Vuoi Unirti alla Nostra Famiglia?
-          </h2>
-          <p className="text-lg md:text-xl text-primary-foreground/90 leading-relaxed">
-            Siamo sempre alla ricerca di professionisti motivati che condividano i nostri valori. 
-            Se vuoi far parte del team Maggiolini, contattaci!
-          </p>
-        </div>
-      </section>
     </div>
   );
 }

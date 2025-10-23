@@ -1,46 +1,8 @@
-import { Link, useLocation } from "wouter";
-import { Building2, Mail, Phone, MapPin, Instagram, Loader2, CheckCircle2, AlertCircle } from "lucide-react";
-import { Input } from "@/components/ui/input";
+import { Link } from "wouter";
+import { Building2, Mail, Phone, MapPin, Instagram } from "lucide-react";
 import { Button } from "@/components/ui/button";
-import { Alert, AlertDescription } from "@/components/ui/alert";
-import { useState } from "react";
-import { useMutation } from "@tanstack/react-query";
-import { apiRequest } from "@/lib/queryClient";
 
 export default function Footer() {
-  const [, setLocation] = useLocation();
-  const [email, setEmail] = useState("");
-  const [submitStatus, setSubmitStatus] = useState<"idle" | "success" | "error">("idle");
-  const [errorMessage, setErrorMessage] = useState<string>("");
-
-  const subscribeMutation = useMutation({
-    mutationFn: async (emailToSubmit: string) => {
-      const response = await apiRequest("POST", "/api/subscribe", {
-        email: emailToSubmit,
-        blogUpdates: true,
-        newListings: false,
-        source: "footer"
-      });
-      return response.json();
-    },
-    onSuccess: (data, emailToSubmit) => {
-      setLocation(`/grazie?lead=ok&source=footer&email=${encodeURIComponent(emailToSubmit)}&blogUpdates=true&newListings=false`);
-    },
-    onError: (error: any) => {
-      setSubmitStatus("error");
-      setErrorMessage(
-        error?.message || "Si è verificato un errore. Riprova più tardi."
-      );
-    },
-  });
-
-  const handleNewsletterSubmit = (e: React.FormEvent) => {
-    e.preventDefault();
-    if (email) {
-      setSubmitStatus("idle");
-      subscribeMutation.mutate(email);
-    }
-  };
 
   return (
     <footer className="bg-secondary border-t border-border">
@@ -113,54 +75,6 @@ export default function Footer() {
             </div>
           </div>
 
-          <div className="space-y-4">
-            <h3 className="font-serif font-semibold text-lg text-foreground">Resta Aggiornato</h3>
-            <p className="text-muted-foreground text-sm">
-              Iscriviti alla newsletter per ricevere le ultime novità e proprietà.
-            </p>
-            
-            {submitStatus === "success" && (
-              <Alert className="border-green-500/50 bg-green-50 dark:bg-green-950/20" data-testid="alert-success">
-                <CheckCircle2 className="h-4 w-4 text-green-600 dark:text-green-400" />
-                <AlertDescription className="text-green-800 dark:text-green-200">
-                  Controlla la tua email per confermare l'iscrizione!
-                </AlertDescription>
-              </Alert>
-            )}
-
-            {submitStatus === "error" && (
-              <Alert variant="destructive" data-testid="alert-error">
-                <AlertCircle className="h-4 w-4" />
-                <AlertDescription>{errorMessage}</AlertDescription>
-              </Alert>
-            )}
-            
-            <form onSubmit={handleNewsletterSubmit} className="space-y-2">
-              <Input
-                type="email"
-                placeholder="La tua email"
-                value={email}
-                onChange={(e) => setEmail(e.target.value)}
-                required
-                data-testid="input-newsletter"
-              />
-              <Button 
-                type="submit" 
-                className="w-full" 
-                data-testid="button-newsletter"
-                disabled={subscribeMutation.isPending}
-              >
-                {subscribeMutation.isPending ? (
-                  <>
-                    <Loader2 className="mr-2 h-4 w-4 animate-spin" />
-                    Iscrizione...
-                  </>
-                ) : (
-                  "Iscriviti"
-                )}
-              </Button>
-            </form>
-          </div>
         </div>
 
         <div className="pt-8 border-t border-border">
