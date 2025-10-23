@@ -9,7 +9,7 @@ import { usePageMeta } from "@/lib/seo";
 export default function ChiSiamo() {
   usePageMeta({
     title: 'Chi Siamo',
-    description: 'Presenza nel territorio da oltre quarant\'anni. Accordi che durano, relazioni che restano. Scopri la storia di Immobiliare Maggiolini e il team che ti accompagnerà nella ricerca della casa perfetta.',
+    description: 'Presenza nel territorio da quarant\'anni. Accordi che durano, relazioni che restano. Scopri la storia di Immobiliare Maggiolini e il team che ti accompagnerà nella ricerca della casa perfetta.',
   });
   const teamMembers = [
     {
@@ -69,7 +69,7 @@ export default function ChiSiamo() {
             Chi Siamo
           </h1>
           <p className="text-muted-foreground text-lg max-w-2xl">
-            Presenza nel territorio da oltre quarant'anni
+            Presenza nel territorio da quarant'anni
           </p>
         </div>
       </section>
@@ -86,25 +86,25 @@ export default function ChiSiamo() {
                   Quando consegni le chiavi di casa tua a uno sconosciuto, o quando firmi per l'acquisto più importante della tua vita, non stai cercando solo qualcuno che compili documenti. Stai cercando qualcuno che capisca cosa c'è davvero in gioco.
                 </p>
                 <p>
-                  Dopo quarant'anni in questo territorio, abbiamo imparato che il nostro lavoro non finisce quando si firma un contratto. Inizia molto prima – quando ascoltiamo cosa ti serve davvero, non cosa è più facile da proporre – e continua molto dopo, perché sappiamo che è nei mesi successivi che si capisce se un accordo funziona davvero.
+                  Dopo quarant'anni in questo territorio, abbiamo imparato che il nostro lavoro non finisce quando si firma un contratto. Inizia molto prima, quando ascoltiamo cosa ti serve davvero, non cosa è più facile da proporre, e continua molto dopo, perché sappiamo che è nei mesi successivi che si capisce se un accordo funziona davvero.
                 </p>
                 <p>
-                  Vediamo proprietari che ci raccontano di agenti spariti dopo aver incassato la provvigione. Inquilini che hanno scoperto "dettagli" solo dopo aver firmato. Acquirenti che si sono fidati di valutazioni gonfiate.
+                  Vediamo troppo spesso agenti spariti dopo aver incassato, dettagli scoperti solo dopo la firma, valutazioni gonfiate.
                 </p>
                 <p>
                   Verifichiamo ogni dettaglio. Controlliamo documenti, referenze, situazioni. Parliamo chiaro su quello che possiamo e non possiamo garantire. Quando ti proponiamo qualcuno, sia inquilino o acquirente, sappiamo già che è affidabile.
                 </p>
                 <p>
-                  Conosciamo ogni angolo di questa zona. Non perché l'abbiamo studiato su una mappa, ma perché ci abbiamo vissuto, lavorato, costruito relazioni. Quando ti diciamo che un immobile vale una certa cifra, o che un quartiere sta cambiando, non stiamo ripetendo statistiche. Stiamo condividendo quello che abbiamo visto accadere.
+                  Conosciamo ogni angolo di questa zona perché ci abbiamo vissuto, lavorato, costruito relazioni. Quando valutiamo, condividiamo quello che abbiamo visto accadere, non statistiche da portale.
                 </p>
                 <p>
                   Molti dei nostri clienti sono diventati amici. Quando hai aiutato qualcuno a trovare la prima casa, poi l'hai seguito nell'acquisto della seconda, e magari hai sistemato l'affitto per suo figlio che va all'università, alla fine ti invitano ai compleanni. E noi ci andiamo.
                 </p>
                 <p>
-                  Facciamo questo lavoro perché ci piace vedere accordi che funzionano. Proprietari che dormono tranquilli. Inquilini che si sentono a casa. Acquirenti che dopo due anni ti fermano per strada e ti ringraziano ancora.
+                  Facciamo questo lavoro per vedere accordi che funzionano: proprietari che dormono tranquilli, inquilini che si sentono a casa, acquirenti che dopo due anni ti ringraziano ancora.
                 </p>
                 <p>
-                  Se cerchi qualcuno che ti ascolti, che conosca davvero questo territorio, e che sia ancora qui quando ti serve – anche mesi dopo aver firmato – allora possiamo parlare.
+                  Se cerchi qualcuno che ti ascolti, che conosca davvero questo territorio, e che sia ancora qui quando ti serve, anche mesi dopo aver firmato, allora possiamo parlare.
                 </p>
               </div>
             </div>
