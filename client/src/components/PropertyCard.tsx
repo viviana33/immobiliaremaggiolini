@@ -29,7 +29,7 @@ export default function PropertyCard({
   area,
 }: PropertyCardProps) {
   return (
-    <Link href={`/immobili/${id}`} data-testid={`link-property-${title.toLowerCase().replace(/\s+/g, "-")}`}>
+    <Link href={`/immobile/${id}`} data-testid={`link-property-${title.toLowerCase().replace(/\s+/g, "-")}`}>
       <Card
         className="overflow-hidden hover-elevate active-elevate-2 transition-all cursor-pointer group"
         data-testid={`card-property-${title.toLowerCase().replace(/\s+/g, "-")}`}
