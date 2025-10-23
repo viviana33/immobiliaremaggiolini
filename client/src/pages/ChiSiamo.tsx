@@ -62,7 +62,7 @@ export default function ChiSiamo() {
                   Vediamo troppo spesso agenti spariti dopo aver incassato, dettagli scoperti solo dopo la firma, valutazioni gonfiate.
                 </p>
                 <p>
-                  Verifichiamo ogni dettaglio. Controlliamo documenti, referenze, situazioni. Parliamo chiaro su quello che possiamo e non possiamo garantire. Quando ti proponiamo qualcuno, sia inquilino o acquirente, sappiamo già che è affidabile.
+                  Verifichiamo ogni dettaglio. Controlliamo documenti, referenze, situazioni. Quando ti proponiamo qualcuno, sia inquilino o acquirente, sappiamo già che è affidabile.
                 </p>
                 <p>
                   Conosciamo ogni angolo di questa zona perché ci abbiamo vissuto, lavorato, costruito relazioni. Quando valutiamo, condividiamo quello che abbiamo visto accadere, non statistiche da portale.
