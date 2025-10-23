@@ -25,15 +25,21 @@ export default function ImageCarousel({
   const displayImages = images.length > 0 ? images : ["/placeholder.jpg"];
   const totalImages = displayImages.length;
 
-  const handlePrevious = () => {
+  const handlePrevious = (e?: React.MouseEvent) => {
+    e?.preventDefault();
+    e?.stopPropagation();
     setCurrent((prev) => (prev === 0 ? totalImages - 1 : prev - 1));
   };
 
-  const handleNext = () => {
+  const handleNext = (e?: React.MouseEvent) => {
+    e?.preventDefault();
+    e?.stopPropagation();
     setCurrent((prev) => (prev === totalImages - 1 ? 0 : prev + 1));
   };
 
-  const handleThumbnailClick = (index: number) => {
+  const handleThumbnailClick = (index: number, e?: React.MouseEvent) => {
+    e?.preventDefault();
+    e?.stopPropagation();
     setCurrent(index);
   };
 
@@ -85,15 +91,18 @@ export default function ImageCarousel({
   const minSwipeDistance = 50;
 
   const onTouchStart = (e: React.TouchEvent) => {
+    e.stopPropagation();
     setTouchEnd(null);
     setTouchStart(e.targetTouches[0].clientX);
   };
 
   const onTouchMove = (e: React.TouchEvent) => {
+    e.stopPropagation();
     setTouchEnd(e.targetTouches[0].clientX);
   };
 
-  const onTouchEnd = () => {
+  const onTouchEnd = (e: React.TouchEvent) => {
+    e.stopPropagation();
     if (!touchStart || !touchEnd) return;
     
     const distance = touchStart - touchEnd;
@@ -111,6 +120,7 @@ export default function ImageCarousel({
   };
 
   const onPointerDown = (e: React.PointerEvent) => {
+    e.stopPropagation();
     if (e.pointerType === "mouse") {
       setTouchEnd(null);
       setTouchStart(e.clientX);
@@ -118,12 +128,14 @@ export default function ImageCarousel({
   };
 
   const onPointerMove = (e: React.PointerEvent) => {
+    e.stopPropagation();
     if (e.pointerType === "mouse" && touchStart !== null) {
       setTouchEnd(e.clientX);
     }
   };
 
-  const onPointerUp = () => {
+  const onPointerUp = (e: React.PointerEvent) => {
+    e.stopPropagation();
     if (!touchStart || !touchEnd) {
       setTouchStart(null);
       setTouchEnd(null);
@@ -162,7 +174,8 @@ export default function ImageCarousel({
           onPointerDown={onPointerDown}
           onPointerMove={onPointerMove}
           onPointerUp={onPointerUp}
-          onPointerCancel={() => {
+          onPointerCancel={(e) => {
+            e.stopPropagation();
             setTouchStart(null);
             setTouchEnd(null);
           }}
@@ -189,34 +202,32 @@ export default function ImageCarousel({
           })}
         </div>
 
+        <Button
+          variant="ghost"
+          size="icon"
+          className="absolute left-2 top-1/2 -translate-y-1/2 z-20 bg-black/50 hover:bg-black/70 text-white no-default-hover-elevate no-default-active-elevate"
+          onClick={handlePrevious}
+          aria-label="Immagine precedente"
+          data-testid="button-carousel-prev"
+        >
+          <ChevronLeft className="h-6 w-6" aria-hidden="true" />
+        </Button>
+
+        <Button
+          variant="ghost"
+          size="icon"
+          className="absolute right-2 top-1/2 -translate-y-1/2 z-20 bg-black/50 hover:bg-black/70 text-white no-default-hover-elevate no-default-active-elevate"
+          onClick={handleNext}
+          aria-label="Immagine successiva"
+          data-testid="button-carousel-next"
+        >
+          <ChevronRight className="h-6 w-6" aria-hidden="true" />
+        </Button>
+
         {totalImages > 1 && (
-          <>
-            <Button
-              variant="ghost"
-              size="icon"
-              className="absolute left-2 top-1/2 -translate-y-1/2 z-20 bg-black/50 hover:bg-black/70 text-white no-default-hover-elevate no-default-active-elevate"
-              onClick={handlePrevious}
-              aria-label="Immagine precedente"
-              data-testid="button-carousel-prev"
-            >
-              <ChevronLeft className="h-6 w-6" aria-hidden="true" />
-            </Button>
-
-            <Button
-              variant="ghost"
-              size="icon"
-              className="absolute right-2 top-1/2 -translate-y-1/2 z-20 bg-black/50 hover:bg-black/70 text-white no-default-hover-elevate no-default-active-elevate"
-              onClick={handleNext}
-              aria-label="Immagine successiva"
-              data-testid="button-carousel-next"
-            >
-              <ChevronRight className="h-6 w-6" aria-hidden="true" />
-            </Button>
-
-            <div className="absolute bottom-4 left-1/2 -translate-x-1/2 z-20 bg-black/50 text-white px-3 py-1 rounded-full text-sm font-medium">
-              {current + 1} / {totalImages}
-            </div>
-          </>
+          <div className="absolute bottom-4 left-1/2 -translate-x-1/2 z-20 bg-black/50 text-white px-3 py-1 rounded-full text-sm font-medium">
+            {current + 1} / {totalImages}
+          </div>
         )}
       </div>
 
@@ -230,7 +241,7 @@ export default function ImageCarousel({
             return (
               <button
                 key={index}
-                onClick={() => handleThumbnailClick(index)}
+                onClick={(e) => handleThumbnailClick(index, e)}
                 className={cn(
                   "relative flex-shrink-0 w-20 h-20 rounded-md overflow-hidden border-2 transition-all hover-elevate",
                   index === current
