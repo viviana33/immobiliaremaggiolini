@@ -61,6 +61,7 @@ export default function AdminImmobileForm() {
     defaultValues: {
       titolo: "",
       descrizione: "",
+      annuncio: "",
       prezzo: "",
       tipo: "vendita",
       mq: 0,
@@ -79,6 +80,7 @@ export default function AdminImmobileForm() {
       form.reset({
         titolo: property.titolo,
         descrizione: property.descrizione,
+        annuncio: property.annuncio || "",
         prezzo: property.prezzo,
         tipo: property.tipo,
         mq: property.mq,
@@ -310,6 +312,25 @@ export default function AdminImmobileForm() {
                         placeholder="Descrizione dettagliata dell'immobile..."
                         rows={6}
                         data-testid="input-descrizione"
+                      />
+                    </FormControl>
+                    <FormMessage />
+                  </FormItem>
+                )}
+              />
+
+              <FormField
+                control={form.control}
+                name="annuncio"
+                render={({ field }) => (
+                  <FormItem>
+                    <FormLabel>Annuncio (opzionale)</FormLabel>
+                    <FormControl>
+                      <Input
+                        {...field}
+                        value={field.value || ""}
+                        placeholder="Es: Open House sabato 26 ottobre"
+                        data-testid="input-annuncio"
                       />
                     </FormControl>
                     <FormMessage />
