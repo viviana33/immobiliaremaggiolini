@@ -3,6 +3,7 @@ import { Home, Building2, FileText, Users, Phone, Menu, X } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import ThemeToggle from "@/components/ThemeToggle";
 import { useState } from "react";
+import logoImg from "@assets/Logo Geometrico su Fondo Rosso_1761237729319.png";
 
 export default function Navbar() {
   const [location] = useLocation();
@@ -16,13 +17,13 @@ export default function Navbar() {
   ];
 
   return (
-    <header className="sticky top-0 z-50 bg-background/95 backdrop-blur-md border-b border-border">
+    <header className="sticky top-0 z-50 border-b border-border" style={{ backgroundColor: 'hsl(0 62% 27%)' }}>
       <nav className="max-w-7xl mx-auto px-6 md:px-8">
         <div className="flex items-center justify-between h-16">
           <Link href="/" data-testid="link-home">
             <div className="flex items-center gap-3 hover-elevate active-elevate-2 px-3 py-2 rounded-md transition-all cursor-pointer">
-              <Building2 className="w-7 h-7 text-primary" aria-hidden="true" />
-              <span className="font-serif font-bold text-xl text-foreground">
+              <img src={logoImg} alt="Immobiliare Maggiolini" className="w-10 h-10 object-contain" aria-hidden="true" />
+              <span className="font-serif font-bold text-xl text-white">
                 Immobiliare Maggiolini
               </span>
             </div>
@@ -33,7 +34,8 @@ export default function Navbar() {
               <Link key={item.path} href={item.path} data-testid={`link-nav-${item.label.toLowerCase().replace(" ", "-")}`}>
                 <Button
                   variant={location === item.path ? "secondary" : "ghost"}
-                  className="gap-2"
+                  className="gap-2 text-white/90 hover:text-white"
+                  style={location === item.path ? { backgroundColor: 'rgba(255,255,255,0.15)' } : {}}
                 >
                   <item.icon className="w-4 h-4" aria-hidden="true" />
                   {item.label}
@@ -65,13 +67,14 @@ export default function Navbar() {
         </div>
 
         {mobileMenuOpen && (
-          <div className="md:hidden py-4 border-t border-border">
+          <div className="md:hidden py-4 border-t" style={{ borderColor: 'rgba(255,255,255,0.2)' }}>
             <div className="flex flex-col gap-2">
               {navItems.map((item) => (
                 <Link key={item.path} href={item.path}>
                   <Button
                     variant={location === item.path ? "secondary" : "ghost"}
-                    className="w-full justify-start gap-2"
+                    className="w-full justify-start gap-2 text-white/90 hover:text-white"
+                    style={location === item.path ? { backgroundColor: 'rgba(255,255,255,0.15)' } : {}}
                     onClick={() => setMobileMenuOpen(false)}
                   >
                     <item.icon className="w-4 h-4" aria-hidden="true" />
