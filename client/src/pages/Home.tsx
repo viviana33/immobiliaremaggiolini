@@ -113,48 +113,6 @@ export default function Home() {
         </div>
       </section>
 
-      <section className="py-20 md:py-24 bg-secondary">
-        <div className="max-w-7xl mx-auto px-6 md:px-8">
-          <div className="grid grid-cols-1 md:grid-cols-3 gap-8 md:gap-12">
-            <div className="space-y-4 p-6 rounded-md hover-elevate transition-all">
-              <div className="w-12 h-12 rounded-md bg-primary flex items-center justify-center">
-                <span className="text-2xl text-primary-foreground">🤝</span>
-              </div>
-              <h3 className="font-serif font-semibold text-xl text-foreground">
-                Servizio Personalizzato
-              </h3>
-              <p className="text-muted-foreground leading-relaxed">
-                Ogni cliente è unico. Ti accompagniamo passo dopo passo nella ricerca della tua casa ideale.
-              </p>
-            </div>
-
-            <div className="space-y-4 p-6 rounded-md hover-elevate transition-all">
-              <div className="w-12 h-12 rounded-md bg-accent flex items-center justify-center">
-                <span className="text-2xl text-accent-foreground">🏡</span>
-              </div>
-              <h3 className="font-serif font-semibold text-xl text-foreground">
-                Esperienza Locale
-              </h3>
-              <p className="text-muted-foreground leading-relaxed">
-                Conosciamo il territorio come nessun altro. 20 anni di presenza sul mercato lombardo.
-              </p>
-            </div>
-
-            <div className="space-y-4 p-6 rounded-md hover-elevate transition-all">
-              <div className="w-12 h-12 rounded-md bg-primary flex items-center justify-center">
-                <span className="text-2xl text-primary-foreground">💚</span>
-              </div>
-              <h3 className="font-serif font-semibold text-xl text-foreground">
-                Rapporto di Fiducia
-              </h3>
-              <p className="text-muted-foreground leading-relaxed">
-                Non siamo solo agenti immobiliari, ma amici che ti sostengono in ogni momento.
-              </p>
-            </div>
-          </div>
-        </div>
-      </section>
-
       <section className="py-20 md:py-24">
         <div className="max-w-7xl mx-auto px-6 md:px-8">
           <div className="flex flex-col md:flex-row justify-between items-start md:items-center gap-4 mb-12">
