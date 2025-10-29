@@ -59,9 +59,6 @@ export default function ChiSiamo() {
                   Dopo quarant'anni in questo territorio, abbiamo imparato che il nostro lavoro non finisce quando si firma un contratto. Inizia molto prima, quando ascoltiamo cosa ti serve davvero, non cosa è più facile da proporre, e continua molto dopo, perché sappiamo che è nei mesi successivi che si capisce se un accordo funziona davvero.
                 </p>
                 <p>
-                  Vediamo troppo spesso agenti spariti dopo aver incassato, dettagli scoperti solo dopo la firma, valutazioni gonfiate.
-                </p>
-                <p>
                   Verifichiamo ogni dettaglio. Controlliamo documenti, referenze, situazioni. Quando ti proponiamo qualcuno, sia inquilino o acquirente, sappiamo già che è affidabile.
                 </p>
                 <p>
