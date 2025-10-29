@@ -12,8 +12,8 @@ export default function Footer() {
           <div className="space-y-4">
             <div className="flex items-center gap-3">
               <img src={logoImg} alt="Immobiliare Maggiolini" className="w-10 h-10 object-contain" />
-              <span className="font-serif font-bold text-xl text-white">
-                Immobiliare Maggiolini
+              <span className="text-sm text-white" style={{ fontFamily: "'Michroma', sans-serif", fontWeight: 400, letterSpacing: '0.08em' }}>
+                Immobiliare MAGGIOLINI
               </span>
             </div>
             <p className="text-white/80 text-sm leading-relaxed">
