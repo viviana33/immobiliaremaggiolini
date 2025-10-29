@@ -259,36 +259,48 @@ class UploadService {
     const resizedBuffer = await this.resizeImage(buffer, 2560);
     const fileHash = this.calculateFileHash(resizedBuffer);
 
-    if (!this.s3Client) {
-      throw new Error("S3/R2 storage not configured. Cold storage is required for post images.");
-    }
-
-    if (!process.env.R2_BUCKET_NAME) {
-      throw new Error("R2_BUCKET_NAME not configured");
+    if (!this.s3Client || !process.env.R2_BUCKET_NAME) {
+      console.warn("R2 storage not configured, using Cloudinary-only fallback for post images");
+      const cloudinaryUrl = await this.uploadToCloudinary(resizedBuffer, filename);
+      return {
+        hot_url: cloudinaryUrl,
+        cold_key: `cloudinary-fallback/${fileHash}/${filename}`,
+        file_hash: fileHash,
+      };
     }
 
     const key = `posts/${fileHash}/${filename}`;
 
-    const command = new PutObjectCommand({
-      Bucket: process.env.R2_BUCKET_NAME,
-      Key: key,
-      Body: resizedBuffer,
-      ContentType: this.getContentType(filename),
-    });
+    try {
+      const command = new PutObjectCommand({
+        Bucket: process.env.R2_BUCKET_NAME,
+        Key: key,
+        Body: resizedBuffer,
+        ContentType: this.getContentType(filename),
+      });
 
-    await this.s3Client.send(command);
+      await this.s3Client.send(command);
 
-    const coldUrl = process.env.R2_PUBLIC_URL
-      ? `${process.env.R2_PUBLIC_URL}/${key}`
-      : `https://${process.env.R2_BUCKET_NAME}.r2.dev/${key}`;
+      const coldUrl = process.env.R2_PUBLIC_URL
+        ? `${process.env.R2_PUBLIC_URL}/${key}`
+        : `https://${process.env.R2_BUCKET_NAME}.r2.dev/${key}`;
 
-    const hotUrl = this.generateCloudinaryFetchUrl(coldUrl, "f_auto,q_auto,w_1600");
+      const hotUrl = this.generateCloudinaryFetchUrl(coldUrl, "f_auto,q_auto,w_1600");
 
-    return {
-      hot_url: hotUrl,
-      cold_key: key,
-      file_hash: fileHash,
-    };
+      return {
+        hot_url: hotUrl,
+        cold_key: key,
+        file_hash: fileHash,
+      };
+    } catch (error: any) {
+      console.error("Error uploading to R2, falling back to Cloudinary-only:", error.message);
+      const cloudinaryUrl = await this.uploadToCloudinary(resizedBuffer, filename);
+      return {
+        hot_url: cloudinaryUrl,
+        cold_key: `cloudinary-fallback/${fileHash}/${filename}`,
+        file_hash: fileHash,
+      };
+    }
   }
 }
 
