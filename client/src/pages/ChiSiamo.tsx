@@ -89,9 +89,12 @@ export default function ChiSiamo() {
       <section className="py-16 md:py-20 bg-secondary">
         <div className="max-w-7xl mx-auto px-6 md:px-8">
           <div className="text-center mb-12">
-            <h2 className="font-serif font-bold text-3xl md:text-4xl text-foreground">
+            <h2 className="font-serif font-bold text-3xl md:text-4xl text-foreground mb-4">
               Il nostro approccio
             </h2>
+            <p className="text-muted-foreground text-lg max-w-2xl mx-auto">
+              Quando lavoriamo per te
+            </p>
           </div>
 
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
