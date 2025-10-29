@@ -1,6 +1,7 @@
 import crypto from "crypto";
 import { S3Client, PutObjectCommand } from "@aws-sdk/client-s3";
 import sharp from "sharp";
+import https from "https";
 
 interface UploadResult {
   urlHot: string;
@@ -19,6 +20,14 @@ class UploadService {
 
   constructor() {
     if (process.env.R2_ACCOUNT_ID && process.env.R2_ACCESS_KEY_ID && process.env.R2_SECRET_ACCESS_KEY) {
+      const agent = new https.Agent({
+        keepAlive: true,
+        keepAliveMsecs: 1000,
+        maxSockets: 50,
+        rejectUnauthorized: true,
+        minVersion: 'TLSv1.2',
+      });
+
       this.s3Client = new S3Client({
         region: "auto",
         endpoint: `https://${process.env.R2_ACCOUNT_ID}.r2.cloudflarestorage.com`,
@@ -27,6 +36,11 @@ class UploadService {
           secretAccessKey: process.env.R2_SECRET_ACCESS_KEY,
         },
         forcePathStyle: true,
+        maxAttempts: 3,
+        requestHandler: {
+          httpsAgent: agent,
+          requestTimeout: 30000,
+        },
       });
     }
   }
