@@ -23,9 +23,14 @@ export default function Navbar() {
           <Link href="/" data-testid="link-home">
             <div className="flex items-center gap-3 hover-elevate active-elevate-2 px-3 py-2 rounded-md transition-all cursor-pointer">
               <img src={logoImg} alt="Immobiliare Maggiolini" className="w-10 h-10 object-contain" aria-hidden="true" />
-              <span className="text-xl text-white" style={{ fontFamily: '"Arial Black", "Helvetica Inserat", "Helvetica", sans-serif', fontWeight: 500, letterSpacing: '0.15em', textTransform: 'lowercase' }}>
-                immobiliare maggiolini
-              </span>
+              <div className="flex flex-col leading-tight">
+                <span className="text-sm text-white" style={{ fontFamily: "'Michroma', sans-serif", fontWeight: 400, letterSpacing: '0.08em' }}>
+                  Immobiliare
+                </span>
+                <span className="text-sm text-white" style={{ fontFamily: "'Michroma', sans-serif", fontWeight: 400, letterSpacing: '0.08em' }}>
+                  MAGGIOLINI
+                </span>
+              </div>
             </div>
           </Link>
 
