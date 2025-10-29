@@ -5,7 +5,7 @@ import heroImage from "@assets/generated_images/Italian_villa_hero_image_8b4b5e4
 
 export default function Hero() {
   return (
-    <section className="relative min-h-[85vh] flex items-center overflow-hidden">
+    <section className="relative min-h-[70vh] flex items-center overflow-hidden">
       <div
         className="absolute inset-0 bg-cover bg-center"
         style={{ backgroundImage: `url(${heroImage})` }}
@@ -15,12 +15,12 @@ export default function Hero() {
         <div className="absolute inset-0 bg-gradient-to-r from-black/50 via-black/30 to-transparent" />
       </div>
 
-      <div className="relative z-10 max-w-7xl mx-auto px-6 md:px-8 py-20">
-        <div className="max-w-2xl">
-          <h1 className="font-serif font-bold text-5xl md:text-6xl lg:text-7xl text-primary-foreground mb-6 leading-tight">
+      <div className="relative z-10 max-w-7xl mx-auto px-6 md:px-8 py-16">
+        <div className="max-w-3xl">
+          <h1 className="font-serif font-bold text-4xl md:text-5xl lg:text-6xl text-primary-foreground mb-4 leading-tight">
             Ancora qui quando ti serve
           </h1>
-          <p className="text-lg md:text-xl text-primary-foreground/90 mb-8 leading-relaxed">
+          <p className="text-base md:text-lg text-primary-foreground/90 mb-6 leading-relaxed">
             Quarant'anni al tuo fianco, ben oltre la firma
           </p>
           <div className="flex flex-col sm:flex-row gap-4">

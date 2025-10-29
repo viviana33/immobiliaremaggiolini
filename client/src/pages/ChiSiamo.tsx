@@ -87,24 +87,24 @@ export default function ChiSiamo() {
       </section>
 
       <section className="py-16 md:py-20 bg-secondary">
-        <div className="max-w-7xl mx-auto px-6 md:px-8">
-          <div className="text-center mb-12">
-            <h2 className="font-serif font-bold text-3xl md:text-4xl text-foreground mb-4">
+        <div className="max-w-6xl mx-auto px-6 md:px-8">
+          <div className="text-center mb-16">
+            <h2 className="font-serif font-bold text-3xl md:text-4xl text-foreground mb-3">
               Il nostro approccio
             </h2>
-            <p className="text-muted-foreground text-lg max-w-2xl mx-auto">
+            <p className="text-muted-foreground text-lg">
               Quando lavoriamo per te
             </p>
           </div>
 
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-8 max-w-4xl mx-auto">
             {values.map((value, index) => (
-              <Card key={index} className="p-6 space-y-3 hover-elevate transition-all" data-testid={`card-value-${value.title.toLowerCase()}`}>
-                <div className="text-4xl">{value.icon}</div>
-                <h3 className="font-serif font-semibold text-xl text-foreground">
+              <Card key={index} className="p-8 space-y-4 hover-elevate transition-all" data-testid={`card-value-${value.title.toLowerCase()}`}>
+                <div className="text-5xl">{value.icon}</div>
+                <h3 className="font-serif font-semibold text-2xl text-foreground">
                   {value.title}
                 </h3>
-                <p className="text-muted-foreground text-sm leading-relaxed">
+                <p className="text-muted-foreground text-base leading-relaxed">
                   {value.description}
                 </p>
               </Card>
