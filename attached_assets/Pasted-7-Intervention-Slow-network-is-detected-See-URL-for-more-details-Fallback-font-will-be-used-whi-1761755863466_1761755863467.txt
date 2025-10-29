@@ -1,0 +1,228 @@
+7[Intervention] Slow network is detected. See <URL> for more details. Fallback font will be used while loading: <URL>
+24The source list for the Content Security Policy directive 'default-src' contains an invalid source: ''unsafe-dynamic''. It will be ignored.
+24The Content-Security-Policy directive 'default-src' contains 'report-uri' as a source expression. Did you want to add it as a directive and forget a semicolon?
+24The source list for Content Security Policy directive 'default-src' contains a source with an invalid path: '/api/4509669501698048/security/?sentry_key=7eb3d90eb4660416caf507087367e67e'. The query component, including the '?', will be ignored.
+CasaMaggiolini:1  The source list for the Content Security Policy directive 'default-src' contains an invalid source: ''unsafe-dynamic''. It will be ignored.
+CasaMaggiolini:1  The Content-Security-Policy directive 'default-src' contains 'report-uri' as a source expression. Did you want to add it as a directive and forget a semicolon?
+CasaMaggiolini:1  The source list for Content Security Policy directive 'default-src' contains a source with an invalid path: '/api/4509669501698048/security/?sentry_key=7eb3d90eb4660416caf507087367e67e'. The query component, including the '?', will be ignored.
+200Tracking Prevention blocked access to storage for <URL>.
+_app-b57c20e79df56098.js:13 
+      /////////////////////
+   ///////////////////////////
+  ////////@@@@@@@//////////////
+  ////////@@@@@@@//////////////
+  ////////@@@@@@@//////////////        Curious and driven?
+  ///////////////@@@@@@@///////        Work with us!
+  ///////////////@@@@@@@///////
+  ///////////////@@@@@@@///////        https://join.replit.com/hack.with.us
+  ////////@@@@@@@//////////////
+  ////////@@@@@@@//////////////
+  ////////@@@@@@#//////////////
+   ///////////////////////////
+      /////////////////////
+      
+_app-b57c20e79df56098.js:13 [LaunchDarkly] LaunchDarkly client initialized
+10Error while parsing the 'sandbox' attribute: 'allow-downloads-without-user-activation' is an invalid sandbox flag.
+framework-feb12df8fd4c4694.js:1  Unrecognized feature: 'ambient-light-sensor'.
+_ @ framework-feb12df8fd4c4694.js:1
+framework-feb12df8fd4c4694.js:1  Unrecognized feature: 'battery'.
+_ @ framework-feb12df8fd4c4694.js:1
+framework-feb12df8fd4c4694.js:1  Unrecognized feature: 'execution-while-not-rendered'.
+_ @ framework-feb12df8fd4c4694.js:1
+framework-feb12df8fd4c4694.js:1  Unrecognized feature: 'execution-while-out-of-viewport'.
+_ @ framework-feb12df8fd4c4694.js:1
+framework-feb12df8fd4c4694.js:1  Unrecognized feature: 'layout-animations'.
+_ @ framework-feb12df8fd4c4694.js:1
+framework-feb12df8fd4c4694.js:1  Unrecognized feature: 'legacy-image-formats'.
+_ @ framework-feb12df8fd4c4694.js:1
+framework-feb12df8fd4c4694.js:1  Unrecognized feature: 'navigation-override'.
+_ @ framework-feb12df8fd4c4694.js:1
+framework-feb12df8fd4c4694.js:1  Unrecognized feature: 'oversized-images'.
+_ @ framework-feb12df8fd4c4694.js:1
+framework-feb12df8fd4c4694.js:1  Unrecognized feature: 'publickey-credentials'.
+_ @ framework-feb12df8fd4c4694.js:1
+framework-feb12df8fd4c4694.js:1  Unrecognized feature: 'speaker-selection'.
+_ @ framework-feb12df8fd4c4694.js:1
+framework-feb12df8fd4c4694.js:1  Unrecognized feature: 'unoptimized-images'.
+_ @ framework-feb12df8fd4c4694.js:1
+framework-feb12df8fd4c4694.js:1  Unrecognized feature: 'unsized-media'.
+_ @ framework-feb12df8fd4c4694.js:1
+framework-feb12df8fd4c4694.js:1  Unrecognized feature: 'pointer-lock'.
+_ @ framework-feb12df8fd4c4694.js:1
+framework-feb12df8fd4c4694.js:1  Allow attribute will take precedence over 'allowfullscreen'.
+_ @ framework-feb12df8fd4c4694.js:1
+framework-feb12df8fd4c4694.js:1  Allow attribute will take precedence over 'allowpaymentrequest'.
+_ @ framework-feb12df8fd4c4694.js:1
+CasaMaggiolini:1 Banner not shown: beforeinstallpromptevent.preventDefault() called. The page must call beforeinstallpromptevent.prompt() to show the banner.
+2_app-b57c20e79df56098.js:13  Failed when connecting: Connection closed (code: 1006)
+(anonymous) @ _app-b57c20e79df56098.js:13
+_app-b57c20e79df56098.js:13  [Coframe] Failed to wait for treatmentApplied callback command Object
+(anonymous) @ _app-b57c20e79df56098.js:13
+analytics.tiktok.com/api/v2/pixel/act:1   Failed to load resource: the server responded with a status of 503 ()
+analytics.tiktok.com/api/v2/pixel/inter:1   Failed to load resource: the server responded with a status of 503 ()
+_app-b57c20e79df56098.js:13  task queue exceeded allotted deadline by 52ms
+(anonymous) @ _app-b57c20e79df56098.js:13
+workspace_iframe.html?initialPath=%2F&id=%3Armf%3A:32  Unrecognized feature: 'ambient-light-sensor'.
+workspace_iframe.html?initialPath=%2F&id=%3Armf%3A:32  Unrecognized feature: 'battery'.
+workspace_iframe.html?initialPath=%2F&id=%3Armf%3A:32  Unrecognized feature: 'execution-while-not-rendered'.
+workspace_iframe.html?initialPath=%2F&id=%3Armf%3A:32  Unrecognized feature: 'execution-while-out-of-viewport'.
+workspace_iframe.html?initialPath=%2F&id=%3Armf%3A:32  Unrecognized feature: 'layout-animations'.
+workspace_iframe.html?initialPath=%2F&id=%3Armf%3A:32  Unrecognized feature: 'legacy-image-formats'.
+workspace_iframe.html?initialPath=%2F&id=%3Armf%3A:32  Unrecognized feature: 'navigation-override'.
+workspace_iframe.html?initialPath=%2F&id=%3Armf%3A:32  Unrecognized feature: 'oversized-images'.
+workspace_iframe.html?initialPath=%2F&id=%3Armf%3A:32  Unrecognized feature: 'publickey-credentials'.
+workspace_iframe.html?initialPath=%2F&id=%3Armf%3A:32  Unrecognized feature: 'speaker-selection'.
+workspace_iframe.html?initialPath=%2F&id=%3Armf%3A:32  Unrecognized feature: 'unoptimized-images'.
+workspace_iframe.html?initialPath=%2F&id=%3Armf%3A:32  Unrecognized feature: 'unsized-media'.
+workspace_iframe.html?initialPath=%2F&id=%3Armf%3A:32  Allow attribute will take precedence over 'allowfullscreen'.
+workspace_iframe.html?initialPath=%2F&id=%3Armf%3A:32  Allow attribute will take precedence over 'allowpaymentrequest'.
+injected.js:27 [Vercel Web Analytics] Debug mode is enabled by default in development. No requests will be sent to the server.
+injected.js:27 [Vercel Web Analytics] [pageview] https://9bf0fbc3-24de-4a6f-89ec-73422dc0568d-00-1i9hn73ix69kw.spock.replit.dev/ Object
+[NEW] Explain Console errors by using Copilot in Edge: click
+         
+         to explain an error. 
+        Learn more
+        Don't show again
+_app-b57c20e79df56098.js:13   GET https://replit.com/_next/data/NftpSLEHPH7NJepM0N_fX/index.json 404 (Not Found)
+(anonymous) @ _app-b57c20e79df56098.js:13
+e @ main-e39bbe138ca431bf.js:1
+f @ main-e39bbe138ca431bf.js:1
+Q @ main-e39bbe138ca431bf.js:1
+(anonymous) @ main-e39bbe138ca431bf.js:1
+Promise.then
+(anonymous) @ main-e39bbe138ca431bf.js:1
+(anonymous) @ main-e39bbe138ca431bf.js:1
+n @ main-e39bbe138ca431bf.js:1
+u @ main-e39bbe138ca431bf.js:1
+Promise.then
+n @ main-e39bbe138ca431bf.js:1
+u @ main-e39bbe138ca431bf.js:1
+Promise.then
+n @ main-e39bbe138ca431bf.js:1
+u @ main-e39bbe138ca431bf.js:1
+Promise.then
+n @ main-e39bbe138ca431bf.js:1
+u @ main-e39bbe138ca431bf.js:1
+Promise.then
+n @ main-e39bbe138ca431bf.js:1
+u @ main-e39bbe138ca431bf.js:1
+(anonymous) @ main-e39bbe138ca431bf.js:1
+(anonymous) @ main-e39bbe138ca431bf.js:1
+value @ main-e39bbe138ca431bf.js:1
+(anonymous) @ main-e39bbe138ca431bf.js:1
+w @ _app-b57c20e79df56098.js:1
+(anonymous) @ _app-b57c20e79df56098.js:1
+oO @ framework-feb12df8fd4c4694.js:1
+uB @ framework-feb12df8fd4c4694.js:1
+(anonymous) @ framework-feb12df8fd4c4694.js:1
+C @ framework-feb12df8fd4c4694.js:1
+z @ framework-feb12df8fd4c4694.js:1
+_app-b57c20e79df56098.js:13   GET https://replit.com/_next/data/NftpSLEHPH7NJepM0N_fX/index.json 404 (Not Found)
+(anonymous) @ _app-b57c20e79df56098.js:13
+e @ main-e39bbe138ca431bf.js:1
+f @ main-e39bbe138ca431bf.js:1
+Q @ main-e39bbe138ca431bf.js:1
+(anonymous) @ main-e39bbe138ca431bf.js:1
+Promise.then
+(anonymous) @ main-e39bbe138ca431bf.js:1
+(anonymous) @ main-e39bbe138ca431bf.js:1
+n @ main-e39bbe138ca431bf.js:1
+u @ main-e39bbe138ca431bf.js:1
+Promise.then
+n @ main-e39bbe138ca431bf.js:1
+u @ main-e39bbe138ca431bf.js:1
+Promise.then
+n @ main-e39bbe138ca431bf.js:1
+u @ main-e39bbe138ca431bf.js:1
+Promise.then
+n @ main-e39bbe138ca431bf.js:1
+u @ main-e39bbe138ca431bf.js:1
+Promise.then
+n @ main-e39bbe138ca431bf.js:1
+u @ main-e39bbe138ca431bf.js:1
+(anonymous) @ main-e39bbe138ca431bf.js:1
+(anonymous) @ main-e39bbe138ca431bf.js:1
+value @ main-e39bbe138ca431bf.js:1
+(anonymous) @ main-e39bbe138ca431bf.js:1
+w @ _app-b57c20e79df56098.js:1
+onMouseEnter @ _app-b57c20e79df56098.js:1
+eB @ framework-feb12df8fd4c4694.js:1
+eH @ framework-feb12df8fd4c4694.js:1
+(anonymous) @ framework-feb12df8fd4c4694.js:1
+re @ framework-feb12df8fd4c4694.js:1
+rt @ framework-feb12df8fd4c4694.js:1
+(anonymous) @ framework-feb12df8fd4c4694.js:1
+uT @ framework-feb12df8fd4c4694.js:1
+eM @ framework-feb12df8fd4c4694.js:1
+ru @ framework-feb12df8fd4c4694.js:1
+tB @ framework-feb12df8fd4c4694.js:1
+tO @ framework-feb12df8fd4c4694.js:1
+n @ _app-b57c20e79df56098.js:13
+cf.js?config=%257B%2522projectId%2522%253A%252268c9ad4d4cddb58cf3a1f93d%2522%252C%2522startTime%2522%253A1761747760811%252C%2522timeoutMs%2522%253A1000%252C%2522currentUrl%2522%253A%2522https%253A%252F%252Freplit.com%252F%2540matteomarazzini%252FCasaMaggiolini%2522%252C%2522trackingOnly%2522%253Atrue%257D:10   POST https://ingest.app.coframe.com/ingest/v2/batched_events/68c9ad4d4cddb58cf3a1f93d/ 502 (Bad Gateway)
+U @ cf.js?config=%257B%2522projectId%2522%253A%252268c9ad4d4cddb58cf3a1f93d%2522%252C%2522startTime%2522%253A1761747760811%252C%2522timeoutMs%2522%253A1000%252C%2522currentUrl%2522%253A%2522https%253A%252F%252Freplit.com%252F%2540matteomarazzini%252FCasaMaggiolini%2522%252C%2522trackingOnly%2522%253Atrue%257D:10
+N @ cf.js?config=%257B%2522projectId%2522%253A%252268c9ad4d4cddb58cf3a1f93d%2522%252C%2522startTime%2522%253A1761747760811%252C%2522timeoutMs%2522%253A1000%252C%2522currentUrl%2522%253A%2522https%253A%252F%252Freplit.com%252F%2540matteomarazzini%252FCasaMaggiolini%2522%252C%2522trackingOnly%2522%253Atrue%257D:10
+(anonymous) @ cf.js?config=%257B%2522projectId%2522%253A%252268c9ad4d4cddb58cf3a1f93d%2522%252C%2522startTime%2522%253A1761747760811%252C%2522timeoutMs%2522%253A1000%252C%2522currentUrl%2522%253A%2522https%253A%252F%252Freplit.com%252F%2540matteomarazzini%252FCasaMaggiolini%2522%252C%2522trackingOnly%2522%253Atrue%257D:10
+n @ _app-b57c20e79df56098.js:13
+_app-b57c20e79df56098.js:13   GET https://replit.com/_next/data/NftpSLEHPH7NJepM0N_fX/index.json 404 (Not Found)
+(anonymous) @ _app-b57c20e79df56098.js:13
+e @ main-e39bbe138ca431bf.js:1
+f @ main-e39bbe138ca431bf.js:1
+Q @ main-e39bbe138ca431bf.js:1
+(anonymous) @ main-e39bbe138ca431bf.js:1
+Promise.then
+(anonymous) @ main-e39bbe138ca431bf.js:1
+(anonymous) @ main-e39bbe138ca431bf.js:1
+n @ main-e39bbe138ca431bf.js:1
+u @ main-e39bbe138ca431bf.js:1
+Promise.then
+n @ main-e39bbe138ca431bf.js:1
+u @ main-e39bbe138ca431bf.js:1
+Promise.then
+n @ main-e39bbe138ca431bf.js:1
+u @ main-e39bbe138ca431bf.js:1
+Promise.then
+n @ main-e39bbe138ca431bf.js:1
+u @ main-e39bbe138ca431bf.js:1
+Promise.then
+n @ main-e39bbe138ca431bf.js:1
+u @ main-e39bbe138ca431bf.js:1
+(anonymous) @ main-e39bbe138ca431bf.js:1
+(anonymous) @ main-e39bbe138ca431bf.js:1
+value @ main-e39bbe138ca431bf.js:1
+(anonymous) @ main-e39bbe138ca431bf.js:1
+w @ _app-b57c20e79df56098.js:1
+onMouseEnter @ _app-b57c20e79df56098.js:1
+eB @ framework-feb12df8fd4c4694.js:1
+eH @ framework-feb12df8fd4c4694.js:1
+(anonymous) @ framework-feb12df8fd4c4694.js:1
+re @ framework-feb12df8fd4c4694.js:1
+rt @ framework-feb12df8fd4c4694.js:1
+(anonymous) @ framework-feb12df8fd4c4694.js:1
+uT @ framework-feb12df8fd4c4694.js:1
+eM @ framework-feb12df8fd4c4694.js:1
+ru @ framework-feb12df8fd4c4694.js:1
+tB @ framework-feb12df8fd4c4694.js:1
+tO @ framework-feb12df8fd4c4694.js:1
+n @ _app-b57c20e79df56098.js:13
+injected.js:27 [Vercel Web Analytics] [pageview] https://9bf0fbc3-24de-4a6f-89ec-73422dc0568d-00-1i9hn73ix69kw.spock.replit.dev/chi-siamo {o: 'https://9bf0fbc3-24de-4a6f-89ec-73422dc0568d-00-1i9hn73ix69kw.spock.replit.dev/chi-siamo', sv: '0.1.3', sdkn: '@vercel/analytics/react', sdkv: '1.5.0', ts: 1761755471828, …}
+injected.js:27 [vite] server connection lost. Polling for restart...
+2stallwart.build.js:1 stallwart: failed ping 1
+workspace_iframe.html?initialPath=%2F&id=%3Aroj%3A:32  Unrecognized feature: 'ambient-light-sensor'.
+workspace_iframe.html?initialPath=%2F&id=%3Aroj%3A:32  Unrecognized feature: 'battery'.
+workspace_iframe.html?initialPath=%2F&id=%3Aroj%3A:32  Unrecognized feature: 'execution-while-not-rendered'.
+workspace_iframe.html?initialPath=%2F&id=%3Aroj%3A:32  Unrecognized feature: 'execution-while-out-of-viewport'.
+workspace_iframe.html?initialPath=%2F&id=%3Aroj%3A:32  Unrecognized feature: 'layout-animations'.
+workspace_iframe.html?initialPath=%2F&id=%3Aroj%3A:32  Unrecognized feature: 'legacy-image-formats'.
+workspace_iframe.html?initialPath=%2F&id=%3Aroj%3A:32  Unrecognized feature: 'navigation-override'.
+workspace_iframe.html?initialPath=%2F&id=%3Aroj%3A:32  Unrecognized feature: 'oversized-images'.
+workspace_iframe.html?initialPath=%2F&id=%3Aroj%3A:32  Unrecognized feature: 'publickey-credentials'.
+workspace_iframe.html?initialPath=%2F&id=%3Aroj%3A:32  Unrecognized feature: 'speaker-selection'.
+workspace_iframe.html?initialPath=%2F&id=%3Aroj%3A:32  Unrecognized feature: 'unoptimized-images'.
+workspace_iframe.html?initialPath=%2F&id=%3Aroj%3A:32  Unrecognized feature: 'unsized-media'.
+workspace_iframe.html?initialPath=%2F&id=%3Aroj%3A:32  Allow attribute will take precedence over 'allowfullscreen'.
+workspace_iframe.html?initialPath=%2F&id=%3Aroj%3A:32  Allow attribute will take precedence over 'allowpaymentrequest'.
+VM3299 injected.js:27 [Vercel Web Analytics] Debug mode is enabled by default in development. No requests will be sent to the server.
+VM3299 injected.js:27 [Vercel Web Analytics] [pageview] https://9bf0fbc3-24de-4a6f-89ec-73422dc0568d-00-1i9hn73ix69kw.spock.replit.dev/ {o: 'https://9bf0fbc3-24de-4a6f-89ec-73422dc0568d-00-1i9hn73ix69kw.spock.replit.dev/', sv: '0.1.3', sdkn: '@vercel/analytics/react', sdkv: '1.5.0', ts: 1761755573842, …}
+VM3299 injected.js:27 [vite] server connection lost. Polling for restart...
+injected.js:27 [Vercel Web Analytics] Debug mode is enabled by default in development. No requests will be sent to the server.
+injected.js:27 [Vercel Web Analytics] [pageview] https://9bf0fbc3-24de-4a6f-89ec-73422dc0568d-00-1i9hn73ix69kw.spock.replit.dev/ {o: 'https://9bf0fbc3-24de-4a6f-89ec-73422dc0568d-00-1i9hn73ix69kw.spock.replit.dev/', sv: '0.1.3', sdkn: '@vercel/analytics/react', sdkv: '1.5.0', ts: 1761755591316, …}
