@@ -18,11 +18,10 @@ export default function Hero() {
       <div className="relative z-10 max-w-7xl mx-auto px-6 md:px-8 py-20">
         <div className="max-w-2xl">
           <h1 className="font-serif font-bold text-5xl md:text-6xl lg:text-7xl text-primary-foreground mb-6 leading-tight">
-            La Tua Casa dei Sogni Ti Aspetta
+            Ancora qui quando ti serve
           </h1>
           <p className="text-lg md:text-xl text-primary-foreground/90 mb-8 leading-relaxed">
-            Con oltre 20 anni di esperienza, accompagniamo le famiglie nella ricerca della casa perfetta. 
-            Un rapporto di fiducia e amicizia che dura nel tempo.
+            Quarant'anni al tuo fianco, ben oltre la firma
           </p>
           <div className="flex flex-col sm:flex-row gap-4">
             <Link href="/immobili">
