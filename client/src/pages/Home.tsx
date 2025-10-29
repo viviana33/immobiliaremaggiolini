@@ -2,7 +2,8 @@ import Hero from "@/components/Hero";
 import PropertyCard from "@/components/PropertyCard";
 import BlogCard from "@/components/BlogCard";
 import { Button } from "@/components/ui/button";
-import { ArrowRight } from "lucide-react";
+import { Card } from "@/components/ui/card";
+import { ArrowRight, Ear, Home as HomeIcon, Handshake, Clock } from "lucide-react";
 import { Link } from "wouter";
 import apartmentImage from "@assets/generated_images/Apartment_interior_property_image_66b8a52c.png";
 import countrysideImage from "@assets/generated_images/Countryside_property_image_dddb1072.png";
@@ -16,6 +17,30 @@ export default function Home() {
     title: 'Vendita e Affitto Immobili a Milano, Monza e Brianza',
     description: 'Agenzia immobiliare specializzata in vendita e affitto di proprietà a Milano, Monza e Brianza. Professionalità, esperienza e servizio personalizzato dal 1985.',
   });
+
+  const values = [
+    {
+      icon: Ear,
+      title: "Ascolto profondo",
+      description: "Prima di ogni proposta",
+    },
+    {
+      icon: HomeIcon,
+      title: "Conoscenza diretta",
+      description: "Di immobili e persone",
+    },
+    {
+      icon: Handshake,
+      title: "Mediazione autentica",
+      description: "Tra esigenze diverse",
+    },
+    {
+      icon: Clock,
+      title: "Presenza costante",
+      description: "Dal primo contatto in poi",
+    },
+  ];
+
   const featuredProperties = [
     {
       id: "1",
@@ -109,6 +134,38 @@ export default function Home() {
             {featuredProperties.map((property) => (
               <PropertyCard key={property.id} {...property} />
             ))}
+          </div>
+        </div>
+      </section>
+
+      <section className="py-16 md:py-20 bg-secondary">
+        <div className="max-w-6xl mx-auto px-6 md:px-8">
+          <div className="text-center mb-12">
+            <h2 className="font-serif font-bold text-3xl md:text-4xl text-foreground mb-3">
+              Il nostro approccio
+            </h2>
+            <p className="text-muted-foreground text-lg">
+              Quando lavoriamo per te
+            </p>
+          </div>
+
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-6 max-w-5xl mx-auto">
+            {values.map((value, index) => {
+              const IconComponent = value.icon;
+              return (
+                <Card key={index} className="p-6 space-y-3 hover-elevate transition-all" data-testid={`card-value-${value.title.toLowerCase()}`}>
+                  <div className="w-12 h-12 rounded-md bg-primary/10 flex items-center justify-center">
+                    <IconComponent className="w-6 h-6 text-primary" aria-hidden="true" />
+                  </div>
+                  <h3 className="font-serif font-semibold text-xl text-foreground">
+                    {value.title}
+                  </h3>
+                  <p className="text-muted-foreground text-sm leading-relaxed">
+                    {value.description}
+                  </p>
+                </Card>
+              );
+            })}
           </div>
         </div>
       </section>

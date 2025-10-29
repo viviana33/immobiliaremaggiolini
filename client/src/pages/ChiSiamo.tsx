@@ -1,36 +1,11 @@
-import { Card } from "@/components/ui/card";
 import teamPhoto from "@assets/generated_images/Real_estate_team_photo_7f941344.png";
 import { usePageMeta } from "@/lib/seo";
-import { Ear, Home, Handshake, Clock } from "lucide-react";
 
 export default function ChiSiamo() {
   usePageMeta({
     title: 'Chi Siamo',
     description: 'Presenza nel territorio da quarant\'anni. Accordi che durano, relazioni che restano. Scopri la storia di Immobiliare Maggiolini.',
   });
-
-  const values = [
-    {
-      icon: Ear,
-      title: "Ascolto profondo",
-      description: "Prima di ogni proposta",
-    },
-    {
-      icon: Home,
-      title: "Conoscenza diretta",
-      description: "Di immobili e persone",
-    },
-    {
-      icon: Handshake,
-      title: "Mediazione autentica",
-      description: "Tra esigenze diverse",
-    },
-    {
-      icon: Clock,
-      title: "Presenza costante",
-      description: "Dal primo contatto in poi",
-    },
-  ];
 
   return (
     <div className="min-h-screen">
@@ -83,38 +58,6 @@ export default function ChiSiamo() {
                 className="w-full h-auto rounded-md shadow-lg"
               />
             </div>
-          </div>
-        </div>
-      </section>
-
-      <section className="py-16 md:py-20 bg-secondary">
-        <div className="max-w-6xl mx-auto px-6 md:px-8">
-          <div className="text-center mb-12">
-            <h2 className="font-serif font-bold text-3xl md:text-4xl text-foreground mb-3">
-              Il nostro approccio
-            </h2>
-            <p className="text-muted-foreground text-lg">
-              Quando lavoriamo per te
-            </p>
-          </div>
-
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-6 max-w-5xl mx-auto">
-            {values.map((value, index) => {
-              const IconComponent = value.icon;
-              return (
-                <Card key={index} className="p-6 space-y-3 hover-elevate transition-all" data-testid={`card-value-${value.title.toLowerCase()}`}>
-                  <div className="w-12 h-12 rounded-md bg-primary/10 flex items-center justify-center">
-                    <IconComponent className="w-6 h-6 text-primary" aria-hidden="true" />
-                  </div>
-                  <h3 className="font-serif font-semibold text-xl text-foreground">
-                    {value.title}
-                  </h3>
-                  <p className="text-muted-foreground text-sm leading-relaxed">
-                    {value.description}
-                  </p>
-                </Card>
-              );
-            })}
           </div>
         </div>
       </section>
