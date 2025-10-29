@@ -10,11 +10,6 @@ export default function ChiSiamo() {
 
   const values = [
     {
-      icon: "💼",
-      title: "Alla professione",
-      description: "",
-    },
-    {
       icon: "👂",
       title: "Ascolto profondo",
       description: "Prima di ogni proposta",
@@ -94,15 +89,12 @@ export default function ChiSiamo() {
       <section className="py-16 md:py-20 bg-secondary">
         <div className="max-w-7xl mx-auto px-6 md:px-8">
           <div className="text-center mb-12">
-            <h2 className="font-serif font-bold text-3xl md:text-4xl text-foreground mb-4">
+            <h2 className="font-serif font-bold text-3xl md:text-4xl text-foreground">
               Il nostro approccio
             </h2>
-            <p className="text-muted-foreground text-lg max-w-2xl mx-auto">
-              I principi che guidano ogni giorno il nostro lavoro
-            </p>
           </div>
 
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
             {values.map((value, index) => (
               <Card key={index} className="p-6 space-y-3 hover-elevate transition-all" data-testid={`card-value-${value.title.toLowerCase()}`}>
                 <div className="text-4xl">{value.icon}</div>
