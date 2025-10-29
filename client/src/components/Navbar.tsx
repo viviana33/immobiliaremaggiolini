@@ -23,8 +23,8 @@ export default function Navbar() {
           <Link href="/" data-testid="link-home">
             <div className="flex items-center gap-3 hover-elevate active-elevate-2 px-3 py-2 rounded-md transition-all cursor-pointer">
               <img src={logoImg} alt="Immobiliare Maggiolini" className="w-10 h-10 object-contain" aria-hidden="true" />
-              <span className="font-serif font-bold text-xl text-white">
-                Immobiliare Maggiolini
+              <span className="font-sans text-xl text-white tracking-wide" style={{ fontWeight: 400 }}>
+                immobiliare maggiolini
               </span>
             </div>
           </Link>
