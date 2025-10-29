@@ -35,7 +35,7 @@ export default function Footer() {
           </div>
 
           <div className="space-y-4">
-            <h3 className="font-serif font-semibold text-lg text-white">Link Veloci</h3>
+            <h3 className="text-sm text-white" style={{ fontFamily: "'Michroma', sans-serif", fontWeight: 400, letterSpacing: '0.08em' }}>Link Veloci</h3>
             <ul className="space-y-2">
               {[
                 { path: "/", label: "Home" },
@@ -55,7 +55,7 @@ export default function Footer() {
           </div>
 
           <div className="space-y-4">
-            <h3 className="font-serif font-semibold text-lg text-white">Contatti</h3>
+            <h3 className="text-sm text-white" style={{ fontFamily: "'Michroma', sans-serif", fontWeight: 400, letterSpacing: '0.08em' }}>Contatti</h3>
             <ul className="space-y-3">
               <li className="flex items-start gap-2 text-white/80 text-sm">
                 <MapPin className="w-4 h-4 mt-0.5 flex-shrink-0" />
