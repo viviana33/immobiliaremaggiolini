@@ -1,7 +1,6 @@
 import crypto from "crypto";
 import { S3Client, PutObjectCommand } from "@aws-sdk/client-s3";
 import sharp from "sharp";
-import https from "https";
 
 interface UploadResult {
   urlHot: string;
@@ -20,14 +19,6 @@ class UploadService {
 
   constructor() {
     if (process.env.R2_ACCOUNT_ID && process.env.R2_ACCESS_KEY_ID && process.env.R2_SECRET_ACCESS_KEY) {
-      const agent = new https.Agent({
-        keepAlive: true,
-        keepAliveMsecs: 1000,
-        maxSockets: 50,
-        rejectUnauthorized: true,
-        minVersion: 'TLSv1.2',
-      });
-
       this.s3Client = new S3Client({
         region: "auto",
         endpoint: `https://${process.env.R2_ACCOUNT_ID}.r2.cloudflarestorage.com`,
@@ -35,12 +26,7 @@ class UploadService {
           accessKeyId: process.env.R2_ACCESS_KEY_ID,
           secretAccessKey: process.env.R2_SECRET_ACCESS_KEY,
         },
-        forcePathStyle: true,
         maxAttempts: 3,
-        requestHandler: {
-          httpsAgent: agent,
-          requestTimeout: 30000,
-        },
       });
     }
   }
@@ -157,18 +143,29 @@ class UploadService {
       }
 
       const longestSide = Math.max(metadata.width, metadata.height);
+      const format = metadata.format;
       
-      if (longestSide <= maxSize) {
-        return buffer;
+      let processedImage = image;
+      
+      if (longestSide > maxSize) {
+        const resizeOptions = metadata.width > metadata.height
+          ? { width: maxSize }
+          : { height: maxSize };
+        
+        processedImage = image.resize({ ...resizeOptions, fit: 'inside', withoutEnlargement: true });
       }
-
-      const resizeOptions = metadata.width > metadata.height
-        ? { width: maxSize }
-        : { height: maxSize };
-
-      return await image
-        .resize(resizeOptions)
-        .toBuffer();
+      
+      if (format === 'jpeg' || format === 'jpg') {
+        return await processedImage.jpeg({ quality: 90, progressive: true }).toBuffer();
+      } else if (format === 'png') {
+        return await processedImage.png({ compressionLevel: 9, progressive: true }).toBuffer();
+      } else if (format === 'webp') {
+        return await processedImage.webp({ quality: 90 }).toBuffer();
+      } else if (format === 'gif') {
+        return await processedImage.gif().toBuffer();
+      }
+      
+      return await processedImage.jpeg({ quality: 90, progressive: true }).toBuffer();
     } catch (error: any) {
       if (error.message?.includes('INVALID_IMAGE:')) {
         throw error;

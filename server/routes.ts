@@ -626,7 +626,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
   const uploadPostImage = multer({
     storage: multer.memoryStorage(),
     limits: {
-      fileSize: 8 * 1024 * 1024,
+      fileSize: 20 * 1024 * 1024,
       files: 1
     },
     fileFilter: (req, file, cb) => {
@@ -710,7 +710,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
     uploadPostImage.single("image")(req, res, (err) => {
       if (err instanceof multer.MulterError) {
         if (err.code === 'LIMIT_FILE_SIZE') {
-          return res.status(400).json({ message: "Il file supera la dimensione massima di 8MB" });
+          return res.status(400).json({ message: "Il file supera la dimensione massima di 20MB" });
         }
         return res.status(400).json({ message: `Errore nel caricamento: ${err.message}` });
       }
@@ -919,7 +919,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
   const uploadPostGalleryImage = multer({
     storage: multer.memoryStorage(),
     limits: {
-      fileSize: 8 * 1024 * 1024,
+      fileSize: 20 * 1024 * 1024,
       files: 10
     },
     fileFilter: (req, file, cb) => {
