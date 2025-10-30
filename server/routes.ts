@@ -1200,20 +1200,53 @@ export async function registerRoutes(app: Express): Promise<Server> {
       try {
         const brevo = getBrevoService();
         
-        // Prepara i destinatari
-        const recipients = subscribers.map(sub => ({
-          email: sub.email,
-          name: sub.nome || undefined
-        }));
+        // Invia email individuali per includere il link di disiscrizione personalizzato
+        for (const sub of subscribers) {
+          try {
+            const unsubscribeUrl = `${baseUrl}/api/unsubscribe/${sub.unsubscribeToken}`;
+            
+            // HTML dell'email con link di disiscrizione personalizzato
+            const personalizedHtmlContent = `
+              <!DOCTYPE html>
+              <html>
+              <head>
+                <meta charset="utf-8">
+                <meta name="viewport" content="width=device-width, initial-scale=1.0">
+              </head>
+              <body style="font-family: Arial, sans-serif; line-height: 1.6; color: #333; max-width: 600px; margin: 0 auto; padding: 20px;">
+                <div style="background-color: #f8f9fa; padding: 30px; border-radius: 8px;">
+                  <h1 style="color: #2c3e50; margin-bottom: 20px;">${post.titolo}</h1>
+                  ${post.sottotitolo ? `<h2 style="color: #7f8c8d; font-size: 18px; font-weight: normal; margin-bottom: 20px;">${post.sottotitolo}</h2>` : ''}
+                  ${post.cover ? `<img src="${post.cover}" alt="${post.titolo}" style="width: 100%; height: auto; border-radius: 8px; margin-bottom: 20px;" />` : ''}
+                  <p style="font-size: 16px; color: #555; margin-bottom: 20px;">${preview}</p>
+                  <a href="${postUrl}" style="display: inline-block; background-color: #3498db; color: white; padding: 12px 30px; text-decoration: none; border-radius: 5px; font-weight: bold;">Leggi l'articolo completo</a>
+                </div>
+                <div style="margin-top: 30px; padding-top: 20px; border-top: 1px solid #e0e0e0; text-align: center; font-size: 12px; color: #999;">
+                  <p>Ricevi questa email perché sei iscritto agli aggiornamenti del blog Maggiolini.</p>
+                  <p>
+                    <a href="${baseUrl}/preferenze?email=${encodeURIComponent(sub.email)}" style="color: #3498db; text-decoration: none;">Gestisci le tue preferenze</a> 
+                    | 
+                    <a href="${unsubscribeUrl}" style="color: #999; text-decoration: none;">Disiscriviti</a>
+                  </p>
+                </div>
+              </body>
+              </html>
+            `;
+            
+            await brevo.sendTransactionalEmail({
+              to: [{ email: sub.email, name: sub.nome || undefined }],
+              subject,
+              htmlContent: personalizedHtmlContent
+            });
+            
+            sentCount++;
+          } catch (emailError: any) {
+            console.error(`Errore invio email a ${sub.email}:`, emailError);
+            errorCount++;
+            errors.push(`${sub.email}: ${emailError.message}`);
+          }
+        }
 
-        // Invia email
-        await brevo.sendTransactionalEmail({
-          to: recipients,
-          subject,
-          htmlContent
-        });
-
-        sentCount = recipients.length;
         console.log(`[${new Date().toISOString()}] Email inviata con successo a ${sentCount} iscritti per il post: ${post.titolo}`);
 
       } catch (brevoError: any) {
@@ -1381,20 +1414,61 @@ export async function registerRoutes(app: Express): Promise<Server> {
       try {
         const brevo = getBrevoService();
         
-        // Prepara i destinatari
-        const recipients = subscribers.map(sub => ({
-          email: sub.email,
-          name: sub.nome || undefined
-        }));
+        // Invia email individuali per includere il link di disiscrizione personalizzato
+        for (const sub of subscribers) {
+          try {
+            const unsubscribeUrl = `${baseUrl}/api/unsubscribe/${sub.unsubscribeToken}`;
+            
+            // HTML dell'email con link di disiscrizione personalizzato
+            const personalizedHtmlContent = `
+              <!DOCTYPE html>
+              <html>
+              <head>
+                <meta charset="utf-8">
+                <meta name="viewport" content="width=device-width, initial-scale=1.0">
+              </head>
+              <body style="font-family: Arial, sans-serif; line-height: 1.6; color: #333; max-width: 600px; margin: 0 auto; padding: 20px;">
+                <div style="background-color: #f8f9fa; padding: 30px; border-radius: 8px;">
+                  <h1 style="color: #2c3e50; margin-bottom: 10px;">${property.titolo}</h1>
+                  <p style="color: #7f8c8d; font-size: 16px; margin-bottom: 20px;">${tipoLabel} - ${property.zona || ''}</p>
+                  ${coverImage ? `<img src="${coverImage}" alt="${property.titolo}" style="width: 100%; height: auto; border-radius: 8px; margin-bottom: 20px;" />` : ''}
+                  <div style="background-color: white; padding: 20px; border-radius: 8px; margin-bottom: 20px;">
+                    <h2 style="color: #3498db; font-size: 28px; margin-bottom: 10px;">${formattedPrice}</h2>
+                    <p style="font-size: 16px; color: #555; margin-bottom: 15px;">${shortDescription}</p>
+                    <div style="display: flex; flex-wrap: wrap; gap: 15px; margin-bottom: 20px;">
+                      ${property.mq ? `<div style="flex: 0 0 auto;"><strong>📐 Superficie:</strong> ${property.mq} m²</div>` : ''}
+                      ${property.stanze ? `<div style="flex: 0 0 auto;"><strong>🛏️ Stanze:</strong> ${property.stanze}</div>` : ''}
+                      ${property.bagni ? `<div style="flex: 0 0 auto;"><strong>🚿 Bagni:</strong> ${property.bagni}</div>` : ''}
+                    </div>
+                  </div>
+                  <a href="${propertyUrl}" style="display: inline-block; background-color: #3498db; color: white; padding: 12px 30px; text-decoration: none; border-radius: 5px; font-weight: bold;">Scopri di più</a>
+                </div>
+                <div style="margin-top: 30px; padding-top: 20px; border-top: 1px solid #e0e0e0; text-align: center; font-size: 12px; color: #999;">
+                  <p>Ricevi questa email perché sei iscritto alle notifiche per nuovi immobili Maggiolini.</p>
+                  <p>
+                    <a href="${baseUrl}/preferenze?email=${encodeURIComponent(sub.email)}" style="color: #3498db; text-decoration: none;">Gestisci le tue preferenze</a> 
+                    | 
+                    <a href="${unsubscribeUrl}" style="color: #999; text-decoration: none;">Disiscriviti</a>
+                  </p>
+                </div>
+              </body>
+              </html>
+            `;
+            
+            await brevo.sendTransactionalEmail({
+              to: [{ email: sub.email, name: sub.nome || undefined }],
+              subject,
+              htmlContent: personalizedHtmlContent
+            });
+            
+            sentCount++;
+          } catch (emailError: any) {
+            console.error(`Errore invio email a ${sub.email}:`, emailError);
+            errorCount++;
+            errors.push(`${sub.email}: ${emailError.message}`);
+          }
+        }
 
-        // Invia email
-        await brevo.sendTransactionalEmail({
-          to: recipients,
-          subject,
-          htmlContent
-        });
-
-        sentCount = recipients.length;
         console.log(`[${new Date().toISOString()}] Email inviata con successo a ${sentCount} iscritti per l'immobile: ${property.titolo}`);
 
       } catch (brevoError: any) {

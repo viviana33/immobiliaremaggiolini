@@ -38,6 +38,7 @@ export default function Preferenze() {
     const params = new URLSearchParams(window.location.search);
     const emailParam = params.get('email');
     const confirmedParam = params.get('confirmed');
+    const unsubscribedParam = params.get('unsubscribed');
     
     if (emailParam) {
       setEmail(emailParam);
@@ -47,6 +48,14 @@ export default function Preferenze() {
     if (confirmedParam === 'true') {
       setSaveStatus("success");
       setErrorMessage("Email confermata con successo!");
+    }
+
+    if (unsubscribedParam === 'true') {
+      setSaveStatus("success");
+      setErrorMessage("Sei stato disiscritto con successo. Non riceverai più email da noi.");
+      setIsLoaded(true);
+      setBlogUpdates(false);
+      setNewListings(false);
     }
   }, [location]);
 
