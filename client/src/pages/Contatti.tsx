@@ -87,29 +87,6 @@ export default function Contatti() {
                   ))}
                 </div>
               </div>
-
-              <Card className="p-6">
-                <h3 className="font-serif font-semibold text-xl text-foreground mb-4">
-                  Tempo di Risposta
-                </h3>
-                <p className="text-muted-foreground text-sm leading-relaxed mb-4">
-                  Ci impegniamo a rispondere a tutte le richieste entro 24 ore lavorative. 
-                  Per esigenze urgenti, non esitate a chiamarci direttamente.
-                </p>
-                <div className="bg-accent/10 border border-accent/20 rounded-md p-4">
-                  <p className="text-sm text-accent-foreground font-medium">
-                    💚 La vostra soddisfazione è la nostra priorità
-                  </p>
-                </div>
-              </Card>
-
-              <div className="bg-secondary rounded-md p-6 h-64 flex items-center justify-center">
-                <div className="text-center text-muted-foreground">
-                  <MapPin className="w-12 h-12 mx-auto mb-3 text-primary" />
-                  <p className="font-semibold text-foreground">Mappa della Nostra Sede</p>
-                  <p className="text-sm mt-2">Via Paolo Castelnovo, 14, Parabiago</p>
-                </div>
-              </div>
             </div>
           </div>
         </div>
