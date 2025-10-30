@@ -1,5 +1,6 @@
 import { Link } from "wouter";
 import { Building2, Mail, Phone, MapPin, Instagram } from "lucide-react";
+import { SiFacebook } from "react-icons/si";
 import { Button } from "@/components/ui/button";
 import logoImg from "@assets/Logo Geometrico su Fondo Rosso_1761237729319.png";
 
@@ -29,6 +30,16 @@ export default function Footer() {
               >
                 <Button variant="ghost" size="icon" className="hover-elevate text-white" data-testid="button-social-instagram">
                   <Instagram className="w-5 h-5" />
+                </Button>
+              </a>
+              <a 
+                href="https://www.facebook.com/immobiliaremaggiolini" 
+                target="_blank" 
+                rel="noopener noreferrer"
+                aria-label="Seguici su Facebook"
+              >
+                <Button variant="ghost" size="icon" className="hover-elevate text-white" data-testid="button-social-facebook">
+                  <SiFacebook className="w-5 h-5" />
                 </Button>
               </a>
             </div>
