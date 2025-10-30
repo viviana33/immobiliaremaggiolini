@@ -84,7 +84,7 @@ export default function Footer() {
             </ul>
             <div className="pt-2 text-sm text-white/80">
               <p className="font-semibold">Orari:</p>
-              <p>Lun-Ven 9:30-13:00/14:30-18:00</p>
+              <p>Lun-Ven 9:30-13:00/14:30-18:30</p>
             </div>
           </div>
 

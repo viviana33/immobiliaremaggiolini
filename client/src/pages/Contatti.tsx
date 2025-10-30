@@ -27,7 +27,7 @@ export default function Contatti() {
     {
       icon: Clock,
       title: "Orari",
-      details: ["Lun-Ven 9:30-13:00/14:30-18:00"],
+      details: ["Lun-Ven 9:30-13:00/14:30-18:30"],
     },
   ];
 
@@ -103,7 +103,7 @@ export default function Contatti() {
           <div className="flex flex-col sm:flex-row gap-4 justify-center pt-4">
             <div className="bg-primary-foreground/10 backdrop-blur-sm border border-primary-foreground/20 rounded-md px-6 py-3">
               <p className="text-sm text-primary-foreground/80">Lunedì - Venerdì</p>
-              <p className="font-semibold text-lg">9:30-13:00 / 14:30-18:00</p>
+              <p className="font-semibold text-lg">9:30-13:00 / 14:30-18:30</p>
             </div>
           </div>
         </div>
