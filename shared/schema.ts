@@ -98,6 +98,7 @@ export const subscriptions = pgTable("subscriptions", {
   consentIp: text("consent_ip"),
   confirmed: boolean("confirmed").notNull().default(false),
   confirmToken: text("confirm_token"),
+  unsubscribeToken: text("unsubscribe_token"),
   createdAt: timestamp("created_at").notNull().default(sql`now()`),
 });
 
@@ -162,6 +163,7 @@ export const insertSubscriptionSchema = createInsertSchema(subscriptions).omit({
   createdAt: true,
   confirmed: true,
   confirmToken: true,
+  unsubscribeToken: true,
   consentTs: true,
 }).extend({
   email: z.string().email("Email non valida"),
