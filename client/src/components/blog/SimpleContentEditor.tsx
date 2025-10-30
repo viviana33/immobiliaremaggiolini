@@ -11,8 +11,14 @@ import {
   SelectValue,
 } from "@/components/ui/select";
 import { Separator } from "@/components/ui/separator";
+import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Plus, Trash2, MoveUp, MoveDown, Image as ImageIcon } from "lucide-react";
-import { useState, useEffect } from "react";
+import { useState, useEffect, useMemo } from "react";
+import { unified } from "unified";
+import remarkParse from "remark-parse";
+import remarkRehype from "remark-rehype";
+import rehypeSanitize from "rehype-sanitize";
+import rehypeStringify from "rehype-stringify";
 
 export interface ContentSection {
   id: string;
@@ -158,8 +164,38 @@ export function SimpleContentEditor({ value, onChange }: SimpleContentEditorProp
     setSections(newSections);
   };
 
+  const htmlContent = useMemo(() => {
+    const markdown = convertToMarkdown(sections);
+    if (!markdown) return "";
+
+    try {
+      const result = unified()
+        .use(remarkParse)
+        .use(remarkRehype)
+        .use(rehypeSanitize)
+        .use(rehypeStringify)
+        .processSync(markdown);
+
+      return String(result);
+    } catch (error) {
+      console.error("Errore nella conversione markdown:", error);
+      return "<p>Errore nella conversione del markdown</p>";
+    }
+  }, [sections]);
+
   return (
     <div className="space-y-4">
+      <Tabs defaultValue="edit" className="w-full">
+        <TabsList className="grid w-full grid-cols-2">
+          <TabsTrigger value="edit" data-testid="tab-edit">
+            Modifica
+          </TabsTrigger>
+          <TabsTrigger value="preview" data-testid="tab-preview">
+            Anteprima
+          </TabsTrigger>
+        </TabsList>
+
+        <TabsContent value="edit" className="mt-4 space-y-4">
       <div className="flex gap-2 flex-wrap">
         <Button
           type="button"
@@ -335,6 +371,27 @@ export function SimpleContentEditor({ value, onChange }: SimpleContentEditorProp
           </Card>
         ))}
       </div>
+        </TabsContent>
+
+        <TabsContent value="preview" className="mt-4">
+          <Card className="p-8 min-h-[400px]">
+            {sections.length > 0 ? (
+              <article 
+                className="prose prose-lg max-w-none dark:prose-invert prose-headings:font-serif prose-headings:font-bold prose-h2:text-3xl prose-h3:text-2xl prose-p:text-foreground prose-a:text-primary prose-a:no-underline hover:prose-a:underline prose-strong:text-foreground prose-ul:text-foreground prose-ol:text-foreground"
+                dangerouslySetInnerHTML={{ __html: htmlContent }}
+                data-testid="preview-content"
+              />
+            ) : (
+              <div className="flex flex-col items-center justify-center py-16 text-center text-muted-foreground">
+                <ImageIcon className="h-16 w-16 mb-4 opacity-20" />
+                <p className="text-lg" data-testid="preview-empty">
+                  Nessun contenuto da visualizzare. Aggiungi sezioni nell'editor per vedere l'anteprima.
+                </p>
+              </div>
+            )}
+          </Card>
+        </TabsContent>
+      </Tabs>
     </div>
   );
 }
