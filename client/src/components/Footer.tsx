@@ -1,5 +1,5 @@
 import { Link } from "wouter";
-import { Building2, Mail, Phone, MapPin, Instagram } from "lucide-react";
+import { Building2, Mail, Phone, MapPin, Instagram, Lock, Shield, BadgeCheck, Star } from "lucide-react";
 import { SiFacebook } from "react-icons/si";
 import { Button } from "@/components/ui/button";
 import logoImg from "@assets/Logo Geometrico su Fondo Rosso_1761237729319.png";
@@ -90,7 +90,47 @@ export default function Footer() {
 
         </div>
 
-        <div className="pt-8 mt-4 border-t border-white/20 text-center">
+        <div className="border-t border-white/20 pt-8 pb-6">
+          <div className="flex flex-wrap items-center justify-center gap-6 md:gap-8">
+            
+            {/* Badge 1: SSL Sicuro */}
+            <div className="flex items-center gap-2 text-sm text-white/80" data-testid="badge-ssl">
+              <Lock className="w-5 h-5 text-[#8B9D83]" />
+              <span>Connessione Sicura SSL</span>
+            </div>
+            
+            {/* Badge 2: GDPR */}
+            <Link 
+              href="/privacy"
+            >
+              <div className="flex items-center gap-2 text-sm text-white/80 hover:text-white transition-colors cursor-pointer" data-testid="badge-gdpr">
+                <Shield className="w-5 h-5 text-[#C87D6C]" />
+                <span>GDPR Compliant</span>
+              </div>
+            </Link>
+            
+            {/* Badge 3: Agenzia Verificata */}
+            <div className="flex items-center gap-2 text-sm text-white/80" data-testid="badge-verified">
+              <BadgeCheck className="w-5 h-5 text-[#8B9D83]" />
+              <div className="flex flex-col">
+                <span className="font-semibold">Agenzia Verificata</span>
+                <span className="text-xs">20+ anni di esperienza</span>
+              </div>
+            </div>
+            
+            {/* Badge 4: Google Reviews */}
+            <div className="flex items-center gap-2 text-sm text-white/80" data-testid="badge-reviews">
+              <Star className="w-5 h-5 fill-yellow-500 text-yellow-500" />
+              <div className="flex flex-col">
+                <span className="font-semibold">4.9/5 su Google</span>
+                <span className="text-xs">50+ recensioni</span>
+              </div>
+            </div>
+            
+          </div>
+        </div>
+
+        <div className="pt-6 text-center border-t border-white/20">
           <p className="text-sm text-white/70">© 2024 Immobiliare Maggiolini. Tutti i diritti riservati.</p>
         </div>
       </div>
