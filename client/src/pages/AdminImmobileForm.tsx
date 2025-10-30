@@ -240,6 +240,11 @@ export default function AdminImmobileForm() {
   const onSubmit = (data: FormData) => {
     console.log('[AdminImmobileForm] onSubmit called with data:', data);
     console.log('[AdminImmobileForm] isEdit:', isEdit, 'id:', id);
+    console.log('[AdminImmobileForm] selectedFiles:', selectedFiles);
+    console.log('[AdminImmobileForm] existingImages:', existingImages);
+    console.log('[AdminImmobileForm] form.formState.isValid:', form.formState.isValid);
+    console.log('[AdminImmobileForm] form.formState.errors:', form.formState.errors);
+    
     if (isEdit) {
       console.log('[AdminImmobileForm] Calling updateMutation');
       updateMutation.mutate(data);
@@ -251,6 +256,7 @@ export default function AdminImmobileForm() {
 
   const onError = (errors: any) => {
     console.error('[AdminImmobileForm] Form validation errors:', errors);
+    console.error('[AdminImmobileForm] Full form state:', form.formState);
   };
 
   if (isEdit && isLoading) {
