@@ -59,6 +59,7 @@ export default function AdminImmobileForm() {
   const form = useForm<FormData>({
     resolver: zodResolver(formSchema),
     defaultValues: {
+      slug: "",
       titolo: "",
       descrizione: "",
       annuncio: "",
@@ -78,6 +79,7 @@ export default function AdminImmobileForm() {
   useEffect(() => {
     if (property) {
       form.reset({
+        slug: property.slug,
         titolo: property.titolo,
         descrizione: property.descrizione,
         annuncio: property.annuncio || "",
@@ -295,6 +297,17 @@ export default function AdminImmobileForm() {
 
       <Form {...form}>
         <form onSubmit={form.handleSubmit(onSubmit, onError)} className="space-y-6">
+          {/* Hidden slug field for edit mode */}
+          {isEdit && (
+            <FormField
+              control={form.control}
+              name="slug"
+              render={({ field }) => (
+                <input type="hidden" {...field} />
+              )}
+            />
+          )}
+          
           <Card>
             <CardHeader>
               <CardTitle>Informazioni Principali</CardTitle>
