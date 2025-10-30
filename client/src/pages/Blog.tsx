@@ -87,7 +87,7 @@ export default function Blog() {
   const allPosts = data?.posts || [];
   const pagination = data?.pagination;
 
-  const hasActiveFilters = Boolean(categoria || searchQuery || selectedTag);
+  const hasActiveFilters = Boolean(categoria || searchQuery);
 
   const updateFilters = (updates: {
     categoria?: string;
@@ -220,54 +220,43 @@ export default function Blog() {
             )}
           </form>
 
-          {!isLoading && allCategories.length > 0 && (
-            <div>
-              <h3 className="text-sm font-medium text-muted-foreground mb-3">Categorie</h3>
-              <div className="flex flex-wrap gap-2">
-                <Button
-                  variant={!categoria ? "default" : "outline"}
-                  size="sm"
-                  onClick={() => setCategory("all")}
-                  data-testid="button-category-all"
-                >
-                  Tutte
-                </Button>
-                {allCategories.map((cat) => (
-                  <Button
-                    key={cat}
-                    variant={categoria === cat ? "default" : "outline"}
-                    size="sm"
-                    onClick={() => setCategory(cat)}
-                    data-testid={`button-category-${cat.toLowerCase().replace(/\s+/g, "-")}`}
-                  >
-                    {cat}
-                  </Button>
-                ))}
-              </div>
+          <div>
+            <h3 className="text-sm font-medium text-muted-foreground mb-3">Categorie</h3>
+            <div className="flex flex-wrap gap-2">
+              <Button
+                variant={!categoria ? "default" : "outline"}
+                size="sm"
+                onClick={() => setCategory("all")}
+                data-testid="button-category-all"
+              >
+                Tutte
+              </Button>
+              <Button
+                variant={categoria === "Consigli" ? "default" : "outline"}
+                size="sm"
+                onClick={() => setCategory("Consigli")}
+                data-testid="button-category-consigli"
+              >
+                Consigli
+              </Button>
+              <Button
+                variant={categoria === "News" ? "default" : "outline"}
+                size="sm"
+                onClick={() => setCategory("News")}
+                data-testid="button-category-news"
+              >
+                News
+              </Button>
+              <Button
+                variant={categoria === "Lifestyle" ? "default" : "outline"}
+                size="sm"
+                onClick={() => setCategory("Lifestyle")}
+                data-testid="button-category-lifestyle"
+              >
+                Lifestyle
+              </Button>
             </div>
-          )}
-
-          {!isLoading && allTags.length > 0 && (
-            <div>
-              <h3 className="text-sm font-medium text-muted-foreground mb-3">Tag</h3>
-              <div className="flex flex-wrap gap-2">
-                {allTags.map((tag) => (
-                  <Badge
-                    key={tag}
-                    variant={selectedTag === tag ? "default" : "outline"}
-                    className="cursor-pointer hover-elevate active-elevate-2"
-                    onClick={() => toggleTag(tag)}
-                    data-testid={`badge-tag-${tag.toLowerCase().replace(/\s+/g, "-")}`}
-                  >
-                    {tag}
-                    {selectedTag === tag && (
-                      <X className="ml-1 h-3 w-3" />
-                    )}
-                  </Badge>
-                ))}
-              </div>
-            </div>
-          )}
+          </div>
 
           {hasActiveFilters && (
             <div className="flex items-center gap-2 text-sm text-muted-foreground">
@@ -280,11 +269,6 @@ export default function Blog() {
               {searchQuery && (
                 <Badge variant="secondary" data-testid="active-filter-search">
                   Cerca: "{searchQuery}"
-                </Badge>
-              )}
-              {selectedTag && (
-                <Badge variant="secondary" data-testid="active-filter-tag">
-                  Tag: {selectedTag}
                 </Badge>
               )}
               <Button

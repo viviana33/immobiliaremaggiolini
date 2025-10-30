@@ -537,13 +537,18 @@ export function PostForm({ postId }: PostFormProps) {
               render={({ field }) => (
                 <FormItem>
                   <FormLabel>Categoria</FormLabel>
-                  <FormControl>
-                    <Input
-                      placeholder="Inserisci la categoria"
-                      data-testid="input-category"
-                      {...field}
-                    />
-                  </FormControl>
+                  <Select onValueChange={field.onChange} value={field.value}>
+                    <FormControl>
+                      <SelectTrigger data-testid="select-category">
+                        <SelectValue placeholder="Seleziona categoria" />
+                      </SelectTrigger>
+                    </FormControl>
+                    <SelectContent>
+                      <SelectItem value="Consigli">Consigli</SelectItem>
+                      <SelectItem value="News">News</SelectItem>
+                      <SelectItem value="Lifestyle">Lifestyle</SelectItem>
+                    </SelectContent>
+                  </Select>
                   <FormMessage />
                 </FormItem>
               )}
