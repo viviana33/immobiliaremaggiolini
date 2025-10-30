@@ -45,17 +45,19 @@ class UploadService {
     const formData = new FormData();
     const blob = new Blob([buffer]);
     formData.append("file", blob, filename);
-    formData.append("upload_preset", "ml_default");
-    formData.append("api_key", process.env.CLOUDINARY_API_KEY);
-
+    
     const timestamp = Math.round(Date.now() / 1000);
+    
+    // Generate signature with all required parameters
+    const paramsToSign = `timestamp=${timestamp}${process.env.CLOUDINARY_API_SECRET}`;
     const signature = crypto
       .createHash("sha1")
-      .update(`timestamp=${timestamp}${process.env.CLOUDINARY_API_SECRET}`)
+      .update(paramsToSign)
       .digest("hex");
 
     formData.append("timestamp", timestamp.toString());
     formData.append("signature", signature);
+    formData.append("api_key", process.env.CLOUDINARY_API_KEY);
 
     const response = await fetch(
       `https://api.cloudinary.com/v1_1/${process.env.CLOUDINARY_CLOUD_NAME}/image/upload`,
@@ -66,6 +68,8 @@ class UploadService {
     );
 
     if (!response.ok) {
+      const errorText = await response.text();
+      console.error('Cloudinary error response:', errorText);
       throw new Error(`Cloudinary upload failed: ${response.statusText}`);
     }
 
