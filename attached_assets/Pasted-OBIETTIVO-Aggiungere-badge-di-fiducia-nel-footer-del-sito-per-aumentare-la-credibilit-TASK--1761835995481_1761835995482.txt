@@ -1,0 +1,73 @@
+OBIETTIVO: Aggiungere badge di fiducia nel footer del sito per aumentare la credibilità
+
+TASK:
+
+1. TROVA IL FOOTER
+   File: client/src/components/Footer.tsx (o dove si trova il footer)
+
+2. AGGIUNGI SEZIONE TRUST BADGES
+   Posizione: Sopra la riga del copyright, centrata
+   
+3. CREA 4 BADGE CON QUESTO CODICE:
+
+<div className="border-t border-border pt-8 pb-6">
+  <div className="flex flex-wrap items-center justify-center gap-6 md:gap-8">
+    
+    {/* Badge 1: SSL Sicuro */}
+    <div className="flex items-center gap-2 text-sm text-muted-foreground">
+      <Lock className="w-5 h-5 text-sage-green" />
+      <span>Connessione Sicura SSL</span>
+    </div>
+    
+    {/* Badge 2: GDPR */}
+    <Link 
+      href="/privacy" 
+      className="flex items-center gap-2 text-sm text-muted-foreground hover:text-primary transition-colors"
+    >
+      <Shield className="w-5 h-5 text-terracotta" />
+      <span>GDPR Compliant</span>
+    </Link>
+    
+    {/* Badge 3: Agenzia Verificata */}
+    <div className="flex items-center gap-2 text-sm text-muted-foreground">
+      <BadgeCheck className="w-5 h-5 text-sage-green" />
+      <div className="flex flex-col">
+        <span className="font-semibold">Agenzia Verificata</span>
+        <span className="text-xs">20+ anni di esperienza</span>
+      </div>
+    </div>
+    
+    {/* Badge 4: Google Reviews */}
+    <div className="flex items-center gap-2 text-sm text-muted-foreground">
+      <Star className="w-5 h-5 fill-yellow-500 text-yellow-500" />
+      <div className="flex flex-col">
+        <span className="font-semibold">4.9/5 su Google</span>
+        <span className="text-xs">50+ recensioni</span>
+      </div>
+    </div>
+    
+  </div>
+</div>
+
+4. IMPORTA ICONE
+   All'inizio del file Footer.tsx aggiungi:
+   import { Lock, Shield, BadgeCheck, Star } from "lucide-react";
+
+5. STILE
+   - Colori: usa variabili tema già esistenti
+   - text-sage-green: colore verde salvia
+   - text-terracotta: colore terracotta
+   - Responsive: su mobile stack se necessario
+   - Dark mode: automatico con text-muted-foreground
+
+6. VERIFICA
+   - Badge visibili nel footer
+   - Link /privacy funzionante
+   - Icone caricate correttamente
+   - Responsive su mobile
+
+NOTE:
+- Usa SOLO icone lucide-react (già installato)
+- NON aggiungere script esterni
+- Mantieni colori mediterranei del design
+- I numeri Google Reviews (4.9/5, 50+) sono placeholder - modificabili dopo
