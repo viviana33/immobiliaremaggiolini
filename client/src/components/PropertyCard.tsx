@@ -1,7 +1,6 @@
 import { Card } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
-import { Alert } from "@/components/ui/alert";
-import { MapPin, Bed, Bath, Maximize, Info } from "lucide-react";
+import { MapPin, Bed, Bath, Maximize } from "lucide-react";
 import { Link } from "wouter";
 import ImageCarousel from "@/components/ImageCarousel";
 
@@ -15,7 +14,6 @@ interface PropertyCardProps {
   bedrooms?: number;
   bathrooms?: number;
   area: number;
-  annuncio?: string | null;
 }
 
 const DEFAULT_IMAGE = "https://images.unsplash.com/photo-1568605114967-8130f3a36994?w=800&h=600&fit=crop";
@@ -30,7 +28,6 @@ export default function PropertyCard({
   bedrooms = 2,
   bathrooms = 1,
   area,
-  annuncio,
 }: PropertyCardProps) {
   const displayImages = images.length > 0 ? images : [DEFAULT_IMAGE];
   
@@ -59,12 +56,6 @@ export default function PropertyCard({
         </div>
 
         <div className="p-6 space-y-3">
-          {annuncio && (
-            <div className="flex items-start gap-2 bg-yellow-50 dark:bg-yellow-950/20 border border-yellow-200 dark:border-yellow-900 text-yellow-900 dark:text-yellow-200 px-3 py-2 rounded-md text-sm" data-testid="text-annuncio">
-              <Info className="w-4 h-4 mt-0.5 flex-shrink-0" />
-              <p className="flex-1">{annuncio}</p>
-            </div>
-          )}
           <h3 className="font-serif font-semibold text-xl text-foreground line-clamp-1" data-testid="text-property-title">
             {title}
           </h3>

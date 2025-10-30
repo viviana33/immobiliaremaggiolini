@@ -24,7 +24,6 @@ export const properties = pgTable("properties", {
   classeEnergetica: energyClassEnum("classe_energetica").notNull(),
   zona: text("zona").notNull(),
   stato: propertyStatusEnum("stato").notNull().default("disponibile"),
-  annuncio: text("annuncio"),
   linkVideo: text("link_video"),
   createdAt: timestamp("created_at").notNull().default(sql`now()`),
   updatedAt: timestamp("updated_at").notNull().default(sql`now()`),

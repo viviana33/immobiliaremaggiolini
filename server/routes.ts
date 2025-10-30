@@ -427,7 +427,6 @@ export async function registerRoutes(app: Express): Promise<Server> {
           for_rent: p.tipo === "affitto",
           area_mq: p.mq,
           location: p.zona,
-          annuncio: p.annuncio,
           images: activeImages.map(img => img.urlHot),
         };
       }));
