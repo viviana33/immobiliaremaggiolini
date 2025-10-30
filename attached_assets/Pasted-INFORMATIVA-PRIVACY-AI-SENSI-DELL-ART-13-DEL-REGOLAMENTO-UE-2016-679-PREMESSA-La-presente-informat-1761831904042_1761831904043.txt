@@ -1,0 +1,193 @@
+INFORMATIVA PRIVACY AI SENSI DELL'ART. 13 DEL REGOLAMENTO UE 2016/679
+
+PREMESSA
+La presente informativa è resa ai sensi dell'art. 13 del Regolamento (UE) 2016/679 (di seguito "GDPR") agli utenti che compilano il form di contatto presente sul sito web [www.immobiliaremaggiolini.it], prima della raccolta dei loro dati personali.
+
+1. TITOLARE DEL TRATTAMENTO
+Il Titolare del trattamento dei dati personali è:
+Immobiliare Maggiolini
+con sede legale/operativa in: [Indirizzo completo, CAP, Città, Provincia]
+Partita IVA/Codice Fiscale: [P.IVA]
+Email: [email@immobiliaremaggiolini.it]
+PEC: [pec@immobiliaremaggiolini.it] (se disponibile)
+Telefono: [Numero di telefono]
+Il Titolare non ha nominato un Responsabile della Protezione dei Dati (DPO) in quanto non ricorrono le condizioni di cui all'art. 37 del GDPR.
+
+2. CATEGORIE DI DATI TRATTATI
+Attraverso il form di contatto, vengono raccolti esclusivamente i seguenti dati personali forniti volontariamente dall'utente:
+
+Nome e Cognome (obbligatorio)
+Indirizzo email (obbligatorio)
+Numero di telefono (facoltativo)
+Messaggio/richiesta inviata tramite form (obbligatorio)
+Eventuale riferimento all'immobile di interesse (se il form è compilato da una scheda immobile)
+
+Non vengono raccolti dati appartenenti a categorie particolari di cui all'art. 9 GDPR (es. dati sensibili relativi a salute, orientamento sessuale, convinzioni religiose, appartenenza sindacale, dati biometrici o genetici).
+
+3. FINALITÀ DEL TRATTAMENTO E BASE GIURIDICA
+I dati personali raccolti tramite il form di contatto sono trattati per le seguenti finalità:
+a) Gestione delle richieste di contatto e fornitura dei servizi richiesti
+Finalità: Rispondere alla richiesta di informazioni dell'utente relativa agli immobili o ai servizi offerti dall'agenzia, fornire assistenza pre-contrattuale e commerciale.
+Base giuridica: Esecuzione di misure precontrattuali adottate su richiesta dell'interessato (art. 6, comma 1, lett. b) GDPR).
+Natura del conferimento: Obbligatoria. Il rifiuto di fornire i dati comporta l'impossibilità di evadere la richiesta.
+
+b) Invio di comunicazioni commerciali e promozionali (Newsletter)
+Finalità: Qualora l'utente esprima il consenso mediante apposita checkbox, i dati potranno essere utilizzati per l'invio di comunicazioni commerciali e promozionali relative a:
+
+Nuovi immobili disponibili
+Aggiornamenti e novità dell'agenzia
+Articoli del blog e contenuti informativi
+Offerte e opportunità immobiliari
+
+Base giuridica: Consenso esplicito dell'interessato (art. 6, comma 1, lett. a) GDPR).
+Natura del conferimento: Facoltativa. Il rifiuto di prestare il consenso non pregiudica la gestione della richiesta di contatto di cui al punto a).
+Revoca del consenso: Il consenso può essere revocato in qualsiasi momento:
+
+Cliccando sul link di "disiscrizione" presente in calce a ogni email;
+Modificando le proprie preferenze tramite la pagina [link alla pagina /preferenze];
+Inviando una comunicazione a [email@immobiliaremaggiolini.it].
+
+La revoca del consenso non pregiudica la liceità del trattamento basata sul consenso prima della revoca.
+
+4. MODALITÀ DI TRATTAMENTO
+I dati personali sono trattati con strumenti elettronici e informatici, mediante procedure e modalità strettamente necessarie a perseguire le finalità indicate, nel rispetto dei principi di liceità, correttezza, trasparenza, minimizzazione, esattezza, limitazione della conservazione e integrità/riservatezza di cui all'art. 5 GDPR.
+Il Titolare adotta misure tecniche e organizzative adeguate per garantire un livello di sicurezza appropriato al rischio, ai sensi dell'art. 32 GDPR, tra cui:
+
+Cifratura delle comunicazioni tramite protocollo HTTPS/TLS
+Accesso ai dati limitato ai soli soggetti autorizzati e preventivamente istruiti
+Procedure di autenticazione per accesso ai sistemi
+Backup periodici con misure di sicurezza appropriate
+Procedure di gestione delle violazioni dei dati personali (data breach)
+
+
+5. AMBITO DI COMUNICAZIONE E DIFFUSIONE DEI DATI
+I dati personali raccolti tramite il form di contatto non sono oggetto di diffusione (ossia di comunicazione a soggetti indeterminati).
+I dati potranno essere comunicati, nei limiti strettamente necessari, ai seguenti soggetti o categorie di soggetti:
+a) Personale interno
+Dipendenti e collaboratori del Titolare, in qualità di soggetti autorizzati al trattamento ai sensi dell'art. 29 GDPR, preventivamente formati e istruiti.
+b) Soggetti terzi che forniscono servizi strumentali
+I dati potranno essere comunicati a soggetti terzi che operano in qualità di Responsabili del trattamento ai sensi dell'art. 28 GDPR, nominati mediante contratto o altro atto giuridico vincolante, tra cui:
+
+Provider di servizi di hosting e infrastruttura web (es. Replit, Vercel) per l'erogazione del servizio del sito web
+Provider di servizi email marketing (es. Brevo) per l'invio delle comunicazioni commerciali, solo in caso di consenso prestato
+Provider di servizi di archiviazione cloud (es. Cloudflare R2) per la conservazione sicura dei dati
+Provider di supporto tecnico e manutenzione IT
+
+Tali soggetti trattano i dati esclusivamente per conto del Titolare, secondo le sue istruzioni, e sono contrattualmente vincolati a garantire la sicurezza e riservatezza dei dati.
+Un elenco aggiornato dei Responsabili del trattamento può essere richiesto al Titolare.
+c) Soggetti legittimati per obbligo di legge
+
+Autorità giudiziarie, amministrative o di pubblica sicurezza, in adempimento di obblighi di legge o su ordine delle stesse
+Consulenti legali, fiscali o commerciali, nei limiti strettamente necessari e vincolati da obblighi di riservatezza
+
+
+6. TRASFERIMENTO DEI DATI FUORI DALL'UE
+I dati personali sono conservati su server ubicati all'interno dell'Unione Europea.
+Nel caso in cui, per esigenze tecniche, alcuni Responsabili del trattamento dovessero trasferire i dati in Paesi terzi al di fuori dello Spazio Economico Europeo (SEE), il Titolare garantisce che tale trasferimento avverrà nel rispetto delle disposizioni del Capo V del GDPR, mediante:
+
+Decisioni di adeguatezza della Commissione Europea (art. 45 GDPR);
+Clausole contrattuali tipo approvate dalla Commissione Europea (art. 46, comma 2, lett. c) GDPR);
+Altri strumenti di garanzia appropriati.
+
+
+7. PERIODO DI CONSERVAZIONE DEI DATI
+I dati personali sono conservati per il tempo strettamente necessario al perseguimento delle finalità per cui sono stati raccolti, nel rispetto del principio di minimizzazione di cui all'art. 5, comma 1, lett. c) e e) GDPR:
+a) Richieste di contatto (finalità pre-contrattuale)
+I dati relativi alle richieste di contatto sono conservati per un periodo di 24 mesi dalla data di ricezione della richiesta, salvo che non si instauri un rapporto commerciale o contrattuale, nel qual caso si applicano i termini di conservazione previsti per obblighi contabili e fiscali (generalmente 10 anni ai sensi dell'art. 2220 c.c. e del D.P.R. 600/1973).
+b) Newsletter e comunicazioni marketing
+I dati trattati per finalità di marketing sono conservati fino alla revoca del consenso da parte dell'interessato o fino a quando il Titolare non decida autonomamente di cessare l'invio di comunicazioni commerciali.
+Al termine dei periodi di conservazione sopra indicati, i dati saranno cancellati o resi anonimi in modo permanente e irreversibile.
+
+8. DIRITTI DELL'INTERESSATO (ARTT. 15-22 GDPR)
+L'interessato ha il diritto di ottenere dal Titolare, nei casi previsti dal GDPR:
+Art. 15 - Diritto di accesso
+Ottenere conferma che sia o meno in corso un trattamento di dati personali che lo riguardano e, in tal caso, ricevere:
+
+Copia dei dati oggetto di trattamento
+Informazioni sulle finalità, categorie di dati, destinatari, periodo di conservazione
+Informazioni sull'esistenza di processi decisionali automatizzati
+
+Art. 16 - Diritto di rettifica
+Ottenere senza ingiustificato ritardo la rettifica dei dati personali inesatti o l'integrazione dei dati incompleti.
+Art. 17 - Diritto alla cancellazione ("diritto all'oblio")
+Ottenere la cancellazione dei dati personali quando:
+
+I dati non sono più necessari rispetto alle finalità per cui sono stati raccolti
+L'interessato revoca il consenso e non sussiste altro fondamento giuridico per il trattamento
+L'interessato si oppone al trattamento e non sussiste alcun motivo legittimo prevalente
+I dati sono stati trattati illecitamente
+La cancellazione è obbligatoria per adempiere un obbligo legale
+
+Art. 18 - Diritto di limitazione di trattamento
+Ottenere la limitazione del trattamento quando:
+
+L'interessato contesta l'esattezza dei dati personali
+Il trattamento è illecito ma l'interessato si oppone alla cancellazione
+I dati sono necessari all'interessato per l'accertamento, esercizio o difesa di un diritto in sede giudiziaria
+L'interessato si è opposto al trattamento in attesa della verifica di eventuali motivi legittimi prevalenti
+
+Art. 20 - Diritto alla portabilità dei dati
+Ricevere in un formato strutturato, di uso comune e leggibile da dispositivo automatico i dati personali forniti al Titolare, e trasmetterli ad altro titolare senza impedimenti, quando:
+
+Il trattamento si basa sul consenso o su un contratto
+Il trattamento è effettuato con mezzi automatizzati
+
+Art. 21 - Diritto di opposizione
+Opporsi in qualsiasi momento al trattamento dei dati personali per motivi connessi alla propria situazione particolare. Il Titolare si asterrà dal trattare ulteriormente i dati salvo che dimostri l'esistenza di motivi legittimi cogenti per procedere al trattamento che prevalgono sugli interessi, sui diritti e sulle libertà dell'interessato.
+In caso di trattamento per finalità di marketing diretto, l'interessato ha il diritto di opporsi in qualsiasi momento al trattamento senza fornire alcuna motivazione.
+Art. 7, comma 3 - Diritto di revoca del consenso
+Revocare il consenso prestato per le finalità di marketing in qualsiasi momento, senza pregiudicare la liceità del trattamento basata sul consenso prestato prima della revoca.
+Diritto di proporre reclamo all'Autorità di controllo (Art. 77 GDPR)
+L'interessato che ritenga che il trattamento dei dati personali che lo riguardano violi il GDPR ha il diritto di proporre reclamo all'Autorità Garante per la Protezione dei Dati Personali, con sede in Piazza Venezia n. 11, 00187 Roma (RM):
+
+Email: garante@gpdp.it
+PEC: protocollo@pec.gpdp.it
+Tel: +39 06.696771
+Sito web: www.garanteprivacy.it
+
+
+9. MODALITÀ DI ESERCIZIO DEI DIRITTI
+Per esercitare i diritti di cui all'art. 8, l'interessato può presentare richiesta scritta al Titolare mediante:
+
+Email: [email@immobiliaremaggiolini.it]
+PEC: [pec@immobiliaremaggiolini.it] (se disponibile)
+Raccomandata A/R: [Indirizzo completo sede legale/operativa]
+
+La richiesta deve contenere:
+
+Generalità complete dell'interessato (nome, cognome)
+Indirizzo email e/o numero di telefono per la risposta
+Copia di un documento di identità valido in corso di validità (per verifica dell'identità)
+Descrizione chiara e specifica del diritto che si intende esercitare
+
+Il Titolare fornirà risposta entro 30 giorni dal ricevimento della richiesta. Tale termine può essere prorogato di ulteriori 60 giorni in caso di particolare complessità della richiesta, dandone comunicazione motivata all'interessato entro 30 giorni dal ricevimento.
+La risposta sarà fornita gratuitamente. In caso di richieste manifestamente infondate o eccessive, il Titolare può addebitare un contributo spese ragionevole o rifiutare di soddisfare la richiesta, motivandone le ragioni.
+
+10. CONSEGUENZE DEL MANCATO CONFERIMENTO DEI DATI
+Il conferimento dei dati contrassegnati come obbligatori (nome, cognome, email, messaggio) è necessario per consentire al Titolare di evadere la richiesta di contatto.
+Il rifiuto di fornire tali dati comporta l'impossibilità per il Titolare di dare seguito alla richiesta.
+Il conferimento del numero di telefono è facoltativo e l'eventuale rifiuto non pregiudica la gestione della richiesta, ferma restando la possibilità di un contatto telefonico solo in caso di consenso esplicito.
+Il conferimento del consenso per l'invio di comunicazioni commerciali è del tutto facoltativo e l'eventuale rifiuto non pregiudica in alcun modo la gestione della richiesta di contatto.
+
+11. PROCESSI DECISIONALI AUTOMATIZZATI E PROFILAZIONE
+Il Titolare non adotta processi decisionali automatizzati, inclusa la profilazione, di cui all'art. 22 del GDPR.
+Le comunicazioni commerciali eventualmente inviate non sono basate su profilazione degli utenti.
+
+12. AGGIORNAMENTO DELL'INFORMATIVA
+La presente informativa può essere oggetto di aggiornamenti e modifiche. L'utente è invitato a consultare periodicamente questa pagina.
+Data ultimo aggiornamento: [GG/MM/AAAA]
+
+13. ACCETTAZIONE DELL'INFORMATIVA
+Barrando la casella "Ho letto e accetto l'Informativa Privacy" e cliccando sul pulsante di invio del form, l'utente dichiara:
+
+Di aver preso visione della presente Informativa Privacy;
+Di essere stato informato in particolare sulle finalità e modalità di trattamento dei dati personali;
+Di acconsentire al trattamento dei propri dati personali per le finalità di gestione della richiesta di contatto di cui all'art. 3, lett. a) della presente informativa.
+
+Nel caso in cui sia presente una checkbox separata per la Newsletter, l'utente con il consenso esplicito e distinto autorizza inoltre il trattamento per le finalità di marketing di cui all'art. 3, lett. b).
+
+IMMOBILIARE MAGGIOLINI
+[Indirizzo completo]
+P.IVA: [P.IVA]
+Email: [email@immobiliaremaggiolini.it]
+Tel: [Numero telefono]
