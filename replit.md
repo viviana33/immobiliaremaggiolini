@@ -35,6 +35,7 @@ Preferred communication style: Simple, everyday language.
 - **Blog Management**: Admin forms use React Hook Form with Zod validation, Markdown editor, and a dual-storage image upload system (R2 for cold, Cloudinary for hot delivery). Public blog pages feature category filtering, pagination, and SEO considerations.
 - **Newsletter System**: Manages user subscriptions with double opt-in via Brevo integration, including preference updates, confirmation flows, and rate limiting. It also includes a "Thank You" page with upgrade flows for subscription preferences and a dedicated "Preferences" page for managing subscriptions.
 - **Property Listing Notifications**: Automated email notifications for new or newly available properties sent to subscribed users, integrated with Brevo transactional emails.
+- **One-Click Unsubscribe**: Token-based unsubscribe system with personalized links in all automated emails (blog posts and property listings). When users click the unsubscribe link, they are immediately unsubscribed from all lists and redirected to the Preferences page with a confirmation message. Admin receives email notification when someone unsubscribes, including user details and previous subscription preferences.
 - **Type Safety**: Zod schemas for validation, shared TypeScript types, strict mode.
 - **Database Migrations**: Drizzle Kit.
 
