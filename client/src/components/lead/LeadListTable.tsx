@@ -166,6 +166,7 @@ export function LeadListTable() {
             variant="ghost"
             onClick={() => setSearchTerm("")}
             className="mt-2"
+            data-testid="button-reset-filters-empty"
           >
             Azzera filtri
           </Button>
