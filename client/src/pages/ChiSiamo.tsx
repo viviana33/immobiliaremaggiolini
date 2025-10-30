@@ -4,7 +4,7 @@ import { usePageMeta } from "@/lib/seo";
 export default function ChiSiamo() {
   usePageMeta({
     title: 'Chi Siamo',
-    description: 'Presenza nel territorio da quarant\'anni. Accordi che durano, relazioni che restano. Scopri la storia di Immobiliare Maggiolini.',
+    description: 'Quarant\'anni nel territorio. Accordi che durano, relazioni che restano. Scopri la storia di Immobiliare Maggiolini.',
   });
 
   return (
@@ -15,7 +15,7 @@ export default function ChiSiamo() {
             Chi Siamo
           </h1>
           <p className="text-muted-foreground text-lg max-w-2xl">
-            Presenza nel territorio da quarant'anni
+            Quarant'anni nel territorio
           </p>
         </div>
       </section>
