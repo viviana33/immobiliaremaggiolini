@@ -33,7 +33,7 @@ const formSchema = insertPropertySchema.extend({
   mq: z.coerce.number().min(1, "Metratura minima 1 mq"),
   stanze: z.coerce.number().min(0, "Numero stanze non valido"),
   bagni: z.coerce.number().min(0, "Numero bagni non valido"),
-  prezzo: z.coerce.string().min(1, "Prezzo richiesto"),
+  prezzo: z.string().min(1, "Prezzo richiesto"),
 });
 
 type FormData = z.infer<typeof formSchema>;
@@ -81,7 +81,7 @@ export default function AdminImmobileForm() {
         titolo: property.titolo,
         descrizione: property.descrizione,
         annuncio: property.annuncio || "",
-        prezzo: property.prezzo,
+        prezzo: String(property.prezzo),
         tipo: property.tipo,
         mq: property.mq,
         stanze: property.stanze,
@@ -238,11 +238,19 @@ export default function AdminImmobileForm() {
   };
 
   const onSubmit = (data: FormData) => {
+    console.log('[AdminImmobileForm] onSubmit called with data:', data);
+    console.log('[AdminImmobileForm] isEdit:', isEdit, 'id:', id);
     if (isEdit) {
+      console.log('[AdminImmobileForm] Calling updateMutation');
       updateMutation.mutate(data);
     } else {
+      console.log('[AdminImmobileForm] Calling createMutation');
       createMutation.mutate(data);
     }
+  };
+
+  const onError = (errors: any) => {
+    console.error('[AdminImmobileForm] Form validation errors:', errors);
   };
 
   if (isEdit && isLoading) {
@@ -280,7 +288,7 @@ export default function AdminImmobileForm() {
       </div>
 
       <Form {...form}>
-        <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-6">
+        <form onSubmit={form.handleSubmit(onSubmit, onError)} className="space-y-6">
           <Card>
             <CardHeader>
               <CardTitle>Informazioni Principali</CardTitle>
@@ -347,7 +355,7 @@ export default function AdminImmobileForm() {
                       <FormLabel>Tipo</FormLabel>
                       <Select
                         onValueChange={field.onChange}
-                        defaultValue={field.value}
+                        value={field.value}
                       >
                         <FormControl>
                           <SelectTrigger data-testid="select-tipo">
@@ -373,8 +381,7 @@ export default function AdminImmobileForm() {
                       <FormControl>
                         <Input
                           {...field}
-                          type="number"
-                          step="0.01"
+                          type="text"
                           placeholder="150000"
                           data-testid="input-prezzo"
                         />
@@ -479,7 +486,7 @@ export default function AdminImmobileForm() {
                       <FormLabel>Classe Energetica</FormLabel>
                       <Select
                         onValueChange={field.onChange}
-                        defaultValue={field.value}
+                        value={field.value}
                       >
                         <FormControl>
                           <SelectTrigger data-testid="select-classe-energetica">
@@ -534,7 +541,7 @@ export default function AdminImmobileForm() {
                       <FormLabel>Stato</FormLabel>
                       <Select
                         onValueChange={field.onChange}
-                        defaultValue={field.value}
+                        value={field.value}
                       >
                         <FormControl>
                           <SelectTrigger data-testid="select-stato">
