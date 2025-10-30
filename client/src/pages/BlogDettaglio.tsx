@@ -67,10 +67,6 @@ export default function BlogDettaglio() {
       ogTags.push({ property: 'article:published_time', content: new Date(post.publishedAt).toISOString() });
     }
 
-    if (post.autore) {
-      ogTags.push({ property: 'article:author', content: post.autore });
-    }
-
     if (post.tag && post.tag.length > 0) {
       post.tag.forEach(tag => {
         const tagMeta = document.createElement('meta');
@@ -118,8 +114,8 @@ export default function BlogDettaglio() {
       "headline": post.titolo,
       "description": metaDescription,
       "author": {
-        "@type": "Person",
-        "name": post.autore
+        "@type": "Organization",
+        "name": "Maggiolini Immobiliare"
       },
       "datePublished": post.publishedAt ? new Date(post.publishedAt).toISOString() : new Date(post.createdAt).toISOString(),
       "dateModified": new Date(post.updatedAt).toISOString(),
@@ -276,9 +272,6 @@ export default function BlogDettaglio() {
 
           {/* Meta info */}
           <div className="flex flex-wrap items-center gap-4 text-sm text-muted-foreground">
-            <div className="flex items-center gap-2" data-testid="post-author">
-              <span className="font-medium text-foreground">{post.autore}</span>
-            </div>
             {publishedDate && (
               <div className="flex items-center gap-2" data-testid="post-date">
                 <Calendar className="h-4 w-4" />
