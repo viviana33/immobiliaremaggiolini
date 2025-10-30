@@ -20,6 +20,7 @@ export interface ContentSection {
   headingLevel?: "h2" | "h3";
   content: string;
   imageUrl?: string;
+  imageAlt?: string;
 }
 
 interface SimpleContentEditorProps {
@@ -39,16 +40,19 @@ function convertToSections(markdown: string): ContentSection[] {
 
   const flushTextSection = () => {
     if (currentTextLines.length > 0) {
+      const textContent = currentTextLines.join("\n");
       sections.push({
         id: `section-${idCounter++}`,
         type: "text",
-        content: currentTextLines.join("\n").trim(),
+        content: textContent,
       });
       currentTextLines = [];
     }
   };
 
-  for (const line of lines) {
+  for (let i = 0; i < lines.length; i++) {
+    const line = lines[i];
+    
     if (line.startsWith("## ")) {
       flushTextSection();
       sections.push({
@@ -65,18 +69,23 @@ function convertToSections(markdown: string): ContentSection[] {
         headingLevel: "h3",
         content: line.substring(4).trim(),
       });
-    } else if (line.match(/!\[.*?\]\((.*?)\)/)) {
+    } else if (line.match(/!\[(.*?)\]\((.*?)\)/)) {
       flushTextSection();
-      const match = line.match(/!\[.*?\]\((.*?)\)/);
+      const match = line.match(/!\[(.*?)\]\((.*?)\)/);
       if (match) {
         sections.push({
           id: `section-${idCounter++}`,
           type: "image",
           content: "",
-          imageUrl: match[1],
+          imageUrl: match[2],
+          imageAlt: match[1],
         });
       }
-    } else if (line.trim() !== "") {
+    } else if (line.trim() === "") {
+      if (currentTextLines.length > 0) {
+        flushTextSection();
+      }
+    } else {
       currentTextLines.push(line);
     }
   }
@@ -95,7 +104,8 @@ function convertToMarkdown(sections: ContentSection[]): string {
       } else if (section.type === "text") {
         return section.content;
       } else if (section.type === "image" && section.imageUrl) {
-        return `![](${section.imageUrl})`;
+        const alt = section.imageAlt || "";
+        return `![${alt}](${section.imageUrl})`;
       }
       return "";
     })
@@ -283,19 +293,31 @@ export function SimpleContentEditor({ value, onChange }: SimpleContentEditorProp
 
               {section.type === "image" && (
                 <div className="space-y-2">
-                  <Label htmlFor={`image-${section.id}`}>URL dell'immagine</Label>
-                  <Input
-                    id={`image-${section.id}`}
-                    placeholder="https://esempio.com/immagine.jpg"
-                    value={section.imageUrl || ""}
-                    onChange={(e) => updateSection(section.id, { imageUrl: e.target.value })}
-                    data-testid={`input-image-url-${index}`}
-                  />
+                  <div>
+                    <Label htmlFor={`image-${section.id}`}>URL dell'immagine</Label>
+                    <Input
+                      id={`image-${section.id}`}
+                      placeholder="https://esempio.com/immagine.jpg"
+                      value={section.imageUrl || ""}
+                      onChange={(e) => updateSection(section.id, { imageUrl: e.target.value })}
+                      data-testid={`input-image-url-${index}`}
+                    />
+                  </div>
+                  <div>
+                    <Label htmlFor={`image-alt-${section.id}`}>Testo alternativo (opzionale)</Label>
+                    <Input
+                      id={`image-alt-${section.id}`}
+                      placeholder="Descrizione dell'immagine per accessibilità"
+                      value={section.imageAlt || ""}
+                      onChange={(e) => updateSection(section.id, { imageAlt: e.target.value })}
+                      data-testid={`input-image-alt-${index}`}
+                    />
+                  </div>
                   {section.imageUrl && (
                     <div className="mt-2 rounded-md border p-2">
                       <img
                         src={section.imageUrl}
-                        alt="Anteprima"
+                        alt={section.imageAlt || "Anteprima"}
                         className="max-h-40 rounded"
                         onError={(e) => {
                           e.currentTarget.style.display = "none";
