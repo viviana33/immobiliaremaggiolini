@@ -77,9 +77,9 @@ export default function Preferenze() {
                          (!data.data.blogUpdates && data.data.newListings);
       setShowQuickAdd(hasOnlyOne);
       
-      // Non sovrascrivere il messaggio di conferma se presente
+      // Non sovrascrivere il messaggio di conferma/disiscrizione se presente
       const params = new URLSearchParams(window.location.search);
-      if (params.get('confirmed') !== 'true') {
+      if (params.get('confirmed') !== 'true' && params.get('unsubscribed') !== 'true') {
         setSaveStatus("idle");
         setErrorMessage("");
       }
