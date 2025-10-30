@@ -87,6 +87,8 @@ export interface IStorage {
   updateSubscription(email: string, subscription: Partial<Subscription>): Promise<Subscription | undefined>;
   
   createLead(lead: InsertLead): Promise<Lead>;
+  getAllLeads(): Promise<Lead[]>;
+  deleteLead(id: string): Promise<void>;
   
   getAvailablePropertySlugs(): Promise<string[]>;
   getPublishedPostSlugs(): Promise<string[]>;
@@ -560,6 +562,14 @@ export class DbStorage implements IStorage {
       .values(insertLead)
       .returning();
     return lead;
+  }
+
+  async getAllLeads(): Promise<Lead[]> {
+    return db.select().from(leads).orderBy(desc(leads.createdAt));
+  }
+
+  async deleteLead(id: string): Promise<void> {
+    await db.delete(leads).where(eq(leads.id, id));
   }
 
   async getAvailablePropertySlugs(): Promise<string[]> {

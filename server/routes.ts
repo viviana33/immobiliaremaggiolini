@@ -503,6 +503,27 @@ export async function registerRoutes(app: Express): Promise<Server> {
     }
   });
 
+  // Admin Lead Routes
+  app.get("/api/admin/leads", requireAdmin, async (req, res) => {
+    try {
+      const leads = await storage.getAllLeads();
+      res.json(leads);
+    } catch (error) {
+      console.error("Error fetching leads:", error);
+      res.status(500).json({ message: "Errore nel recupero dei lead" });
+    }
+  });
+
+  app.delete("/api/admin/leads/:id", requireAdmin, async (req, res) => {
+    try {
+      await storage.deleteLead(req.params.id);
+      res.json({ success: true, message: "Lead eliminato con successo" });
+    } catch (error) {
+      console.error("Error deleting lead:", error);
+      res.status(500).json({ message: "Errore nell'eliminazione del lead" });
+    }
+  });
+
   app.get("/api/admin/properties", requireAdmin, async (req, res) => {
     try {
       const properties = await storage.getAllProperties();

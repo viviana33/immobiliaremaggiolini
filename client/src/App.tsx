@@ -24,6 +24,7 @@ import AdminImmobili from "@/pages/AdminImmobili";
 import AdminImmobileForm from "@/pages/AdminImmobileForm";
 import AdminBlog from "@/pages/AdminBlog";
 import AdminBlogForm from "@/pages/AdminBlogForm";
+import AdminLeads from "@/pages/AdminLeads";
 import NotFound from "@/pages/not-found";
 import { ProtectedRoute } from "@/components/ProtectedRoute";
 import OrganizationSchema from "@/components/OrganizationSchema";
@@ -67,6 +68,11 @@ function Router() {
       <Route path="/admin/blog" component={() => (
         <ProtectedRoute>
           <AdminBlog />
+        </ProtectedRoute>
+      )} />
+      <Route path="/admin/lead" component={() => (
+        <ProtectedRoute>
+          <AdminLeads />
         </ProtectedRoute>
       )} />
       <Route>
