@@ -17,10 +17,14 @@ export default function Footer() {
                 Immobiliare MAGGIOLINI
               </span>
             </div>
-            <p className="text-white/80 text-sm leading-relaxed">
-              Da oltre 20 anni al vostro fianco per trovare la casa dei vostri sogni. 
-              Un rapporto di fiducia che dura nel tempo.
-            </p>
+            <div className="space-y-1.5">
+              <p className="text-white/90 text-base font-medium leading-snug">
+                Quarant'anni nel territorio.
+              </p>
+              <p className="text-white/75 text-sm leading-relaxed">
+                Accordi che durano, relazioni che restano.
+              </p>
+            </div>
             <div className="flex gap-3 pt-2">
               <a 
                 href="https://www.instagram.com/immobiliaremaggiolini?igsh=NGx4ZHpwbWlscDV2" 
