@@ -233,24 +233,14 @@ export default function BlogDettaglio() {
       {/* Header */}
       <section className="py-12 border-b border-border">
         <div className="max-w-4xl mx-auto px-6 md:px-8 space-y-6">
-          {/* Categoria e Tag */}
-          <div className="flex flex-wrap items-center gap-2">
-            {post.categoria && (
+          {/* Categoria */}
+          {post.categoria && (
+            <div className="flex flex-wrap items-center gap-2">
               <Badge variant="secondary" data-testid="badge-category">
                 {post.categoria}
               </Badge>
-            )}
-            {post.tag && post.tag.length > 0 && (
-              <>
-                {post.tag.map((tag) => (
-                  <Badge key={tag} variant="outline" data-testid={`badge-tag-${tag}`}>
-                    <Tag className="h-3 w-3 mr-1" />
-                    {tag}
-                  </Badge>
-                ))}
-              </>
-            )}
-          </div>
+            </div>
+          )}
 
           {/* Titolo */}
           <h1 

@@ -47,19 +47,6 @@ export default function PostCard({ post }: PostCardProps) {
               </Badge>
             </div>
           )}
-          {post.tag && post.tag.length > 0 && (
-            <div className="absolute bottom-4 left-4 flex flex-wrap gap-2">
-              {post.tag.slice(0, 3).map((tag) => (
-                <Badge
-                  key={tag}
-                  variant="outline"
-                  className="text-xs bg-background/80 backdrop-blur-sm"
-                >
-                  {tag}
-                </Badge>
-              ))}
-            </div>
-          )}
         </div>
 
         <div className="p-6 space-y-3">

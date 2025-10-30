@@ -333,8 +333,18 @@ export class DbStorage implements IStorage {
     
     if (filters.search) {
       const searchTerm = `%${filters.search}%`;
+      // Ricerca intelligente: cerca in titolo, sottotitolo, contenuto e tag
+      // Gli hashtag aiutano la ricerca semantica senza essere visibili
       conditions.push(
-        sql`(${posts.titolo} ILIKE ${searchTerm} OR ${posts.sottotitolo} ILIKE ${searchTerm})`
+        sql`(
+          ${posts.titolo} ILIKE ${searchTerm} OR 
+          ${posts.sottotitolo} ILIKE ${searchTerm} OR
+          ${posts.contenuto} ILIKE ${searchTerm} OR
+          EXISTS (
+            SELECT 1 FROM unnest(${posts.tag}) AS tag_value 
+            WHERE tag_value ILIKE ${searchTerm}
+          )
+        )`
       );
     }
     
