@@ -51,6 +51,13 @@ export default function PostContent({ content, images = [] }: PostContentProps) 
         processedContent = processedContent.replace(link, '');
       });
 
+      // Check if content is already HTML (contains HTML tags)
+      if (/<[a-z][\s\S]*>/i.test(processedContent)) {
+        // Content is already HTML, return it directly
+        return processedContent;
+      }
+
+      // Content is Markdown, process it
       const result = unified()
         .use(remarkParse)
         .use(remarkRehype)
