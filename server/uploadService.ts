@@ -101,14 +101,15 @@ class UploadService {
   }
 
   async uploadImage(buffer: Buffer, filename: string): Promise<UploadResult> {
-    const hashFile = this.calculateFileHash(buffer);
+    const resizedBuffer = await this.resizeImage(buffer, 2560);
+    const hashFile = this.calculateFileHash(resizedBuffer);
 
-    const urlHot = await this.uploadToCloudinary(buffer, filename);
+    const urlHot = await this.uploadToCloudinary(resizedBuffer, filename);
     
     let urlCold = urlHot;
     try {
       if (this.s3Client) {
-        urlCold = await this.uploadToR2(buffer, filename, hashFile);
+        urlCold = await this.uploadToR2(resizedBuffer, filename, hashFile);
       }
     } catch (error) {
       console.warn("R2 upload failed, using Cloudinary URL as fallback:", error);
