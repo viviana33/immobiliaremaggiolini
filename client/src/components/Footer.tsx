@@ -38,15 +38,15 @@ export default function Footer() {
             <h3 className="text-sm text-white" style={{ fontFamily: "'Michroma', sans-serif", fontWeight: 400, letterSpacing: '0.08em' }}>Link Veloci</h3>
             <ul className="space-y-2">
               {[
-                { path: "/", label: "Home" },
-                { path: "/proprieta", label: "Proprietà" },
-                { path: "/blog", label: "Blog" },
-                { path: "/chi-siamo", label: "Chi Siamo" },
-                { path: "/privacy", label: "Privacy Policy" },
+                { path: "/", label: "Home", testId: "link-footer-home" },
+                { path: "/proprieta", label: "Proprietà", testId: "link-footer-proprieta" },
+                { path: "/blog", label: "Blog", testId: "link-footer-blog" },
+                { path: "/chi-siamo", label: "Chi Siamo", testId: "link-footer-chi-siamo" },
+                { path: "/privacy", label: "Privacy Policy", testId: "link-footer-privacy" },
               ].map((link) => (
                 <li key={link.path}>
                   <Link href={link.path}>
-                    <span className="text-white/80 hover:text-white text-sm transition-colors cursor-pointer">
+                    <span className="text-white/80 hover:text-white text-sm transition-colors cursor-pointer" data-testid={link.testId}>
                       {link.label}
                     </span>
                   </Link>

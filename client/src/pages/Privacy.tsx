@@ -38,7 +38,7 @@ export default function Privacy() {
               <p className="font-semibold mb-2">Immobiliare Maggiolini</p>
               <p className="mb-1">con sede legale/operativa in: [Indirizzo completo, CAP, Città, Provincia]</p>
               <p className="mb-1">Partita IVA/Codice Fiscale: [P.IVA]</p>
-              <p className="mb-1">Email: <a href="mailto:email@immobiliaremaggiolini.it" className="text-primary hover:underline">email@immobiliaremaggiolini.it</a></p>
+              <p className="mb-1">Email: <a href="mailto:email@immobiliaremaggiolini.it" className="text-primary hover:underline" data-testid="link-email-titolare">email@immobiliaremaggiolini.it</a></p>
               <p className="mb-1">PEC: [pec@immobiliaremaggiolini.it] (se disponibile)</p>
               <p>Telefono: [Numero di telefono]</p>
             </div>
@@ -102,8 +102,8 @@ export default function Privacy() {
             </p>
             <ul className="ml-6 space-y-2 mb-4">
               <li>Cliccando sul link di "disiscrizione" presente in calce a ogni email;</li>
-              <li>Modificando le proprie preferenze tramite la pagina <a href="/preferenze" className="text-primary hover:underline">/preferenze</a>;</li>
-              <li>Inviando una comunicazione a <a href="mailto:email@immobiliaremaggiolini.it" className="text-primary hover:underline">email@immobiliaremaggiolini.it</a>.</li>
+              <li>Modificando le proprie preferenze tramite la pagina <a href="/preferenze" className="text-primary hover:underline" data-testid="link-preferenze">/preferenze</a>;</li>
+              <li>Inviando una comunicazione a <a href="mailto:email@immobiliaremaggiolini.it" className="text-primary hover:underline" data-testid="link-email-revoca">email@immobiliaremaggiolini.it</a>.</li>
             </ul>
             <p className="mb-4 leading-relaxed">
               La revoca del consenso non pregiudica la liceità del trattamento basata sul consenso prima della revoca.
@@ -286,10 +286,10 @@ export default function Privacy() {
                 L'interessato che ritenga che il trattamento dei dati personali che lo riguardano violi il GDPR ha il diritto di proporre reclamo all'Autorità Garante per la Protezione dei Dati Personali, con sede in Piazza Venezia n. 11, 00187 Roma (RM):
               </p>
               <ul className="ml-6 space-y-2">
-                <li>Email: <a href="mailto:garante@gpdp.it" className="text-primary hover:underline">garante@gpdp.it</a></li>
-                <li>PEC: <a href="mailto:protocollo@pec.gpdp.it" className="text-primary hover:underline">protocollo@pec.gpdp.it</a></li>
+                <li>Email: <a href="mailto:garante@gpdp.it" className="text-primary hover:underline" data-testid="link-email-garante">garante@gpdp.it</a></li>
+                <li>PEC: <a href="mailto:protocollo@pec.gpdp.it" className="text-primary hover:underline" data-testid="link-pec-garante">protocollo@pec.gpdp.it</a></li>
                 <li>Tel: +39 06.696771</li>
-                <li>Sito web: <a href="https://www.garanteprivacy.it" target="_blank" rel="noopener noreferrer" className="text-primary hover:underline">www.garanteprivacy.it</a></li>
+                <li>Sito web: <a href="https://www.garanteprivacy.it" target="_blank" rel="noopener noreferrer" className="text-primary hover:underline" data-testid="link-website-garante">www.garanteprivacy.it</a></li>
               </ul>
             </div>
           </section>
@@ -300,7 +300,7 @@ export default function Privacy() {
               Per esercitare i diritti di cui all'art. 8, l'interessato può presentare richiesta scritta al Titolare mediante:
             </p>
             <ul className="ml-6 space-y-2 mb-6">
-              <li>Email: <a href="mailto:email@immobiliaremaggiolini.it" className="text-primary hover:underline">email@immobiliaremaggiolini.it</a></li>
+              <li>Email: <a href="mailto:email@immobiliaremaggiolini.it" className="text-primary hover:underline" data-testid="link-email-esercizio-diritti">email@immobiliaremaggiolini.it</a></li>
               <li>PEC: [pec@immobiliaremaggiolini.it] (se disponibile)</li>
               <li>Raccomandata A/R: [Indirizzo completo sede legale/operativa]</li>
             </ul>
@@ -377,7 +377,7 @@ export default function Privacy() {
               <p className="font-semibold mb-2">IMMOBILIARE MAGGIOLINI</p>
               <p className="mb-1">[Indirizzo completo]</p>
               <p className="mb-1">P.IVA: [P.IVA]</p>
-              <p className="mb-1">Email: <a href="mailto:email@immobiliaremaggiolini.it" className="text-primary hover:underline">email@immobiliaremaggiolini.it</a></p>
+              <p className="mb-1">Email: <a href="mailto:email@immobiliaremaggiolini.it" className="text-primary hover:underline" data-testid="link-email-footer-privacy">email@immobiliaremaggiolini.it</a></p>
               <p>Tel: [Numero telefono]</p>
             </div>
           </section>
