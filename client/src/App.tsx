@@ -17,6 +17,7 @@ import ChiSiamo from "@/pages/ChiSiamo";
 import Contatti from "@/pages/Contatti";
 import Preferenze from "@/pages/Preferenze";
 import Grazie from "@/pages/Grazie";
+import Privacy from "@/pages/Privacy";
 import Login from "@/pages/Login";
 import AdminDashboard from "@/pages/AdminDashboard";
 import AdminImmobili from "@/pages/AdminImmobili";
@@ -83,6 +84,7 @@ function Router() {
                 <Route path="/chi-siamo" component={ChiSiamo} />
                 <Route path="/contatti" component={Contatti} />
                 <Route path="/preferenze" component={Preferenze} />
+                <Route path="/privacy" component={Privacy} />
                 <Route path="/grazie" component={Grazie} />
                 <Route path="/" component={Home} />
                 <Route component={NotFound} />

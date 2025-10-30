@@ -42,6 +42,7 @@ export default function Footer() {
                 { path: "/proprieta", label: "Proprietà" },
                 { path: "/blog", label: "Blog" },
                 { path: "/chi-siamo", label: "Chi Siamo" },
+                { path: "/privacy", label: "Privacy Policy" },
               ].map((link) => (
                 <li key={link.path}>
                   <Link href={link.path}>
