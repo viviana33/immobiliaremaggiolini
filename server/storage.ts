@@ -505,6 +505,14 @@ export class DbStorage implements IStorage {
     return subscription;
   }
 
+  async getSubscriptionByUnsubscribeToken(token: string): Promise<Subscription | undefined> {
+    const [subscription] = await db
+      .select()
+      .from(subscriptions)
+      .where(eq(subscriptions.unsubscribeToken, token));
+    return subscription;
+  }
+
   async getConfirmedBlogSubscribers(): Promise<Subscription[]> {
     return db
       .select()

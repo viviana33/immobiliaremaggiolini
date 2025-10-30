@@ -8,7 +8,7 @@ import { uploadService } from "./uploadService";
 import { insertSubscriptionSchema, updateSubscriptionSchema, insertPropertySchema, propertyFiltersSchema, insertPostSchema, postFiltersSchema, insertLeadSchema } from "@shared/schema";
 import { getBrevoService } from "./brevoService";
 import { registerSubscriptionConfirmRoutes } from "./routes-subscription-confirm";
-import { getAdminLeadNotificationTemplate, getUserLeadConfirmationTemplate } from "./emailTemplates";
+import { getAdminLeadNotificationTemplate, getUserLeadConfirmationTemplate, getAdminUnsubscribeNotificationTemplate } from "./emailTemplates";
 import crypto from "crypto";
 
 export async function registerRoutes(app: Express): Promise<Server> {
@@ -151,6 +151,9 @@ export async function registerRoutes(app: Express): Promise<Server> {
       const existingSubscription = await storage.getSubscriptionByEmail(validatedData.email);
       
       if (existingSubscription) {
+        // Genera token di disiscrizione se non esiste
+        const unsubscribeToken = existingSubscription.unsubscribeToken || crypto.randomBytes(32).toString('hex');
+        
         // Aggiorna le preferenze e consent timestamp
         await storage.updateSubscription(validatedData.email, {
           nome: validatedData.nome,
@@ -159,6 +162,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
           source: validatedData.source || 'website',
           consentIp: clientIp,
           consentTs: new Date(),
+          unsubscribeToken,
         });
         
         // Se già confermato, non invia nuova email DOI
@@ -172,6 +176,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
       
       // Token per conferma (anche se Brevo gestisce il suo)
       const confirmToken = crypto.randomBytes(32).toString('hex');
+      const unsubscribeToken = crypto.randomBytes(32).toString('hex');
       
       // Crea o aggiorna subscription nel database
       const subscriptionData = {
@@ -179,6 +184,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
         source: validatedData.source || 'website',
         consentIp: clientIp,
         confirmToken,
+        unsubscribeToken,
         confirmed: false,
       };
       
@@ -337,6 +343,60 @@ export async function registerRoutes(app: Express): Promise<Server> {
         success: false,
         message: "Errore nell'aggiornamento delle preferenze"
       });
+    }
+  });
+
+  // Unsubscribe endpoint (one-click unsubscribe con token)
+  app.get("/api/unsubscribe/:token", async (req, res) => {
+    try {
+      const { token } = req.params;
+      
+      if (!token) {
+        return res.status(400).send("Token mancante");
+      }
+      
+      // Trova la subscription con questo token
+      const subscription = await storage.getSubscriptionByUnsubscribeToken(token);
+      
+      if (!subscription) {
+        return res.status(404).send("Token non valido o iscrizione non trovata");
+      }
+      
+      // Salva le preferenze originali per la notifica all'admin
+      const originalSubscription = { ...subscription };
+      
+      // Disiscrivi completamente (imposta entrambe le preferenze a false)
+      await storage.updateSubscription(subscription.email, {
+        blogUpdates: false,
+        newListings: false,
+      });
+      
+      // Invia notifica all'admin
+      const adminEmail = process.env.ADMIN_EMAIL;
+      if (adminEmail) {
+        try {
+          const brevo = getBrevoService();
+          const htmlContent = getAdminUnsubscribeNotificationTemplate(originalSubscription);
+          
+          await brevo.sendTransactionalEmail({
+            to: [{ email: adminEmail }],
+            subject: "Disiscrizione dalla Newsletter",
+            htmlContent
+          });
+          
+          console.log(`[UNSUBSCRIBE] Notifica inviata all'admin per: ${subscription.email}`);
+        } catch (emailError: any) {
+          console.error("Errore invio notifica admin disiscrizione:", emailError);
+        }
+      }
+      
+      console.log(`[UNSUBSCRIBE] Utente disiscritto: ${subscription.email}`);
+      
+      // Redirect alla pagina preferenze con messaggio di conferma
+      return res.redirect(`/preferenze?unsubscribed=true&email=${encodeURIComponent(subscription.email)}`);
+    } catch (error) {
+      console.error("Error in unsubscribe endpoint:", error);
+      return res.status(500).send("Errore durante la disiscrizione");
     }
   });
 
