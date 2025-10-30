@@ -27,7 +27,7 @@ import {
   AlertDialogHeader,
   AlertDialogTitle,
 } from "@/components/ui/alert-dialog";
-import { MarkdownEditor } from "./MarkdownEditor";
+import { SimpleContentEditor } from "./SimpleContentEditor";
 import { ImageUploader } from "./ImageUploader";
 import { PostGallery } from "./PostGallery";
 import { useForm, useWatch } from "react-hook-form";
@@ -514,8 +514,11 @@ export function PostForm({ postId }: PostFormProps) {
             render={({ field }) => (
               <FormItem>
                 <FormLabel>Contenuto *</FormLabel>
+                <FormDescription className="mb-2">
+                  Crea il tuo articolo aggiungendo sezioni. Ogni sezione può essere un titolo, un paragrafo di testo o un'immagine.
+                </FormDescription>
                 <FormControl>
-                  <MarkdownEditor value={field.value} onChange={field.onChange} />
+                  <SimpleContentEditor value={field.value} onChange={field.onChange} />
                 </FormControl>
                 {readingTime > 0 && (
                   <FormDescription className="flex items-center gap-2 mt-2">
