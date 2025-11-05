@@ -583,24 +583,34 @@ export function PostForm({ postId }: PostFormProps) {
           <FormField
             control={form.control}
             name="tag"
-            render={({ field }) => (
-              <FormItem>
-                <FormLabel>Tag</FormLabel>
-                <FormControl>
-                  <Input
-                    placeholder="tag1, tag2, tag3"
-                    data-testid="input-tags"
-                    value={field.value?.join(", ") || ""}
-                    onChange={(e) => {
-                      const tags = e.target.value.split(",").map(t => t.trim()).filter(Boolean);
-                      field.onChange(tags);
-                    }}
-                  />
-                </FormControl>
-                <FormDescription>Separa i tag con virgole</FormDescription>
-                <FormMessage />
-              </FormItem>
-            )}
+            render={({ field }) => {
+              const [inputValue, setInputValue] = useState(field.value?.join(", ") || "");
+              
+              useEffect(() => {
+                setInputValue(field.value?.join(", ") || "");
+              }, [field.value]);
+              
+              return (
+                <FormItem>
+                  <FormLabel>Tag</FormLabel>
+                  <FormControl>
+                    <Input
+                      placeholder="tag1, tag2, tag3"
+                      data-testid="input-tags"
+                      value={inputValue}
+                      onChange={(e) => {
+                        const newValue = e.target.value;
+                        setInputValue(newValue);
+                        const tags = newValue.split(",").map(t => t.trim()).filter(Boolean);
+                        field.onChange(tags);
+                      }}
+                    />
+                  </FormControl>
+                  <FormDescription>Separa i tag con virgole</FormDescription>
+                  <FormMessage />
+                </FormItem>
+              );
+            }}
           />
 
           <Separator />
