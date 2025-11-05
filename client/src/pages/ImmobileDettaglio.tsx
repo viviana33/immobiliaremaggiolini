@@ -355,6 +355,21 @@ export default function ImmobileDettaglio() {
             />
 
             <div>
+              <h2 className="text-2xl font-serif font-bold mb-4">Descrizione</h2>
+              <div className="prose prose-slate max-w-none">
+                {property.descrizione.split('\n\n').map((paragraph, index) => (
+                  <p 
+                    key={index} 
+                    className="text-muted-foreground mb-4 last:mb-0" 
+                    data-testid={index === 0 ? "text-description" : undefined}
+                  >
+                    {paragraph}
+                  </p>
+                ))}
+              </div>
+            </div>
+
+            <div>
               <h2 className="text-2xl font-serif font-bold mb-4">Caratteristiche</h2>
               <div className="grid grid-cols-2 md:grid-cols-3 gap-4">
                 <div className="flex flex-col gap-1">
@@ -411,25 +426,10 @@ export default function ImmobileDettaglio() {
               </div>
             </div>
 
-            <div>
-              <h2 className="text-2xl font-serif font-bold mb-4">Descrizione</h2>
-              <div className="prose prose-slate max-w-none">
-                {property.descrizione.split('\n\n').map((paragraph, index) => (
-                  <p 
-                    key={index} 
-                    className="text-muted-foreground mb-4 last:mb-0" 
-                    data-testid={index === 0 ? "text-description" : undefined}
-                  >
-                    {paragraph}
-                  </p>
-                ))}
-              </div>
-            </div>
-
             {property.linkVideo && (
               <div>
                 <h3 className="text-xl font-semibold mb-4">Video Tour</h3>
-                <div className="max-w-md">
+                <div className="max-w-sm">
                   <YouTubeEmbed 
                     videoUrl={property.linkVideo} 
                     title={`Video tour - ${property.titolo}`}
