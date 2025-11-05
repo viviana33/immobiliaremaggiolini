@@ -6,7 +6,6 @@ import { Badge } from "@/components/ui/badge";
 import ImageCarousel from "@/components/ImageCarousel";
 import YouTubeEmbed from "@/components/YouTubeEmbed";
 import PropertyCard from "@/components/PropertyCard";
-import ContactForm from "@/components/ContactForm";
 import { 
   MapPin, 
   Bed, 
@@ -479,14 +478,6 @@ export default function ImmobileDettaglio() {
                 </CardContent>
               </Card>
             </div>
-        </div>
-
-        {/* Form Contatto */}
-        <div className="mt-16">
-          <h3 className="text-2xl font-serif font-bold mb-6">Richiedi Informazioni</h3>
-          <div className="max-w-2xl">
-            <ContactForm source="immobile" contextId={property.id} />
-          </div>
         </div>
 
         {!isAvailable && property.similarProperties && property.similarProperties.length > 0 && (
