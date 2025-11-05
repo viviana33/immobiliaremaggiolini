@@ -429,7 +429,7 @@ export default function ImmobileDettaglio() {
             {property.linkVideo && (
               <div>
                 <h3 className="text-xl font-semibold mb-4">Video Tour</h3>
-                <div className="max-w-sm">
+                <div className="max-w-xs">
                   <YouTubeEmbed 
                     videoUrl={property.linkVideo} 
                     title={`Video tour - ${property.titolo}`}
