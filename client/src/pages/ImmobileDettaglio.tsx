@@ -354,16 +354,6 @@ export default function ImmobileDettaglio() {
               title={property.titolo}
             />
 
-            {property.linkVideo && (
-              <div>
-                <h3 className="text-xl font-semibold mb-4">Video Tour</h3>
-                <YouTubeEmbed 
-                  videoUrl={property.linkVideo} 
-                  title={`Video tour - ${property.titolo}`}
-                />
-              </div>
-            )}
-
             <div>
               <h2 className="text-2xl font-serif font-bold mb-4">Caratteristiche</h2>
               <div className="grid grid-cols-2 md:grid-cols-3 gap-4">
@@ -435,6 +425,18 @@ export default function ImmobileDettaglio() {
                 ))}
               </div>
             </div>
+
+            {property.linkVideo && (
+              <div>
+                <h3 className="text-xl font-semibold mb-4">Video Tour</h3>
+                <div className="max-w-md">
+                  <YouTubeEmbed 
+                    videoUrl={property.linkVideo} 
+                    title={`Video tour - ${property.titolo}`}
+                  />
+                </div>
+              </div>
+            )}
           </div>
 
           <div className="space-y-6">
