@@ -12,12 +12,12 @@ import {
 } from "@/components/ui/select";
 import { Separator } from "@/components/ui/separator";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
-import { Plus, Trash2, MoveUp, MoveDown, Image as ImageIcon, Upload, Loader2 } from "lucide-react";
+import { Plus, Trash2, GripVertical, Image as ImageIcon, Upload, Loader2, AlignLeft, AlignCenter, AlignRight } from "lucide-react";
 import { useState, useEffect, useMemo, useRef } from "react";
 import { unified } from "unified";
 import remarkParse from "remark-parse";
 import remarkRehype from "remark-rehype";
-import rehypeSanitize from "rehype-sanitize";
+import rehypeSanitize, { defaultSchema } from "rehype-sanitize";
 import rehypeStringify from "rehype-stringify";
 import { useToast } from "@/hooks/use-toast";
 
@@ -28,6 +28,8 @@ export interface ContentSection {
   content: string;
   imageUrl?: string;
   imageAlt?: string;
+  imageSize?: "small" | "medium" | "large" | "full";
+  imageAlign?: "left" | "center" | "right";
 }
 
 interface SimpleContentEditorProps {
@@ -76,6 +78,34 @@ function convertToSections(markdown: string): ContentSection[] {
         headingLevel: "h3",
         content: line.substring(4).trim(),
       });
+    } else if (line.match(/<div class="my-6/)) {
+      flushTextSection();
+      const imgMatch = line.match(/<img.*?src="(.*?)".*?alt="(.*?)".*?class="(.*?)"/);
+      const alignMatch = line.match(/class="my-6 (.*?)"/);
+      
+      if (imgMatch) {
+        const imgClasses = imgMatch[3];
+        const alignClass = alignMatch?.[1] || "mx-auto";
+        
+        const size = imgClasses.includes("max-w-xs") ? "small" :
+                    imgClasses.includes("max-w-lg") ? "medium" :
+                    imgClasses.includes("max-w-2xl") ? "large" :
+                    "full";
+        
+        const align = alignClass.includes("mr-auto") ? "left" :
+                     alignClass.includes("ml-auto") ? "right" :
+                     "center";
+        
+        sections.push({
+          id: `section-${idCounter++}`,
+          type: "image",
+          content: "",
+          imageUrl: imgMatch[1],
+          imageAlt: imgMatch[2],
+          imageSize: size,
+          imageAlign: align,
+        });
+      }
     } else if (line.match(/!\[(.*?)\]\((.*?)\)/)) {
       flushTextSection();
       const match = line.match(/!\[(.*?)\]\((.*?)\)/);
@@ -86,13 +116,15 @@ function convertToSections(markdown: string): ContentSection[] {
           content: "",
           imageUrl: match[2],
           imageAlt: match[1],
+          imageSize: "medium",
+          imageAlign: "center",
         });
       }
     } else if (line.trim() === "") {
       if (currentTextLines.length > 0) {
         flushTextSection();
       }
-    } else {
+    } else if (!line.match(/<\/div>/)) {
       currentTextLines.push(line);
     }
   }
@@ -112,7 +144,16 @@ function convertToMarkdown(sections: ContentSection[]): string {
         return section.content;
       } else if (section.type === "image" && section.imageUrl) {
         const alt = section.imageAlt || "";
-        return `![${alt}](${section.imageUrl})`;
+        const size = section.imageSize || "medium";
+        const align = section.imageAlign || "center";
+        const sizeClass = size === "small" ? "max-w-xs" : 
+                        size === "medium" ? "max-w-lg" :
+                        size === "large" ? "max-w-2xl" :
+                        "w-full";
+        const alignClass = align === "left" ? "mr-auto" :
+                         align === "right" ? "ml-auto" :
+                         "mx-auto";
+        return `<div class="my-6 ${alignClass}"><img src="${section.imageUrl}" alt="${alt}" class="${sizeClass} rounded-md" /></div>`;
       }
       return "";
     })
@@ -196,6 +237,28 @@ function ImageSectionUploader({ section, index, onUpdate }: ImageSectionUploader
     }
   };
 
+  const imageSize = section.imageSize || "medium";
+  const imageAlign = section.imageAlign || "center";
+
+  const getSizeClass = (size: string) => {
+    switch (size) {
+      case "small": return "max-w-xs";
+      case "medium": return "max-w-lg";
+      case "large": return "max-w-2xl";
+      case "full": return "w-full";
+      default: return "max-w-lg";
+    }
+  };
+
+  const getAlignClass = (align: string) => {
+    switch (align) {
+      case "left": return "mr-auto";
+      case "center": return "mx-auto";
+      case "right": return "ml-auto";
+      default: return "mx-auto";
+    }
+  };
+
   return (
     <div className="space-y-3">
       <input
@@ -207,7 +270,7 @@ function ImageSectionUploader({ section, index, onUpdate }: ImageSectionUploader
         data-testid={`input-file-hidden-${index}`}
       />
 
-      <div className="flex gap-2">
+      <div className="flex gap-2 flex-wrap">
         <Button
           type="button"
           size="sm"
@@ -250,17 +313,72 @@ function ImageSectionUploader({ section, index, onUpdate }: ImageSectionUploader
         />
       </div>
 
+      <div className="grid grid-cols-2 gap-4">
+        <div>
+          <Label htmlFor={`image-size-${section.id}`}>Dimensione</Label>
+          <Select
+            value={imageSize}
+            onValueChange={(value) => onUpdate({ imageSize: value as "small" | "medium" | "large" | "full" })}
+          >
+            <SelectTrigger id={`image-size-${section.id}`} data-testid={`select-image-size-${index}`}>
+              <SelectValue />
+            </SelectTrigger>
+            <SelectContent>
+              <SelectItem value="small">Piccola</SelectItem>
+              <SelectItem value="medium">Media</SelectItem>
+              <SelectItem value="large">Grande</SelectItem>
+              <SelectItem value="full">Larghezza piena</SelectItem>
+            </SelectContent>
+          </Select>
+        </div>
+
+        <div>
+          <Label htmlFor={`image-align-${section.id}`}>Allineamento</Label>
+          <Select
+            value={imageAlign}
+            onValueChange={(value) => onUpdate({ imageAlign: value as "left" | "center" | "right" })}
+          >
+            <SelectTrigger id={`image-align-${section.id}`} data-testid={`select-image-align-${index}`}>
+              <SelectValue />
+            </SelectTrigger>
+            <SelectContent>
+              <SelectItem value="left">
+                <div className="flex items-center gap-2">
+                  <AlignLeft className="h-4 w-4" />
+                  Sinistra
+                </div>
+              </SelectItem>
+              <SelectItem value="center">
+                <div className="flex items-center gap-2">
+                  <AlignCenter className="h-4 w-4" />
+                  Centro
+                </div>
+              </SelectItem>
+              <SelectItem value="right">
+                <div className="flex items-center gap-2">
+                  <AlignRight className="h-4 w-4" />
+                  Destra
+                </div>
+              </SelectItem>
+            </SelectContent>
+          </Select>
+        </div>
+      </div>
+
       {section.imageUrl && (
-        <div className="mt-2 rounded-md border p-2">
-          <img
-            src={section.imageUrl}
-            alt={section.imageAlt || "Anteprima"}
-            className="max-h-40 rounded"
-            onError={(e) => {
-              e.currentTarget.style.display = "none";
-            }}
-            data-testid={`img-preview-${index}`}
-          />
+        <div className="mt-2 rounded-md border p-4">
+          <p className="text-xs text-muted-foreground mb-2">Anteprima con dimensione e allineamento selezionati:</p>
+          <div className={`${getAlignClass(imageAlign)}`}>
+            <img
+              src={section.imageUrl}
+              alt={section.imageAlt || "Anteprima"}
+              className={`${getSizeClass(imageSize)} rounded`}
+              onError={(e) => {
+                e.currentTarget.style.display = "none";
+              }}
+              data-testid={`img-preview-${index}`}
+            />
+          </div>
         </div>
       )}
     </div>
@@ -269,6 +387,7 @@ function ImageSectionUploader({ section, index, onUpdate }: ImageSectionUploader
 
 export function SimpleContentEditor({ value, onChange }: SimpleContentEditorProps) {
   const [sections, setSections] = useState<ContentSection[]>(() => convertToSections(value));
+  const [draggedIndex, setDraggedIndex] = useState<number | null>(null);
 
   useEffect(() => {
     const markdown = convertToMarkdown(sections);
@@ -288,6 +407,8 @@ export function SimpleContentEditor({ value, onChange }: SimpleContentEditorProp
       content: "",
       headingLevel: type === "heading" ? "h2" : undefined,
       imageUrl: type === "image" ? "" : undefined,
+      imageSize: type === "image" ? "medium" : undefined,
+      imageAlign: type === "image" ? "center" : undefined,
     };
     setSections([...sections, newSection]);
   };
@@ -300,16 +421,25 @@ export function SimpleContentEditor({ value, onChange }: SimpleContentEditorProp
     setSections(sections.filter((s) => s.id !== id));
   };
 
-  const moveSection = (id: string, direction: "up" | "down") => {
-    const index = sections.findIndex((s) => s.id === id);
-    if (index === -1) return;
+  const handleDragStart = (index: number) => {
+    setDraggedIndex(index);
+  };
 
-    const newIndex = direction === "up" ? index - 1 : index + 1;
-    if (newIndex < 0 || newIndex >= sections.length) return;
+  const handleDragOver = (e: React.DragEvent, index: number) => {
+    e.preventDefault();
+    if (draggedIndex === null || draggedIndex === index) return;
 
     const newSections = [...sections];
-    [newSections[index], newSections[newIndex]] = [newSections[newIndex], newSections[index]];
+    const draggedSection = newSections[draggedIndex];
+    newSections.splice(draggedIndex, 1);
+    newSections.splice(index, 0, draggedSection);
+
+    setDraggedIndex(index);
     setSections(newSections);
+  };
+
+  const handleDragEnd = () => {
+    setDraggedIndex(null);
   };
 
   const htmlContent = useMemo(() => {
@@ -319,9 +449,27 @@ export function SimpleContentEditor({ value, onChange }: SimpleContentEditorProp
     try {
       const result = unified()
         .use(remarkParse)
-        .use(remarkRehype)
-        .use(rehypeSanitize)
-        .use(rehypeStringify)
+        .use(remarkRehype, { allowDangerousHtml: true })
+        .use(rehypeSanitize, {
+          ...defaultSchema,
+          attributes: {
+            ...defaultSchema.attributes,
+            div: [
+              ...(defaultSchema.attributes?.div || []),
+              'className',
+              ['className', 'my-6', 'mr-auto', 'ml-auto', 'mx-auto']
+            ],
+            img: [
+              ...(defaultSchema.attributes?.img || []),
+              'src',
+              'alt',
+              'className',
+              ['className', 'max-w-xs', 'max-w-lg', 'max-w-2xl', 'w-full', 'rounded-md']
+            ],
+          },
+          tagNames: [...(defaultSchema.tagNames || []), 'div'],
+        })
+        .use(rehypeStringify, { allowDangerousHtml: true })
         .processSync(markdown);
 
       return String(result);
@@ -387,10 +535,24 @@ export function SimpleContentEditor({ value, onChange }: SimpleContentEditorProp
 
       <div className="space-y-4">
         {sections.map((section, index) => (
-          <Card key={section.id} className="p-4" data-testid={`section-${index}`}>
+          <Card 
+            key={section.id} 
+            className={`p-4 transition-all ${draggedIndex === index ? 'opacity-50' : ''}`}
+            data-testid={`section-${index}`}
+            draggable
+            onDragStart={() => handleDragStart(index)}
+            onDragOver={(e) => handleDragOver(e, index)}
+            onDragEnd={handleDragEnd}
+          >
             <div className="space-y-3">
               <div className="flex items-center justify-between gap-2">
                 <div className="flex items-center gap-2">
+                  <div 
+                    className="cursor-grab active:cursor-grabbing p-1 hover-elevate rounded"
+                    data-testid={`drag-handle-${index}`}
+                  >
+                    <GripVertical className="h-5 w-5 text-muted-foreground" />
+                  </div>
                   {section.type === "heading" && (
                     <Select
                       value={section.headingLevel}
@@ -414,26 +576,6 @@ export function SimpleContentEditor({ value, onChange }: SimpleContentEditorProp
                   </span>
                 </div>
                 <div className="flex gap-1">
-                  <Button
-                    type="button"
-                    size="icon"
-                    variant="ghost"
-                    onClick={() => moveSection(section.id, "up")}
-                    disabled={index === 0}
-                    data-testid={`button-move-up-${index}`}
-                  >
-                    <MoveUp className="h-4 w-4" />
-                  </Button>
-                  <Button
-                    type="button"
-                    size="icon"
-                    variant="ghost"
-                    onClick={() => moveSection(section.id, "down")}
-                    disabled={index === sections.length - 1}
-                    data-testid={`button-move-down-${index}`}
-                  >
-                    <MoveDown className="h-4 w-4" />
-                  </Button>
                   <Button
                     type="button"
                     size="icon"
