@@ -51,6 +51,7 @@ const formSchema = insertPostSchema.extend({
   sottotitolo: z.string().optional(),
   slug: z.string().min(1, "Lo slug è obbligatorio"),
   cover: z.string().optional(),
+  coverPosition: z.enum(["nascosta", "inizio", "fine"]),
   contenuto: z.string().min(1, "Il contenuto è obbligatorio"),
   readingTimeMin: z.number().optional(),
   tag: z.array(z.string()).optional(),
@@ -102,6 +103,7 @@ export function PostForm({ postId }: PostFormProps) {
       sottotitolo: "",
       slug: "",
       cover: "",
+      coverPosition: "inizio",
       contenuto: "",
       readingTimeMin: 0,
       tag: [],
@@ -134,6 +136,7 @@ export function PostForm({ postId }: PostFormProps) {
         sottotitolo: existingPost.sottotitolo || "",
         slug: existingPost.slug,
         cover: existingPost.cover || "",
+        coverPosition: existingPost.coverPosition || "inizio",
         contenuto: existingPost.contenuto,
         readingTimeMin: existingPost.readingTimeMin || 0,
         tag: existingPost.tag || [],
@@ -497,6 +500,32 @@ export function PostForm({ postId }: PostFormProps) {
                   />
                 </FormControl>
                 <FormDescription>Obbligatoria per la pubblicazione (max 8MB)</FormDescription>
+                <FormMessage />
+              </FormItem>
+            )}
+          />
+
+          <FormField
+            control={form.control}
+            name="coverPosition"
+            render={({ field }) => (
+              <FormItem>
+                <FormLabel>Visualizzazione copertina nel post</FormLabel>
+                <Select onValueChange={field.onChange} value={field.value}>
+                  <FormControl>
+                    <SelectTrigger data-testid="select-cover-position">
+                      <SelectValue placeholder="Seleziona posizione" />
+                    </SelectTrigger>
+                  </FormControl>
+                  <SelectContent>
+                    <SelectItem value="nascosta">Non mostrare nel contenuto</SelectItem>
+                    <SelectItem value="inizio">Mostra all'inizio</SelectItem>
+                    <SelectItem value="fine">Mostra alla fine</SelectItem>
+                  </SelectContent>
+                </Select>
+                <FormDescription>
+                  Scegli se e dove mostrare l'immagine di copertina all'interno del post
+                </FormDescription>
                 <FormMessage />
               </FormItem>
             )}
