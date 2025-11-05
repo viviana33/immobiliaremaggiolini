@@ -283,8 +283,8 @@ export default function BlogDettaglio() {
         </div>
       </section>
 
-      {/* Immagine Cover */}
-      {post.cover && (
+      {/* Immagine Cover all'inizio */}
+      {post.cover && post.coverPosition === "inizio" && (
         <section className="py-8 border-b border-border">
           <div className="max-w-4xl mx-auto px-6 md:px-8">
             <div className="relative aspect-[16/9] rounded-lg overflow-hidden bg-muted">
@@ -313,6 +313,22 @@ export default function BlogDettaglio() {
           )}
         </div>
       </section>
+
+      {/* Immagine Cover alla fine */}
+      {post.cover && post.coverPosition === "fine" && (
+        <section className="py-8 border-t border-border">
+          <div className="max-w-4xl mx-auto px-6 md:px-8">
+            <div className="relative aspect-[16/9] rounded-lg overflow-hidden bg-muted">
+              <img
+                src={post.cover}
+                alt={post.titolo}
+                className="w-full h-full object-cover"
+                data-testid="post-cover-end"
+              />
+            </div>
+          </div>
+        </section>
+      )}
 
       {/* Contact Form */}
       <section className="py-12 border-t border-border">
