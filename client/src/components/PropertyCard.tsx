@@ -5,7 +5,7 @@ import { Link } from "wouter";
 import ImageCarousel from "@/components/ImageCarousel";
 
 interface PropertyCardProps {
-  id: string;
+  slug: string;
   title: string;
   location: string;
   price: string;
@@ -19,7 +19,7 @@ interface PropertyCardProps {
 const DEFAULT_IMAGE = "https://images.unsplash.com/photo-1568605114967-8130f3a36994?w=800&h=600&fit=crop";
 
 export default function PropertyCard({
-  id,
+  slug,
   title,
   location,
   price,
@@ -32,7 +32,7 @@ export default function PropertyCard({
   const displayImages = images.length > 0 ? images : [DEFAULT_IMAGE];
   
   return (
-    <Link href={`/immobile/${id}`} data-testid={`link-property-${title.toLowerCase().replace(/\s+/g, "-")}`}>
+    <Link href={`/immobile/${slug}`} data-testid={`link-property-${title.toLowerCase().replace(/\s+/g, "-")}`}>
       <Card
         className="overflow-hidden hover-elevate active-elevate-2 transition-all cursor-pointer group"
         data-testid={`card-property-${title.toLowerCase().replace(/\s+/g, "-")}`}

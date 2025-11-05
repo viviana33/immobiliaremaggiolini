@@ -135,7 +135,7 @@ export default function Immobili() {
           return (
             <PropertyCard
               key={property.id}
-              id={property.id}
+              slug={property.slug}
               title={property.title}
               location={property.location}
               price={`€ ${priceValue.toLocaleString('it-IT')}`}

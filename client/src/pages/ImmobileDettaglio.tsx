@@ -500,7 +500,7 @@ export default function ImmobileDettaglio() {
                   data-testid={`link-similar-${similar.slug}`}
                 >
                   <PropertyCard
-                    id={similar.id}
+                    slug={similar.slug}
                     title={similar.titolo}
                     location={similar.zona}
                     price={similar.tipo === "affitto" 

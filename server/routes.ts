@@ -550,8 +550,22 @@ export async function registerRoutes(app: Express): Promise<Server> {
 
   app.post("/api/admin/properties", requireAdmin, upload.array("images", 15), async (req, res) => {
     try {
+      // Generate slug from title
+      const slugify = (input: string): string => {
+        return input
+          .toLowerCase()
+          .normalize("NFD").replace(/[\u0300-\u036f]/g, "")
+          .replace(/[^a-z0-9]+/g, "-")
+          .replace(/^-+|-+$/g, "");
+      };
+      
+      const baseSlug = slugify(req.body.titolo);
+      const timestamp = Date.now();
+      const slug = `${baseSlug}-${timestamp}`;
+      
       const formData = {
         ...req.body,
+        slug,
         mq: parseInt(req.body.mq),
         stanze: parseInt(req.body.stanze),
         bagni: parseInt(req.body.bagni),

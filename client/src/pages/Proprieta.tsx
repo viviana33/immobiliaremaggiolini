@@ -156,7 +156,7 @@ export default function Proprieta() {
                   return (
                     <PropertyCard
                       key={property.id}
-                      id={property.slug}
+                      slug={property.slug}
                       title={property.title}
                       location={property.location}
                       price={formattedPrice}

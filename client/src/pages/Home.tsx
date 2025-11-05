@@ -44,10 +44,11 @@ export default function Home() {
   const featuredProperties = [
     {
       id: "1",
+      slug: "elegante-appartamento-centro",
       title: "Elegante Appartamento Centro",
       location: "Milano, Porta Nuova",
       price: "€ 450.000",
-      image: apartmentImage,
+      images: [apartmentImage],
       type: "vendita" as const,
       bedrooms: 3,
       bathrooms: 2,
@@ -55,10 +56,11 @@ export default function Home() {
     },
     {
       id: "2",
+      slug: "villa-con-giardino",
       title: "Villa con Giardino",
       location: "Monza, Centro Storico",
       price: "€ 2.800/mese",
-      image: countrysideImage,
+      images: [countrysideImage],
       type: "affitto" as const,
       bedrooms: 4,
       bathrooms: 3,
@@ -66,10 +68,11 @@ export default function Home() {
     },
     {
       id: "3",
+      slug: "attico-con-terrazza-panoramica",
       title: "Attico con Terrazza Panoramica",
       location: "Como, Lungolago",
       price: "€ 890.000",
-      image: penthouseImage,
+      images: [penthouseImage],
       type: "vendita" as const,
       bedrooms: 3,
       bathrooms: 2,
