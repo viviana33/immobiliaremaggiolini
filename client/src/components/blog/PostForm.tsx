@@ -91,6 +91,7 @@ export function PostForm({ postId }: PostFormProps) {
   const isEdit = Boolean(postId);
   const [readingTime, setReadingTime] = useState<number>(0);
   const [showPublishDialog, setShowPublishDialog] = useState(false);
+  const [tagsInput, setTagsInput] = useState<string>("");
   const { toast } = useToast();
   const [, setLocation] = useLocation();
 
@@ -142,6 +143,7 @@ export function PostForm({ postId }: PostFormProps) {
         metaTitle: existingPost.metaTitle || "",
         metaDescription: existingPost.metaDescription || "",
       });
+      setTagsInput(existingPost.tag?.join(", ") || "");
     }
   }, [existingPost, form]);
 
@@ -583,34 +585,26 @@ export function PostForm({ postId }: PostFormProps) {
           <FormField
             control={form.control}
             name="tag"
-            render={({ field }) => {
-              const [inputValue, setInputValue] = useState(field.value?.join(", ") || "");
-              
-              useEffect(() => {
-                setInputValue(field.value?.join(", ") || "");
-              }, [field.value]);
-              
-              return (
-                <FormItem>
-                  <FormLabel>Tag</FormLabel>
-                  <FormControl>
-                    <Input
-                      placeholder="tag1, tag2, tag3"
-                      data-testid="input-tags"
-                      value={inputValue}
-                      onChange={(e) => {
-                        const newValue = e.target.value;
-                        setInputValue(newValue);
-                        const tags = newValue.split(",").map(t => t.trim()).filter(Boolean);
-                        field.onChange(tags);
-                      }}
-                    />
-                  </FormControl>
-                  <FormDescription>Separa i tag con virgole</FormDescription>
-                  <FormMessage />
-                </FormItem>
-              );
-            }}
+            render={({ field }) => (
+              <FormItem>
+                <FormLabel>Tag</FormLabel>
+                <FormControl>
+                  <Input
+                    placeholder="tag1, tag2, tag3"
+                    data-testid="input-tags"
+                    value={tagsInput}
+                    onChange={(e) => {
+                      const newValue = e.target.value;
+                      setTagsInput(newValue);
+                      const tags = newValue.split(",").map(t => t.trim()).filter(Boolean);
+                      field.onChange(tags);
+                    }}
+                  />
+                </FormControl>
+                <FormDescription>Separa i tag con virgole</FormDescription>
+                <FormMessage />
+              </FormItem>
+            )}
           />
 
           <Separator />
