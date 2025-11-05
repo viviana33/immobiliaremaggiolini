@@ -33,14 +33,24 @@ Preferred communication style: Simple, everyday language.
     - **Subscriptions**: Stores email, name, preferences (`blog_updates`, `new_listings`), consent data, and confirmation status.
     - **Leads**: Stores contact form submissions with nome, email, messaggio, fonte, contextId, newsletter consent, IP address, and creation timestamp.
 - **Property Management**: Supports URL-based filtering, detailed property pages with image galleries, video embeds, and related properties. Price formatting handles numeric strings from API ("180000.00") via `parseFloat(price.replace(/[^\d.-]/g, ''))` for correct locale-formatted display.
-- **Blog Management**: Admin forms use React Hook Form with Zod validation, simplified content editor (`SimpleContentEditor`), and a dual-storage image upload system (R2 for cold, Cloudinary for hot delivery). Public blog pages feature category filtering, pagination, and SEO considerations.
-  - **SimpleContentEditor**: User-friendly block-based editor that replaces the previous Markdown editor. Allows non-technical users to create blog content by adding modular sections (headings H2/H3, text paragraphs, images with size/alignment controls). Features include:
-    * **Image Controls**: Four size options (Piccola/Small, Media/Medium, Grande/Large, Larghezza piena/Full width) and three alignment options (Sinistra/Left, Centro/Center, Destra/Right) with visual Tailwind class rendering
-    * **Drag & Drop**: Native HTML5 drag-and-drop for reordering content blocks with visual feedback
-    * **Live Preview**: Tabbed interface with "Modifica" (Edit) and "Anteprima" (Preview) - preview renders directly from state showing real-time formatted content
-    * **Security**: Comprehensive XSS prevention with HTML escaping for all user input, URL validation rejecting javascript:/data: protocols, and sanitization through unified/remark/rehype pipeline
-    * **Persistence**: Content stored as mixed Markdown/HTML with regex-based parsing for round-trip preservation of image metadata (size, alignment, alt text)
-    * **Accessibility**: Full support for image alt text and semantic HTML structure
+- **Blog Management**: Admin forms use React Hook Form with Zod validation, professional WYSIWYG editor (`RichTextEditor`), and a dual-storage image upload system (R2 for cold, Cloudinary for hot delivery). Public blog pages feature category filtering, pagination, and SEO considerations.
+  - **RichTextEditor**: Professional Tiptap-based WYSIWYG editor providing complete creative control over blog content. Features include:
+    * **Text Formatting**: Bold, Italic, Underline, Strikethrough, Code with instant visual feedback
+    * **Headings**: Three levels (H1, H2, H3) with customizable sizes - perfect for main headlines and section headings
+    * **Colors & Highlighting**: Custom text colors and text highlights via intuitive color pickers - full creative freedom
+    * **Text Alignment**: Left, Center, Right alignment for any content block
+    * **Lists & Quotes**: Bullet lists, numbered lists, and blockquotes for structured content
+    * **Images**: Insert via URL, fully resizable by clicking/dragging, with automatic responsive sizing
+    * **Undo/Redo**: Complete edit history with keyboard shortcuts
+    * **Real-Time WYSIWYG**: Inline editing shows exactly how content will appear - no preview tab needed
+    * **Security (Defense-in-Depth)**:
+      - Editor-level: Blocks data: URIs (`allowBase64: false`)
+      - HTML-level: rehype-sanitize blocks dangerous tags (script, iframe), event handlers (onclick, onerror), and dangerous protocols (javascript:)
+      - Protocol-level: Only http/https/mailto allowed in URLs
+      - CSS-level: Custom plugin whitelists only `color`, `background-color`, `text-align` and blocks all `url()` to prevent data: URI attacks
+      - All content sanitized before rendering - no XSS vulnerabilities
+    * **Persistence**: Content stored as HTML, preserving all formatting including colors, highlights, alignment
+    * **Mobile-Friendly**: Responsive toolbar adapts to screen size
 - **Newsletter System**: Manages user subscriptions with double opt-in via Brevo integration, including preference updates, confirmation flows, and rate limiting. It also includes a "Thank You" page with upgrade flows for subscription preferences and a dedicated "Preferences" page for managing subscriptions.
 - **Property Listing Notifications**: Automated email notifications for new or newly available properties sent to subscribed users, integrated with Brevo transactional emails.
 - **One-Click Unsubscribe**: Token-based unsubscribe system with personalized links in all automated emails (blog posts and property listings). When users click the unsubscribe link, they are immediately unsubscribed from all lists and redirected to the Preferences page with a confirmation message. Admin receives email notification when someone unsubscribes, including user details and previous subscription preferences.

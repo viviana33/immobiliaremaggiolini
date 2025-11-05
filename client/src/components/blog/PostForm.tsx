@@ -27,7 +27,7 @@ import {
   AlertDialogHeader,
   AlertDialogTitle,
 } from "@/components/ui/alert-dialog";
-import { SimpleContentEditor } from "./SimpleContentEditor";
+import { RichTextEditor } from "./RichTextEditor";
 import { ImageUploader } from "./ImageUploader";
 import { PostGallery } from "./PostGallery";
 import { useForm, useWatch } from "react-hook-form";
@@ -517,10 +517,10 @@ export function PostForm({ postId }: PostFormProps) {
               <FormItem>
                 <FormLabel>Contenuto *</FormLabel>
                 <FormDescription className="mb-2">
-                  Crea il tuo articolo aggiungendo sezioni. Ogni sezione può essere un titolo, un paragrafo di testo o un'immagine.
+                  Scrivi il tuo articolo con completa libertà di formattazione: titoli di diverse dimensioni, grassetto, corsivo, colori personalizzati, evidenziazioni, liste, citazioni e immagini ridimensionabili. Usa la barra degli strumenti per personalizzare ogni dettaglio.
                 </FormDescription>
                 <FormControl>
-                  <SimpleContentEditor value={field.value} onChange={field.onChange} />
+                  <RichTextEditor value={field.value} onChange={field.onChange} />
                 </FormControl>
                 {readingTime > 0 && (
                   <FormDescription className="flex items-center gap-2 mt-2">
