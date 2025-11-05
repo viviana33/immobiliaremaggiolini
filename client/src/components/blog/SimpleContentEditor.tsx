@@ -12,13 +12,14 @@ import {
 } from "@/components/ui/select";
 import { Separator } from "@/components/ui/separator";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
-import { Plus, Trash2, MoveUp, MoveDown, Image as ImageIcon } from "lucide-react";
-import { useState, useEffect, useMemo } from "react";
+import { Plus, Trash2, MoveUp, MoveDown, Image as ImageIcon, Upload, Loader2 } from "lucide-react";
+import { useState, useEffect, useMemo, useRef } from "react";
 import { unified } from "unified";
 import remarkParse from "remark-parse";
 import remarkRehype from "remark-rehype";
 import rehypeSanitize from "rehype-sanitize";
 import rehypeStringify from "rehype-stringify";
+import { useToast } from "@/hooks/use-toast";
 
 export interface ContentSection {
   id: string;
@@ -117,6 +118,153 @@ function convertToMarkdown(sections: ContentSection[]): string {
     })
     .filter(Boolean)
     .join("\n\n");
+}
+
+interface ImageSectionUploaderProps {
+  section: ContentSection;
+  index: number;
+  onUpdate: (updates: Partial<ContentSection>) => void;
+}
+
+function ImageSectionUploader({ section, index, onUpdate }: ImageSectionUploaderProps) {
+  const [isUploading, setIsUploading] = useState(false);
+  const fileInputRef = useRef<HTMLInputElement>(null);
+  const { toast } = useToast();
+
+  const handleFileSelect = async (file: File) => {
+    const allowedTypes = ['image/jpeg', 'image/jpg', 'image/png', 'image/webp', 'image/gif'];
+    const maxSize = 8 * 1024 * 1024;
+
+    if (!allowedTypes.includes(file.type)) {
+      toast({
+        variant: "destructive",
+        title: "Formato non supportato",
+        description: "Utilizza JPEG, PNG, WebP o GIF.",
+      });
+      return;
+    }
+
+    if (file.size > maxSize) {
+      toast({
+        variant: "destructive",
+        title: "File troppo grande",
+        description: "Il file supera la dimensione massima di 8MB.",
+      });
+      return;
+    }
+
+    setIsUploading(true);
+
+    try {
+      const formData = new FormData();
+      formData.append('image', file);
+
+      const response = await fetch('/api/admin/upload-post-image', {
+        method: 'POST',
+        body: formData,
+        credentials: 'include',
+      });
+
+      if (!response.ok) {
+        const error = await response.json();
+        throw new Error(error.message || 'Errore nel caricamento');
+      }
+
+      const result = await response.json();
+      
+      onUpdate({ imageUrl: result.hot_url });
+
+      toast({
+        title: "Immagine caricata",
+        description: "L'immagine è stata caricata con successo.",
+      });
+    } catch (error: any) {
+      toast({
+        variant: "destructive",
+        title: "Errore nel caricamento",
+        description: error.message || "Si è verificato un errore durante il caricamento.",
+      });
+    } finally {
+      setIsUploading(false);
+    }
+  };
+
+  const handleFileChange = (event: React.ChangeEvent<HTMLInputElement>) => {
+    const file = event.target.files?.[0];
+    if (file) {
+      handleFileSelect(file);
+    }
+  };
+
+  return (
+    <div className="space-y-3">
+      <input
+        ref={fileInputRef}
+        type="file"
+        accept="image/jpeg,image/jpg,image/png,image/webp,image/gif"
+        onChange={handleFileChange}
+        className="hidden"
+        data-testid={`input-file-hidden-${index}`}
+      />
+
+      <div className="flex gap-2">
+        <Button
+          type="button"
+          size="sm"
+          variant="outline"
+          onClick={() => fileInputRef.current?.click()}
+          disabled={isUploading}
+          data-testid={`button-upload-image-${index}`}
+        >
+          {isUploading ? (
+            <Loader2 className="h-4 w-4 mr-2 animate-spin" />
+          ) : (
+            <Upload className="h-4 w-4 mr-2" />
+          )}
+          Carica immagine
+        </Button>
+        <span className="text-sm text-muted-foreground self-center">
+          oppure inserisci URL manualmente
+        </span>
+      </div>
+
+      <div>
+        <Label htmlFor={`image-${section.id}`}>URL dell'immagine</Label>
+        <Input
+          id={`image-${section.id}`}
+          placeholder="https://esempio.com/immagine.jpg"
+          value={section.imageUrl || ""}
+          onChange={(e) => onUpdate({ imageUrl: e.target.value })}
+          data-testid={`input-image-url-${index}`}
+        />
+      </div>
+
+      <div>
+        <Label htmlFor={`image-alt-${section.id}`}>Testo alternativo (opzionale)</Label>
+        <Input
+          id={`image-alt-${section.id}`}
+          placeholder="Descrizione dell'immagine per accessibilità"
+          value={section.imageAlt || ""}
+          onChange={(e) => onUpdate({ imageAlt: e.target.value })}
+          data-testid={`input-image-alt-${index}`}
+        />
+      </div>
+
+      {section.imageUrl && (
+        <div className="mt-2 rounded-md border p-2">
+          <img
+            src={section.imageUrl}
+            alt={section.imageAlt || "Anteprima"}
+            className="max-h-40 rounded"
+            onError={(e) => {
+              e.currentTarget.style.display = "none";
+            }}
+            data-testid={`img-preview-${index}`}
+          />
+        </div>
+      )}
+    </div>
+  );
 }
 
 export function SimpleContentEditor({ value, onChange }: SimpleContentEditorProps) {
@@ -328,44 +476,11 @@ export function SimpleContentEditor({ value, onChange }: SimpleContentEditorProp
               )}
 
               {section.type === "image" && (
-                <div className="space-y-2">
-                  <div>
-                    <Label htmlFor={`image-${section.id}`}>URL dell'immagine</Label>
-                    <Input
-                      id={`image-${section.id}`}
-                      placeholder="https://esempio.com/immagine.jpg"
-                      value={section.imageUrl || ""}
-                      onChange={(e) => updateSection(section.id, { imageUrl: e.target.value })}
-                      data-testid={`input-image-url-${index}`}
-                    />
-                  </div>
-                  <div>
-                    <Label htmlFor={`image-alt-${section.id}`}>Testo alternativo (opzionale)</Label>
-                    <Input
-                      id={`image-alt-${section.id}`}
-                      placeholder="Descrizione dell'immagine per accessibilità"
-                      value={section.imageAlt || ""}
-                      onChange={(e) => updateSection(section.id, { imageAlt: e.target.value })}
-                      data-testid={`input-image-alt-${index}`}
-                    />
-                  </div>
-                  {section.imageUrl && (
-                    <div className="mt-2 rounded-md border p-2">
-                      <img
-                        src={section.imageUrl}
-                        alt={section.imageAlt || "Anteprima"}
-                        className="max-h-40 rounded"
-                        onError={(e) => {
-                          e.currentTarget.style.display = "none";
-                        }}
-                        data-testid={`img-preview-${index}`}
-                      />
-                    </div>
-                  )}
-                  <p className="text-xs text-muted-foreground">
-                    Puoi usare le immagini dalla galleria del post
-                  </p>
-                </div>
+                <ImageSectionUploader
+                  section={section}
+                  index={index}
+                  onUpdate={(updates) => updateSection(section.id, updates)}
+                />
               )}
             </div>
           </Card>
