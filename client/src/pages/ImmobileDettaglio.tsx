@@ -331,8 +331,7 @@ export default function ImmobileDettaglio() {
           Torna Indietro
         </Button>
 
-        <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
-          <div className="lg:col-span-2 space-y-6">
+        <div className="max-w-5xl space-y-6">
             <div>
               <h1 className="text-3xl md:text-4xl font-serif font-bold mb-2" data-testid="text-property-title">
                 {property.titolo}
@@ -426,61 +425,60 @@ export default function ImmobileDettaglio() {
               </div>
             </div>
 
-            {property.linkVideo && (
-              <div>
-                <h3 className="text-xl font-semibold mb-4">Video Tour</h3>
-                <div className="max-w-[280px]">
-                  <YouTubeEmbed 
-                    videoUrl={property.linkVideo} 
-                    title={`Video tour - ${property.titolo}`}
-                  />
+            <div className={`flex flex-col ${property.linkVideo ? 'md:flex-row' : ''} gap-6`}>
+              {property.linkVideo && (
+                <div className="flex-shrink-0">
+                  <h3 className="text-xl font-semibold mb-4">Video Tour</h3>
+                  <div className="w-[280px]">
+                    <YouTubeEmbed 
+                      videoUrl={property.linkVideo} 
+                      title={`Video tour - ${property.titolo}`}
+                    />
+                  </div>
                 </div>
-              </div>
-            )}
-          </div>
+              )}
 
-          <div className="space-y-6">
-            <Card className="sticky top-4">
-              <CardHeader>
-                <div className="flex items-center justify-between gap-2 flex-wrap">
-                  <Badge 
-                    variant={property.tipo === "vendita" ? "default" : "secondary"}
-                    data-testid={`badge-type-${property.tipo}`}
-                  >
-                    {property.tipo === "vendita" ? "Vendita" : "Affitto"}
-                  </Badge>
-                  {!isAvailable && (
+              <Card className={property.linkVideo ? 'flex-1' : 'w-full'}>
+                <CardHeader>
+                  <div className="flex items-center justify-between gap-2 flex-wrap">
                     <Badge 
-                      variant={statusBadgeVariant(property.stato)} 
-                      data-testid={`badge-status-${property.stato}`}
+                      variant={property.tipo === "vendita" ? "default" : "secondary"}
+                      data-testid={`badge-type-${property.tipo}`}
                     >
-                      {statusLabel(property.stato)}
+                      {property.tipo === "vendita" ? "Vendita" : "Affitto"}
                     </Badge>
-                  )}
-                </div>
-                <CardTitle className="text-2xl font-bold mt-2" data-testid="text-price">
-                  {formattedPrice}
-                </CardTitle>
-              </CardHeader>
-              <CardContent className="space-y-4">
-                <Button 
-                  className="w-full" 
-                  size="lg"
-                  asChild
-                  data-testid="button-contact"
-                >
-                  <Link href={`/contatti?ref=immobile&context=${property.id}`}>
-                    <Mail className="mr-2 h-5 w-5" />
-                    Contattaci
-                  </Link>
-                </Button>
-                
-                <div className="text-sm text-muted-foreground text-center pt-2 border-t">
-                  <p>Richiedi maggiori informazioni su questo immobile</p>
-                </div>
-              </CardContent>
-            </Card>
-          </div>
+                    {!isAvailable && (
+                      <Badge 
+                        variant={statusBadgeVariant(property.stato)} 
+                        data-testid={`badge-status-${property.stato}`}
+                      >
+                        {statusLabel(property.stato)}
+                      </Badge>
+                    )}
+                  </div>
+                  <CardTitle className="text-2xl font-bold mt-2" data-testid="text-price">
+                    {formattedPrice}
+                  </CardTitle>
+                </CardHeader>
+                <CardContent className="space-y-4">
+                  <Button 
+                    className="w-full" 
+                    size="lg"
+                    asChild
+                    data-testid="button-contact"
+                  >
+                    <Link href={`/contatti?ref=immobile&context=${property.id}`}>
+                      <Mail className="mr-2 h-5 w-5" />
+                      Contattaci
+                    </Link>
+                  </Button>
+                  
+                  <div className="text-sm text-muted-foreground text-center pt-2 border-t">
+                    <p>Richiedi maggiori informazioni su questo immobile</p>
+                  </div>
+                </CardContent>
+              </Card>
+            </div>
         </div>
 
         {/* Form Contatto */}
