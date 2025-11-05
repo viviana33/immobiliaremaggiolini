@@ -3,9 +3,9 @@ import StarterKit from '@tiptap/starter-kit';
 import { TextStyle } from '@tiptap/extension-text-style';
 import { Color } from '@tiptap/extension-color';
 import TextAlign from '@tiptap/extension-text-align';
-import Image from '@tiptap/extension-image';
 import { Underline } from '@tiptap/extension-underline';
 import { Highlight } from '@tiptap/extension-highlight';
+import ResizableImage from 'tiptap-extension-resize-image';
 import { Button } from '@/components/ui/button';
 import { Separator } from '@/components/ui/separator';
 import {
@@ -27,6 +27,8 @@ import {
   AlignRight,
   Image as ImageIcon,
   Highlighter,
+  Upload,
+  Loader2,
 } from 'lucide-react';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
@@ -35,7 +37,9 @@ import {
   PopoverContent,
   PopoverTrigger,
 } from '@/components/ui/popover';
-import { useState, useEffect } from 'react';
+import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
+import { useState, useEffect, useRef } from 'react';
+import { useToast } from '@/hooks/use-toast';
 
 interface RichTextEditorProps {
   value: string;
@@ -46,6 +50,9 @@ const MenuBar = ({ editor }: { editor: any }) => {
   const [imageUrl, setImageUrl] = useState('');
   const [textColor, setTextColor] = useState('#000000');
   const [highlightColor, setHighlightColor] = useState('#ffff00');
+  const [isUploading, setIsUploading] = useState(false);
+  const fileInputRef = useRef<HTMLInputElement>(null);
+  const { toast } = useToast();
 
   if (!editor) {
     return null;
@@ -55,6 +62,75 @@ const MenuBar = ({ editor }: { editor: any }) => {
     if (imageUrl) {
       editor.chain().focus().setImage({ src: imageUrl }).run();
       setImageUrl('');
+    }
+  };
+
+  const handleFileUpload = async (file: File) => {
+    const allowedTypes = ['image/jpeg', 'image/jpg', 'image/png', 'image/webp', 'image/gif'];
+    const maxSize = 8 * 1024 * 1024;
+
+    if (!allowedTypes.includes(file.type)) {
+      toast({
+        variant: "destructive",
+        title: "Formato non supportato",
+        description: 'Utilizza JPEG, PNG, WebP o GIF.',
+      });
+      return;
+    }
+
+    if (file.size > maxSize) {
+      toast({
+        variant: "destructive",
+        title: "File troppo grande",
+        description: 'Il file supera la dimensione massima di 8MB.',
+      });
+      return;
+    }
+
+    setIsUploading(true);
+
+    try {
+      const formData = new FormData();
+      formData.append('image', file);
+
+      const response = await fetch('/api/admin/upload-post-image', {
+        method: 'POST',
+        body: formData,
+        credentials: 'include',
+      });
+
+      if (!response.ok) {
+        const error = await response.json();
+        throw new Error(error.message || 'Errore nel caricamento');
+      }
+
+      const result = await response.json();
+      
+      editor.chain().focus().setImage({ src: result.hot_url }).run();
+
+      toast({
+        title: "Immagine inserita",
+        description: "L'immagine è stata caricata e inserita nel contenuto.",
+      });
+    } catch (error: any) {
+      console.error('Upload error:', error);
+      toast({
+        variant: "destructive",
+        title: "Errore nel caricamento",
+        description: error.message || "Si è verificato un errore durante il caricamento dell'immagine.",
+      });
+    } finally {
+      setIsUploading(false);
+      if (fileInputRef.current) {
+        fileInputRef.current.value = '';
+      }
+    }
+  };
+
+  const handleFileChange = (event: React.ChangeEvent<HTMLInputElement>) => {
+    const file = event.target.files?.[0];
+    if (file) {
+      handleFileUpload(file);
     }
   };
 
@@ -291,24 +367,74 @@ const MenuBar = ({ editor }: { editor: any }) => {
             size="sm"
             variant="ghost"
             data-testid="button-add-image"
+            disabled={isUploading}
           >
-            <ImageIcon className="h-4 w-4" />
+            {isUploading ? (
+              <Loader2 className="h-4 w-4 animate-spin" />
+            ) : (
+              <ImageIcon className="h-4 w-4" />
+            )}
           </Button>
         </PopoverTrigger>
         <PopoverContent className="w-80">
-          <div className="space-y-2">
-            <Label>URL Immagine</Label>
-            <Input
-              type="url"
-              placeholder="https://esempio.com/immagine.jpg"
-              value={imageUrl}
-              onChange={(e) => setImageUrl(e.target.value)}
-              data-testid="input-image-url"
-            />
-            <Button type="button" size="sm" onClick={addImage} className="w-full">
-              Inserisci Immagine
-            </Button>
-          </div>
+          <Tabs defaultValue="upload" className="w-full">
+            <TabsList className="grid w-full grid-cols-2">
+              <TabsTrigger value="upload">Carica File</TabsTrigger>
+              <TabsTrigger value="url">URL</TabsTrigger>
+            </TabsList>
+            
+            <TabsContent value="upload" className="space-y-3">
+              <input
+                ref={fileInputRef}
+                type="file"
+                accept="image/jpeg,image/jpg,image/png,image/webp,image/gif"
+                onChange={handleFileChange}
+                className="hidden"
+                data-testid="input-file-hidden"
+              />
+              
+              <div className="space-y-2">
+                <Label>Carica Immagine</Label>
+                <Button 
+                  type="button" 
+                  variant="outline"
+                  className="w-full"
+                  onClick={() => fileInputRef.current?.click()}
+                  disabled={isUploading}
+                  data-testid="button-upload-image"
+                >
+                  {isUploading ? (
+                    <>
+                      <Loader2 className="h-4 w-4 mr-2 animate-spin" />
+                      Caricamento...
+                    </>
+                  ) : (
+                    <>
+                      <Upload className="h-4 w-4 mr-2" />
+                      Seleziona File
+                    </>
+                  )}
+                </Button>
+                <p className="text-xs text-muted-foreground">
+                  JPEG, PNG, WebP o GIF (max 8MB)
+                </p>
+              </div>
+            </TabsContent>
+            
+            <TabsContent value="url" className="space-y-2">
+              <Label>URL Immagine</Label>
+              <Input
+                type="url"
+                placeholder="https://esempio.com/immagine.jpg"
+                value={imageUrl}
+                onChange={(e) => setImageUrl(e.target.value)}
+                data-testid="input-image-url"
+              />
+              <Button type="button" size="sm" onClick={addImage} className="w-full">
+                Inserisci Immagine
+              </Button>
+            </TabsContent>
+          </Tabs>
         </PopoverContent>
       </Popover>
 
@@ -350,12 +476,9 @@ export function RichTextEditor({ value, onChange }: RichTextEditorProps) {
       TextAlign.configure({
         types: ['heading', 'paragraph'],
       }),
-      Image.configure({
-        inline: true,
-        allowBase64: false,  // Security: Block data URIs (SVG can execute scripts)
-        HTMLAttributes: {
-          class: 'max-w-full h-auto rounded-md cursor-pointer',
-        },
+      ResizableImage.configure({
+        inline: false,
+        allowBase64: false,
       }),
       Underline,
       Highlight.configure({
