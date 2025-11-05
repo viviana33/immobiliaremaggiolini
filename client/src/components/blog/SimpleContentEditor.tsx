@@ -37,13 +37,82 @@ interface SimpleContentEditorProps {
   onChange: (value: string) => void;
 }
 
+function escapeHtml(text: string): string {
+  return text
+    .replace(/&/g, '&amp;')
+    .replace(/</g, '&lt;')
+    .replace(/>/g, '&gt;')
+    .replace(/"/g, '&quot;')
+    .replace(/'/g, '&#039;');
+}
+
+function unescapeHtml(text: string): string {
+  return text
+    .replace(/&amp;/g, '&')
+    .replace(/&lt;/g, '<')
+    .replace(/&gt;/g, '>')
+    .replace(/&quot;/g, '"')
+    .replace(/&#039;/g, "'");
+}
+
+function isValidImageUrl(url: string): boolean {
+  if (!url) return false;
+  try {
+    const parsed = new URL(url);
+    return parsed.protocol === 'http:' || parsed.protocol === 'https:';
+  } catch {
+    return false;
+  }
+}
+
 function convertToSections(markdown: string): ContentSection[] {
   if (!markdown || markdown.trim() === "") {
     return [];
   }
 
   const sections: ContentSection[] = [];
-  const lines = markdown.split("\n");
+  
+  const imageBlockRegex = /<div\s+class="my-6\s+([^"]+)"><img\s+src="([^"]+)"\s+alt="([^"]*)"\s+class="([^\s"]+)\s+rounded-md"\s*\/?><\/div>/gi;
+  let processedMarkdown = markdown;
+  const imagePlaceholders: { placeholder: string; section: ContentSection }[] = [];
+  
+  let match;
+  let placeholderIndex = 0;
+  while ((match = imageBlockRegex.exec(markdown)) !== null) {
+    const alignClass = match[1];
+    const imageUrl = unescapeHtml(match[2]);
+    const imageAlt = unescapeHtml(match[3]);
+    const sizeClass = match[4];
+    
+    const size = sizeClass.includes("max-w-xs") ? "small" as const :
+                sizeClass.includes("max-w-lg") ? "medium" as const :
+                sizeClass.includes("max-w-2xl") ? "large" as const :
+                "full" as const;
+    
+    const align = alignClass.includes("mr-auto") ? "left" as const :
+                 alignClass.includes("ml-auto") ? "right" as const :
+                 "center" as const;
+    
+    const placeholder = `__IMAGE_PLACEHOLDER_${placeholderIndex}__`;
+    placeholderIndex++;
+    
+    imagePlaceholders.push({
+      placeholder,
+      section: {
+        id: `section-${Date.now()}-${placeholderIndex}`,
+        type: "image",
+        content: "",
+        imageUrl,
+        imageAlt,
+        imageSize: size,
+        imageAlign: align,
+      }
+    });
+    
+    processedMarkdown = processedMarkdown.replace(match[0], placeholder);
+  }
+  
+  const lines = processedMarkdown.split("\n");
   let currentTextLines: string[] = [];
   let idCounter = 0;
 
@@ -78,33 +147,12 @@ function convertToSections(markdown: string): ContentSection[] {
         headingLevel: "h3",
         content: line.substring(4).trim(),
       });
-    } else if (line.match(/<div class="my-6/)) {
+    } else if (line.match(/__IMAGE_PLACEHOLDER_\d+__/)) {
       flushTextSection();
-      const imgMatch = line.match(/<img.*?src="(.*?)".*?alt="(.*?)".*?class="(.*?)"/);
-      const alignMatch = line.match(/class="my-6 (.*?)"/);
-      
-      if (imgMatch) {
-        const imgClasses = imgMatch[3];
-        const alignClass = alignMatch?.[1] || "mx-auto";
-        
-        const size = imgClasses.includes("max-w-xs") ? "small" :
-                    imgClasses.includes("max-w-lg") ? "medium" :
-                    imgClasses.includes("max-w-2xl") ? "large" :
-                    "full";
-        
-        const align = alignClass.includes("mr-auto") ? "left" :
-                     alignClass.includes("ml-auto") ? "right" :
-                     "center";
-        
-        sections.push({
-          id: `section-${idCounter++}`,
-          type: "image",
-          content: "",
-          imageUrl: imgMatch[1],
-          imageAlt: imgMatch[2],
-          imageSize: size,
-          imageAlign: align,
-        });
+      const placeholder = line.trim();
+      const imageData = imagePlaceholders.find(p => p.placeholder === placeholder);
+      if (imageData) {
+        sections.push(imageData.section);
       }
     } else if (line.match(/!\[(.*?)\]\((.*?)\)/)) {
       flushTextSection();
@@ -124,7 +172,7 @@ function convertToSections(markdown: string): ContentSection[] {
       if (currentTextLines.length > 0) {
         flushTextSection();
       }
-    } else if (!line.match(/<\/div>/)) {
+    } else {
       currentTextLines.push(line);
     }
   }
@@ -135,7 +183,7 @@ function convertToSections(markdown: string): ContentSection[] {
 }
 
 function convertToMarkdown(sections: ContentSection[]): string {
-  return sections
+  const markdown = sections
     .map((section) => {
       if (section.type === "heading") {
         const prefix = section.headingLevel === "h2" ? "## " : "### ";
@@ -143,7 +191,12 @@ function convertToMarkdown(sections: ContentSection[]): string {
       } else if (section.type === "text") {
         return section.content;
       } else if (section.type === "image" && section.imageUrl) {
-        const alt = section.imageAlt || "";
+        if (!isValidImageUrl(section.imageUrl)) {
+          console.warn("[convertToMarkdown] Skipping invalid image URL:", section.imageUrl);
+          return "";
+        }
+        const escapedUrl = escapeHtml(section.imageUrl);
+        const escapedAlt = escapeHtml(section.imageAlt || "");
         const size = section.imageSize || "medium";
         const align = section.imageAlign || "center";
         const sizeClass = size === "small" ? "max-w-xs" : 
@@ -153,12 +206,14 @@ function convertToMarkdown(sections: ContentSection[]): string {
         const alignClass = align === "left" ? "mr-auto" :
                          align === "right" ? "ml-auto" :
                          "mx-auto";
-        return `<div class="my-6 ${alignClass}"><img src="${section.imageUrl}" alt="${alt}" class="${sizeClass} rounded-md" /></div>`;
+        return `<div class="my-6 ${alignClass}"><img src="${escapedUrl}" alt="${escapedAlt}" class="${sizeClass} rounded-md" /></div>`;
       }
       return "";
     })
     .filter(Boolean)
     .join("\n\n");
+  
+  return markdown;
 }
 
 interface ImageSectionUploaderProps {
@@ -443,39 +498,50 @@ export function SimpleContentEditor({ value, onChange }: SimpleContentEditorProp
   };
 
   const htmlContent = useMemo(() => {
-    const markdown = convertToMarkdown(sections);
-    if (!markdown) return "";
+    if (sections.length === 0) return "";
 
     try {
-      const result = unified()
-        .use(remarkParse)
-        .use(remarkRehype, { allowDangerousHtml: true })
-        .use(rehypeSanitize, {
-          ...defaultSchema,
-          attributes: {
-            ...defaultSchema.attributes,
-            div: [
-              ...(defaultSchema.attributes?.div || []),
-              'className',
-              ['className', 'my-6', 'mr-auto', 'ml-auto', 'mx-auto']
-            ],
-            img: [
-              ...(defaultSchema.attributes?.img || []),
-              'src',
-              'alt',
-              'className',
-              ['className', 'max-w-xs', 'max-w-lg', 'max-w-2xl', 'w-full', 'rounded-md']
-            ],
-          },
-          tagNames: [...(defaultSchema.tagNames || []), 'div'],
-        })
-        .use(rehypeStringify, { allowDangerousHtml: true })
-        .processSync(markdown);
+      const htmlParts = sections.map((section) => {
+        if (section.type === "heading") {
+          const tag = section.headingLevel === "h2" ? "h2" : "h3";
+          const escapedContent = escapeHtml(section.content);
+          return `<${tag}>${escapedContent}</${tag}>`;
+        } else if (section.type === "text") {
+          if (!section.content.trim()) return "";
+          const result = unified()
+            .use(remarkParse)
+            .use(remarkRehype)
+            .use(rehypeSanitize, defaultSchema)
+            .use(rehypeStringify)
+            .processSync(section.content);
+          return String(result);
+        } else if (section.type === "image" && section.imageUrl) {
+          if (!isValidImageUrl(section.imageUrl)) {
+            console.warn("[htmlContent] Skipping invalid image URL:", section.imageUrl);
+            return "";
+          }
+          const escapedUrl = escapeHtml(section.imageUrl);
+          const escapedAlt = escapeHtml(section.imageAlt || "");
+          const size = section.imageSize || "medium";
+          const align = section.imageAlign || "center";
+          
+          const sizeClass = size === "small" ? "max-w-xs" : 
+                          size === "medium" ? "max-w-lg" :
+                          size === "large" ? "max-w-2xl" :
+                          "w-full";
+          const alignClass = align === "left" ? "mr-auto" :
+                           align === "right" ? "ml-auto" :
+                           "mx-auto";
+          
+          return `<div class="my-6 ${alignClass}"><img src="${escapedUrl}" alt="${escapedAlt}" class="${sizeClass} rounded-md" /></div>`;
+        }
+        return "";
+      });
 
-      return String(result);
+      return htmlParts.filter(Boolean).join("\n\n");
     } catch (error) {
-      console.error("Errore nella conversione markdown:", error);
-      return "<p>Errore nella conversione del markdown</p>";
+      console.error("Errore nella generazione HTML:", error);
+      return "<p>Errore nella generazione HTML</p>";
     }
   }, [sections]);
 

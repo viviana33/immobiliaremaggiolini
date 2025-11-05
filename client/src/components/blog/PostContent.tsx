@@ -51,18 +51,13 @@ export default function PostContent({ content, images = [] }: PostContentProps) 
         processedContent = processedContent.replace(link, '');
       });
 
-      // Check if content is already HTML (contains HTML tags)
-      if (/<[a-z][\s\S]*>/i.test(processedContent)) {
-        // Content is already HTML, return it directly
-        return processedContent;
-      }
-
-      // Content is Markdown, process it
+      // Always process through the unified pipeline for security
+      // This ensures all content is properly sanitized
       const result = unified()
         .use(remarkParse)
-        .use(remarkRehype)
+        .use(remarkRehype, { allowDangerousHtml: true })
         .use(rehypeSanitize)
-        .use(rehypeStringify)
+        .use(rehypeStringify, { allowDangerousHtml: true })
         .processSync(processedContent);
 
       return String(result);
