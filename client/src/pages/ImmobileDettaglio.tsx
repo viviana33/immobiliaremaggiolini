@@ -410,7 +410,7 @@ export default function ImmobileDettaglio() {
                     <span className="text-sm">Classe Energetica</span>
                   </div>
                   <span className="font-semibold text-lg" data-testid="text-energy-class">
-                    {energyClassMap[property.classeEnergetica] || property.classeEnergetica}
+                    {property.classeEnergetica}
                   </span>
                 </div>
 
