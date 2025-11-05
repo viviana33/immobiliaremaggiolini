@@ -29,18 +29,23 @@ Preferred communication style: Simple, everyday language.
 - **Database Schema**:
     - **Properties**: Includes details like title, description, price, type, area, rooms, bathrooms, energy class, zone, status, video link.
     - **Property Images**: Stores foreign keys to properties, hot/cold URLs, file hashes, and archive flags.
-    - **Blog Posts**: Contains title, subtitle, slug, cover image, rich content, tags, category, author, status, SEO fields.
+    - **Blog Posts**: Contains title, subtitle, slug, cover image, cover position (nascosta/inizio/fine), rich content, tags, category, author, status, SEO fields.
     - **Subscriptions**: Stores email, name, preferences (`blog_updates`, `new_listings`), consent data, and confirmation status.
     - **Leads**: Stores contact form submissions with nome, email, messaggio, fonte, contextId, newsletter consent, IP address, and creation timestamp.
 - **Property Management**: Supports URL-based filtering, detailed property pages with image galleries, video embeds, and related properties. Price formatting handles numeric strings from API ("180000.00") via `parseFloat(price.replace(/[^\d.-]/g, ''))` for correct locale-formatted display.
 - **Blog Management**: Admin forms use React Hook Form with Zod validation, professional WYSIWYG editor (`RichTextEditor`), and a dual-storage image upload system (R2 for cold, Cloudinary for hot delivery). Public blog pages feature category filtering, pagination, and SEO considerations.
+  - **Cover Image Control**: Administrators can control if and where the cover image appears within blog post content via `coverPosition` field with three options:
+    * **Nascosta** (Hidden): Cover image is used for SEO meta tags and social sharing but not displayed in the article content
+    * **Inizio** (Start): Cover image appears before the article content (default behavior)
+    * **Fine** (End): Cover image appears after the article content
+    The setting is managed through a select field in the admin post form and persisted in the database with default value "inizio" for backward compatibility.
   - **RichTextEditor**: Professional Tiptap-based WYSIWYG editor providing complete creative control over blog content. Features include:
     * **Text Formatting**: Bold, Italic, Underline, Strikethrough, Code with instant visual feedback
     * **Headings**: Three levels (H1, H2, H3) with customizable sizes - perfect for main headlines and section headings
     * **Colors & Highlighting**: Custom text colors and text highlights via intuitive color pickers - full creative freedom
     * **Text Alignment**: Left, Center, Right alignment for any content block
     * **Lists & Quotes**: Bullet lists, numbered lists, and blockquotes for structured content
-    * **Images**: Insert via URL, fully resizable by clicking/dragging, with automatic responsive sizing
+    * **Images**: Insert via file upload or URL, fully resizable by clicking/dragging with visual resize handles, automatic responsive sizing. File uploads use the same `/api/admin/upload-post-image` endpoint as cover images (JPEG, PNG, WebP, GIF, max 8MB). Images can be repositioned using cut/paste, delete/re-insert, or alignment buttons.
     * **Undo/Redo**: Complete edit history with keyboard shortcuts
     * **Real-Time WYSIWYG**: Inline editing shows exactly how content will appear - no preview tab needed
     * **Security (Defense-in-Depth)**:
