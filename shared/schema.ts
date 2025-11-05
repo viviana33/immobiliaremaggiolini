@@ -8,6 +8,7 @@ export const propertyTypeEnum = pgEnum("property_type", ["vendita", "affitto"]);
 export const propertyStatusEnum = pgEnum("property_status", ["disponibile", "venduto", "affittato", "riservato"]);
 export const energyClassEnum = pgEnum("energy_class", ["A4", "A3", "A2", "A1", "B", "C", "D", "E", "F", "G"]);
 export const postStatusEnum = pgEnum("post_status", ["bozza", "pubblicato", "archiviato"]);
+export const coverPositionEnum = pgEnum("cover_position", ["nascosta", "inizio", "fine"]);
 
 // Tabella properties (immobili)
 export const properties = pgTable("properties", {
@@ -47,6 +48,7 @@ export const posts = pgTable("posts", {
   sottotitolo: text("sottotitolo"),
   slug: text("slug").notNull().unique(),
   cover: text("cover"),
+  coverPosition: coverPositionEnum("cover_position").notNull().default("inizio"),
   contenuto: text("contenuto").notNull(),
   readingTimeMin: integer("reading_time_min"),
   tag: text("tag").array().default(sql`ARRAY[]::text[]`),
