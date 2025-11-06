@@ -36,11 +36,11 @@ export default function Privacy() {
             </p>
             <div className="bg-secondary/30 p-6 rounded-md my-6">
               <p className="font-semibold mb-2">Immobiliare Maggiolini</p>
-              <p className="mb-1">con sede legale/operativa in: [Indirizzo completo, CAP, Città, Provincia]</p>
-              <p className="mb-1">Partita IVA/Codice Fiscale: [P.IVA]</p>
-              <p className="mb-1">Email: <a href="mailto:email@immobiliaremaggiolini.it" className="text-primary hover:underline" data-testid="link-email-titolare">email@immobiliaremaggiolini.it</a></p>
-              <p className="mb-1">PEC: [pec@immobiliaremaggiolini.it] (se disponibile)</p>
-              <p>Telefono: [Numero di telefono]</p>
+              <p className="mb-1">con sede legale/operativa in: Via Paolo Castelnovo, 14, 20015 Parabiago (MI)</p>
+              <p className="mb-1">Partita IVA/Codice Fiscale: 13125670151</p>
+              <p className="mb-1">Email: <a href="mailto:immobiliaremaggiolini@gmail.com" className="text-primary hover:underline" data-testid="link-email-titolare">immobiliaremaggiolini@gmail.com</a></p>
+              <p className="mb-1">PEC: immobiliare.maggiolini@pec.it</p>
+              <p>Telefono: 3293589090</p>
             </div>
             <p className="mb-4 leading-relaxed">
               Il Titolare non ha nominato un Responsabile della Protezione dei Dati (DPO) in quanto non ricorrono le condizioni di cui all'art. 37 del GDPR.
@@ -103,7 +103,7 @@ export default function Privacy() {
             <ul className="ml-6 space-y-2 mb-4">
               <li>Cliccando sul link di "disiscrizione" presente in calce a ogni email;</li>
               <li>Modificando le proprie preferenze tramite la pagina <a href="/preferenze" className="text-primary hover:underline" data-testid="link-preferenze">/preferenze</a>;</li>
-              <li>Inviando una comunicazione a <a href="mailto:email@immobiliaremaggiolini.it" className="text-primary hover:underline" data-testid="link-email-revoca">email@immobiliaremaggiolini.it</a>.</li>
+              <li>Inviando una comunicazione a <a href="mailto:immobiliaremaggiolini@gmail.com" className="text-primary hover:underline" data-testid="link-email-revoca">immobiliaremaggiolini@gmail.com</a>.</li>
             </ul>
             <p className="mb-4 leading-relaxed">
               La revoca del consenso non pregiudica la liceità del trattamento basata sul consenso prima della revoca.
@@ -300,9 +300,9 @@ export default function Privacy() {
               Per esercitare i diritti di cui all'art. 8, l'interessato può presentare richiesta scritta al Titolare mediante:
             </p>
             <ul className="ml-6 space-y-2 mb-6">
-              <li>Email: <a href="mailto:email@immobiliaremaggiolini.it" className="text-primary hover:underline" data-testid="link-email-esercizio-diritti">email@immobiliaremaggiolini.it</a></li>
-              <li>PEC: [pec@immobiliaremaggiolini.it] (se disponibile)</li>
-              <li>Raccomandata A/R: [Indirizzo completo sede legale/operativa]</li>
+              <li>Email: <a href="mailto:immobiliaremaggiolini@gmail.com" className="text-primary hover:underline" data-testid="link-email-esercizio-diritti">immobiliaremaggiolini@gmail.com</a></li>
+              <li>PEC: immobiliare.maggiolini@pec.it</li>
+              <li>Raccomandata A/R: Via Paolo Castelnovo, 14, 20015 Parabiago (MI)</li>
             </ul>
 
             <p className="mb-4 leading-relaxed font-semibold">
@@ -355,7 +355,7 @@ export default function Privacy() {
               La presente informativa può essere oggetto di aggiornamenti e modifiche. L'utente è invitato a consultare periodicamente questa pagina.
             </p>
             <p className="mb-4 leading-relaxed">
-              Data ultimo aggiornamento: [GG/MM/AAAA]
+              Data ultimo aggiornamento: 06/11/2025
             </p>
           </section>
 
