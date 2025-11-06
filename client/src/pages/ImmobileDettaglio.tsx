@@ -65,8 +65,8 @@ export default function ImmobileDettaglio() {
     const pageUrl = `${siteUrl}/immobile/${property.slug}`;
     
     const formattedPrice = property.tipo === "affitto" 
-      ? `€ ${Number(property.prezzo).toLocaleString()}/mese`
-      : `€ ${Number(property.prezzo).toLocaleString()}`;
+      ? `€ ${Number(property.prezzo).toLocaleString('it-IT')}/mese`
+      : `€ ${Number(property.prezzo).toLocaleString('it-IT')}`;
 
     const metaTitle = `${property.titolo} | Immobiliare Maggiolini`;
     document.title = metaTitle;
@@ -282,8 +282,8 @@ export default function ImmobileDettaglio() {
 
   const isAvailable = property.stato === "disponibile";
   const formattedPrice = property.tipo === "affitto" 
-    ? `€ ${Number(property.prezzo).toLocaleString()}/mese`
-    : `€ ${Number(property.prezzo).toLocaleString()}`;
+    ? `€ ${Number(property.prezzo).toLocaleString('it-IT')}/mese`
+    : `€ ${Number(property.prezzo).toLocaleString('it-IT')}`;
 
   const statusBadgeVariant = (status: string) => {
     switch (status) {

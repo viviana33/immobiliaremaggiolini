@@ -5,12 +5,9 @@ import { Button } from "@/components/ui/button";
 import { Card } from "@/components/ui/card";
 import { ArrowRight, Ear, Home as HomeIcon, Handshake, Clock } from "lucide-react";
 import { Link } from "wouter";
-import apartmentImage from "@assets/generated_images/Apartment_interior_property_image_66b8a52c.png";
-import countrysideImage from "@assets/generated_images/Countryside_property_image_dddb1072.png";
-import penthouseImage from "@assets/generated_images/Penthouse_terrace_property_image_6980bf5a.png";
-import blogImage1 from "@assets/generated_images/Blog_lifestyle_image_1_9c81ebb5.png";
-import blogImage2 from "@assets/generated_images/Blog_lifestyle_image_2_e0f97e8e.png";
 import { usePageMeta } from "@/lib/seo";
+import { useQuery } from "@tanstack/react-query";
+import type { Property, Post } from "@shared/schema";
 
 export default function Home() {
   usePageMeta({
@@ -41,74 +38,41 @@ export default function Home() {
     },
   ];
 
-  const featuredProperties = [
-    {
-      id: "1",
-      slug: "elegante-appartamento-centro",
-      title: "Elegante Appartamento Centro",
-      location: "Milano, Porta Nuova",
-      price: "€ 450.000",
-      images: [apartmentImage],
-      type: "vendita" as const,
-      bedrooms: 3,
-      bathrooms: 2,
-      area: 120,
+  const { data: propertiesData, isLoading: isLoadingProperties, error: propertiesError } = useQuery<{
+    properties: Array<{
+      id: string;
+      slug: string;
+      title: string;
+      price: string;
+      for_rent: boolean;
+      area_mq: number;
+      location: string;
+      images: string[];
+    }>;
+    pagination: any;
+  }>({
+    queryKey: ['/api/properties', 'perPage=3&sort=recente'],
+    queryFn: async () => {
+      const response = await fetch('/api/properties?perPage=3&sort=recente');
+      if (!response.ok) throw new Error('Failed to fetch properties');
+      return response.json();
     },
-    {
-      id: "2",
-      slug: "villa-con-giardino",
-      title: "Villa con Giardino",
-      location: "Monza, Centro Storico",
-      price: "€ 2.800/mese",
-      images: [countrysideImage],
-      type: "affitto" as const,
-      bedrooms: 4,
-      bathrooms: 3,
-      area: 200,
-    },
-    {
-      id: "3",
-      slug: "attico-con-terrazza-panoramica",
-      title: "Attico con Terrazza Panoramica",
-      location: "Como, Lungolago",
-      price: "€ 890.000",
-      images: [penthouseImage],
-      type: "vendita" as const,
-      bedrooms: 3,
-      bathrooms: 2,
-      area: 150,
-    },
-  ];
+  });
 
-  const latestBlogPosts = [
-    {
-      id: "1",
-      title: "Come Scegliere il Quartiere Perfetto per la Tua Famiglia",
-      excerpt: "Scopri i fattori chiave da considerare quando cerchi la zona ideale dove vivere: scuole, servizi, trasporti e qualità della vita.",
-      image: blogImage1,
-      category: "Consigli Casa",
-      date: "15 Marzo 2024",
-      readTime: "5 min",
+  const { data: postsData, isLoading: isLoadingPosts, error: postsError } = useQuery<{
+    posts: Post[];
+    pagination: any;
+  }>({
+    queryKey: ['/api/posts', 'perPage=3'],
+    queryFn: async () => {
+      const response = await fetch('/api/posts?perPage=3');
+      if (!response.ok) throw new Error('Failed to fetch posts');
+      return response.json();
     },
-    {
-      id: "2",
-      title: "Tendenze del Mercato Immobiliare Primavera 2024",
-      excerpt: "Analisi dettagliata delle tendenze attuali nel mercato immobiliare lombardo e previsioni per i prossimi mesi.",
-      image: blogImage2,
-      category: "Mercato",
-      date: "10 Marzo 2024",
-      readTime: "7 min",
-    },
-    {
-      id: "3",
-      title: "Vivere a Milano: I Quartieri Più Ricercati",
-      excerpt: "Una guida completa ai quartieri milanesi più desiderati, con focus su prezzi, servizi e stile di vita.",
-      image: blogImage1,
-      category: "Territorio",
-      date: "5 Marzo 2024",
-      readTime: "6 min",
-    },
-  ];
+  });
+
+  const featuredProperties = propertiesData?.properties || [];
+  const latestBlogPosts = postsData?.posts || [];
 
   return (
     <div>
@@ -134,9 +98,49 @@ export default function Home() {
           </div>
 
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
-            {featuredProperties.map((property) => (
-              <PropertyCard key={property.id} {...property} />
-            ))}
+            {isLoadingProperties ? (
+              Array.from({ length: 3 }).map((_, i) => (
+                <Card key={i} className="overflow-hidden animate-pulse" data-testid={`skeleton-property-${i}`}>
+                  <div className="aspect-[4/3] bg-muted" />
+                  <div className="p-6 space-y-3">
+                    <div className="h-6 bg-muted rounded w-3/4" />
+                    <div className="h-4 bg-muted rounded w-1/2" />
+                    <div className="h-4 bg-muted rounded w-full" />
+                  </div>
+                </Card>
+              ))
+            ) : propertiesError ? (
+              <div className="col-span-full text-center py-12">
+                <p className="text-destructive" data-testid="text-error-properties">
+                  Errore nel caricamento degli immobili
+                </p>
+              </div>
+            ) : featuredProperties.length > 0 ? (
+              featuredProperties.map((property) => {
+                const formattedPrice = property.for_rent 
+                  ? `€ ${parseFloat(property.price).toLocaleString('it-IT')}/mese`
+                  : `€ ${parseFloat(property.price).toLocaleString('it-IT')}`;
+                
+                return (
+                  <PropertyCard
+                    key={property.id}
+                    slug={property.slug}
+                    title={property.title}
+                    location={property.location}
+                    price={formattedPrice}
+                    images={property.images}
+                    type={property.for_rent ? "affitto" : "vendita"}
+                    area={property.area_mq}
+                  />
+                );
+              })
+            ) : (
+              <div className="col-span-full text-center py-12">
+                <p className="text-muted-foreground" data-testid="text-no-properties">
+                  Nessun immobile disponibile al momento
+                </p>
+              </div>
+            )}
           </div>
         </div>
       </section>
@@ -193,9 +197,43 @@ export default function Home() {
           </div>
 
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
-            {latestBlogPosts.map((post) => (
-              <BlogCard key={post.id} {...post} />
-            ))}
+            {isLoadingPosts ? (
+              Array.from({ length: 3 }).map((_, i) => (
+                <Card key={i} className="overflow-hidden animate-pulse" data-testid={`skeleton-post-${i}`}>
+                  <div className="aspect-video bg-muted" />
+                  <div className="p-6 space-y-3">
+                    <div className="h-6 bg-muted rounded w-3/4" />
+                    <div className="h-4 bg-muted rounded w-full" />
+                    <div className="h-4 bg-muted rounded w-1/2" />
+                  </div>
+                </Card>
+              ))
+            ) : postsError ? (
+              <div className="col-span-full text-center py-12">
+                <p className="text-destructive" data-testid="text-error-posts">
+                  Errore nel caricamento degli articoli
+                </p>
+              </div>
+            ) : latestBlogPosts.length > 0 ? (
+              latestBlogPosts.map((post) => (
+                <BlogCard
+                  key={post.id}
+                  id={post.id}
+                  title={post.titolo}
+                  excerpt={post.sottotitolo || post.contenuto.substring(0, 150) + '...'}
+                  image={post.cover || 'https://images.unsplash.com/photo-1560518883-ce09059eeffa?w=800&h=600&fit=crop'}
+                  category={post.categoria || 'Blog'}
+                  date={new Date(post.publishedAt || post.createdAt).toLocaleDateString('it-IT', { day: 'numeric', month: 'long', year: 'numeric' })}
+                  readTime={post.readingTimeMin ? `${post.readingTimeMin} min` : '5 min'}
+                />
+              ))
+            ) : (
+              <div className="col-span-full text-center py-12">
+                <p className="text-muted-foreground" data-testid="text-no-posts">
+                  Nessun articolo disponibile al momento
+                </p>
+              </div>
+            )}
           </div>
         </div>
       </section>
