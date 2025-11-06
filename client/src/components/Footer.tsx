@@ -74,11 +74,11 @@ export default function Footer() {
               </li>
               <li className="flex items-center gap-2 text-white/80 text-sm">
                 <Phone className="w-4 h-4 flex-shrink-0" />
-                <span>+39 02 1234 5678</span>
+                <span>3293589090</span>
               </li>
               <li className="flex items-center gap-2 text-white/80 text-sm">
                 <Mail className="w-4 h-4 flex-shrink-0" />
-                <span>info@maggiolini.it</span>
+                <span>immobiliaremaggiolini@gmail.com</span>
               </li>
             </ul>
             <div className="pt-2 text-sm text-white/80">
