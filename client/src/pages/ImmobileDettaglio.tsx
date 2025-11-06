@@ -4,7 +4,7 @@ import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import ImageCarousel from "@/components/ImageCarousel";
-import YouTubeEmbed from "@/components/YouTubeEmbed";
+import VideoEmbed from "@/components/VideoEmbed";
 import PropertyCard from "@/components/PropertyCard";
 import { 
   MapPin, 
@@ -429,7 +429,7 @@ export default function ImmobileDettaglio() {
                 <div className="flex-shrink-0">
                   <h3 className="text-xl font-semibold mb-4">Video Tour</h3>
                   <div className="w-[280px]">
-                    <YouTubeEmbed 
+                    <VideoEmbed 
                       videoUrl={property.linkVideo} 
                       title={`Video tour - ${property.titolo}`}
                     />
