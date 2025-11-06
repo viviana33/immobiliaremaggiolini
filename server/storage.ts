@@ -124,6 +124,22 @@ export class DbStorage implements IStorage {
   async getFilteredProperties(filters: PropertyFilters): Promise<PaginatedProperties> {
     const conditions = [];
     
+    // Ricerca per parole chiave nel titolo
+    if (filters.search) {
+      const searchTerms = filters.search.trim().split(/\s+/);
+      const searchConditions = searchTerms.map(term => 
+        ilike(properties.titolo, `%${term}%`)
+      );
+      if (searchConditions.length > 0) {
+        conditions.push(or(...searchConditions));
+      }
+    }
+    
+    // Escludi immobili archiviati per default, a meno che non sia specificato
+    if (!filters.includeArchived) {
+      conditions.push(sql`${properties.stato} != 'archiviato'`);
+    }
+    
     if (filters.tipo) {
       conditions.push(eq(properties.tipo, filters.tipo));
     }

@@ -5,7 +5,7 @@ import { z } from "zod";
 
 // Enums per i tipi
 export const propertyTypeEnum = pgEnum("property_type", ["vendita", "affitto"]);
-export const propertyStatusEnum = pgEnum("property_status", ["disponibile", "venduto", "affittato", "riservato"]);
+export const propertyStatusEnum = pgEnum("property_status", ["disponibile", "venduto", "affittato", "riservato", "archiviato"]);
 export const energyClassEnum = pgEnum("energy_class", ["A4", "A3", "A2", "A1", "B", "C", "D", "E", "F", "G"]);
 export const postStatusEnum = pgEnum("post_status", ["bozza", "pubblicato", "archiviato"]);
 export const coverPositionEnum = pgEnum("cover_position", ["nascosta", "inizio", "fine"]);
@@ -197,10 +197,12 @@ export type User = typeof users.$inferSelect;
 
 // Property filters schema
 export const propertyFiltersSchema = z.object({
+  search: z.string().optional(),
   tipo: z.enum(["vendita", "affitto"]).optional(),
   prezzoMin: z.coerce.number().positive().optional(),
   prezzoMax: z.coerce.number().positive().optional(),
   mqMin: z.coerce.number().positive().optional(),
+  includeArchived: z.coerce.boolean().optional(),
   sort: z.enum(["recente", "prezzo_asc", "prezzo_desc", "mq_asc", "mq_desc"]).optional(),
   page: z.coerce.number().positive().optional(),
   perPage: z.coerce.number().positive().max(100).optional(),
