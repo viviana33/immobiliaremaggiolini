@@ -9,7 +9,6 @@ import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import {
   Form,
   FormControl,
-  FormDescription,
   FormField,
   FormItem,
   FormLabel,
@@ -655,18 +654,15 @@ export default function AdminImmobileForm() {
                 name="linkVideo"
                 render={({ field }) => (
                   <FormItem>
-                    <FormLabel>Link Video (opzionale)</FormLabel>
+                    <FormLabel>Link YouTube (opzionale)</FormLabel>
                     <FormControl>
                       <Input
                         {...field}
                         value={field.value || ""}
-                        placeholder="YouTube, Facebook o Instagram"
+                        placeholder="https://www.youtube.com/watch?v=..."
                         data-testid="input-link-video"
                       />
                     </FormControl>
-                    <FormDescription>
-                      Incolla il link di un video da YouTube, Facebook o Instagram
-                    </FormDescription>
                     <FormMessage />
                   </FormItem>
                 )}

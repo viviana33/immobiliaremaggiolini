@@ -17,15 +17,6 @@ Preferred communication style: Simple, everyday language.
 - **UI Framework**: shadcn/ui (Radix UI) with Tailwind CSS, custom Mediterranean color palette, responsive mobile-first design, dark mode.
 - **Component Structure**: Organized by presentation, pages, UI primitives, and custom hooks.
 - **Image Carousel**: Custom `ImageCarousel` component with keyboard navigation (Arrow keys), touch/pointer swipe support, lazy loading for non-current images, smart prefetch (only next image), aspect ratio preservation, thumbnail navigation, descriptive alt text support, and full accessibility (ARIA labels, focus rings). Supports empty state with placeholder fallback. Uses instance-scoped prefetch to prevent conflicts when multiple carousels are mounted.
-- **Video Embed System**: Universal `VideoEmbed` component supporting multiple video platforms:
-  - **YouTube**: Recognizes youtube.com/watch?v=ID, youtu.be/ID, youtube.com/embed/ID formats
-  - **Facebook**: Supports facebook.com/watch/?v=ID, facebook.com/username/videos/ID, fb.watch/ID, facebook.com/reel/ID URLs
-  - **Instagram**: Handles instagram.com/p/POST_ID and instagram.com/reel/REEL_ID links
-  - Automatically detects platform from URL and renders appropriate iframe embed
-  - Gracefully handles invalid URLs by returning null (no broken embeds)
-  - Used in property detail pages and blog post content
-  - Responsive 16:9 aspect ratio with rounded corners
-  - Platform-specific data-testids for testing (youtube-embed, facebook-embed, instagram-embed)
 - **Navigation UX**: Property listing pages (/proprieta and /immobili) set sessionStorage to track user's origin. Property detail pages read this value to correctly navigate back to the originating list when users click "Torna Indietro", with /immobili as safe fallback for direct links.
 
 ### Backend

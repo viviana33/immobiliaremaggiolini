@@ -5,7 +5,7 @@ import remarkRehype from "remark-rehype";
 import rehypeParse from "rehype-parse";
 import rehypeSanitize, { defaultSchema } from "rehype-sanitize";
 import rehypeStringify from "rehype-stringify";
-import VideoEmbed from "@/components/VideoEmbed";
+import YouTubeEmbed from "@/components/YouTubeEmbed";
 import type { PostImage } from "@shared/schema";
 import { Image as ImageIcon } from "lucide-react";
 import type { Root, Element } from "hast";
@@ -67,31 +67,33 @@ function rehypeSanitizeCSS() {
   };
 }
 
-const extractVideoLinks = (markdown: string): string[] => {
-  const videoRegexes = [
-    /https?:\/\/(?:www\.)?(?:youtube\.com\/watch\?v=|youtu\.be\/)([a-zA-Z0-9_-]{11})/g,
-    /https?:\/\/(?:www\.)?facebook\.com\/watch\/?\?v=\d+/g,
-    /https?:\/\/(?:www\.)?facebook\.com\/[^\/]+\/videos\/\d+/g,
-    /https?:\/\/(?:www\.)?fb\.watch\/[a-zA-Z0-9_-]+/g,
-    /https?:\/\/(?:www\.)?facebook\.com\/reel\/\d+/g,
-    /https?:\/\/(?:www\.)?facebook\.com\/share\/v\/[a-zA-Z0-9_-]+/g,
-    /https?:\/\/(?:www\.)?instagram\.com\/(?:p|reel)\/[a-zA-Z0-9_-]+/g,
+const extractYouTubeId = (url: string): string | null => {
+  if (!url) return null;
+  
+  const patterns = [
+    /(?:youtube\.com\/watch\?v=|youtu\.be\/)([a-zA-Z0-9_-]{11})/,
+    /youtube\.com\/embed\/([a-zA-Z0-9_-]{11})/,
+    /youtube\.com\/v\/([a-zA-Z0-9_-]{11})/,
   ];
   
-  const links: string[] = [];
-  
-  for (const regex of videoRegexes) {
-    const matches = markdown.match(regex);
-    if (matches) {
-      links.push(...matches);
+  for (const pattern of patterns) {
+    const match = url.match(pattern);
+    if (match && match[1]) {
+      return match[1];
     }
   }
   
-  return links;
+  return null;
+};
+
+const extractYouTubeLinks = (markdown: string): string[] => {
+  const youtubeRegex = /https?:\/\/(?:www\.)?(?:youtube\.com\/watch\?v=|youtu\.be\/)([a-zA-Z0-9_-]{11})/g;
+  const matches = markdown.match(youtubeRegex);
+  return matches || [];
 };
 
 export default function PostContent({ content, images = [] }: PostContentProps) {
-  const videoLinks = useMemo(() => extractVideoLinks(content), [content]);
+  const youtubeLinks = useMemo(() => extractYouTubeLinks(content), [content]);
   
   const htmlContent = useMemo(() => {
     if (!content) return "";
@@ -99,7 +101,7 @@ export default function PostContent({ content, images = [] }: PostContentProps) 
     try {
       let processedContent = content;
       
-      videoLinks.forEach(link => {
+      youtubeLinks.forEach(link => {
         processedContent = processedContent.replace(link, '');
       });
 
@@ -178,7 +180,7 @@ export default function PostContent({ content, images = [] }: PostContentProps) 
       console.error("Errore nella conversione contenuto:", error);
       return "<p>Errore nella conversione del contenuto</p>";
     }
-  }, [content, videoLinks]);
+  }, [content, youtubeLinks]);
 
   const sortedImages = useMemo(() => {
     return [...images]
@@ -186,7 +188,7 @@ export default function PostContent({ content, images = [] }: PostContentProps) 
       .sort((a, b) => a.position - b.position);
   }, [images]);
 
-  const hasMedia = videoLinks.length > 0 || sortedImages.length > 0;
+  const hasMedia = youtubeLinks.length > 0 || sortedImages.length > 0;
 
   return (
     <article className="space-y-8">
@@ -198,12 +200,15 @@ export default function PostContent({ content, images = [] }: PostContentProps) 
         />
       )}
 
-      {videoLinks.length > 0 && (
-        <div className="space-y-6" data-testid="video-embeds">
-          {videoLinks.map((link, index) => {
+      {youtubeLinks.length > 0 && (
+        <div className="space-y-6" data-testid="youtube-embeds">
+          {youtubeLinks.map((link, index) => {
+            const videoId = extractYouTubeId(link);
+            if (!videoId) return null;
+            
             return (
-              <div key={`video-${link}-${index}`} className="my-8">
-                <VideoEmbed 
+              <div key={`youtube-${videoId}-${index}`} className="my-8">
+                <YouTubeEmbed 
                   videoUrl={link} 
                   title={`Video ${index + 1}`}
                 />
