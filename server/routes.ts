@@ -655,14 +655,14 @@ export async function registerRoutes(app: Express): Promise<Server> {
         await Promise.all(uploadPromises);
       }
       
-      // Archivia immagini solo per venduto/affittato
-      if (updatedProperty.stato === "venduto" || updatedProperty.stato === "affittato") {
+      // Archivia immagini solo per affittato
+      if (updatedProperty.stato === "affittato") {
         await storage.archivePropertyImages(updatedProperty.id, 3);
       }
       
-      // Ripristina tutte le immagini per tutti gli altri stati (disponibile, riservato, archiviato)
-      if (updatedProperty.stato !== "venduto" && updatedProperty.stato !== "affittato" && 
-          (existingProperty.stato === "venduto" || existingProperty.stato === "affittato")) {
+      // Ripristina immagini quando si esce da affittato o venduto (ma NON quando il nuovo stato è affittato)
+      if ((existingProperty.stato === "affittato" || existingProperty.stato === "venduto") &&
+          updatedProperty.stato !== "affittato") {
         await storage.unarchivePropertyImages(updatedProperty.id);
       }
       

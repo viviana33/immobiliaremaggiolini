@@ -39,9 +39,9 @@ Preferred communication style: Simple, everyday language.
     * **Chevron Buttons**: On hover, left/right chevron buttons appear for accessible, step-by-step reordering
     Images are displayed with position indicators (1, 2, 3...) showing the current order. The order is persisted in the database via the `position` field. Backend endpoint `/api/admin/properties/:id/images/reorder` validates that all images belong to the specified property before updating positions for security.
   - **Image Archiving Logic**: Property images are automatically archived/restored based on property status to optimize storage while preserving complete data for re-listing:
-    * **Archived States** (venduto, affittato): Images are archived automatically, keeping only the first 3 images active. This saves storage space for properties unlikely to be re-listed.
-    * **Active States** (disponibile, riservato, archiviato): All images are kept active and visible. When archiving a property for future re-use, all images are preserved intact.
-    * **Automatic Restoration**: Transitioning from venduto/affittato to any other state automatically restores all archived images, ensuring properties can be re-published with complete galleries.
+    * **Archived State** (affittato): Images are archived automatically when a property is rented, keeping only the first 3 images active. This saves storage space while maintaining basic visibility.
+    * **Active States** (disponibile, riservato, archiviato, venduto): All images are kept active and visible. When archiving a property for future re-use, all images are preserved intact. Sold properties also keep all images visible.
+    * **Automatic Restoration**: Transitioning from "affittato" to any other state automatically restores all archived images, ensuring properties can be re-published with complete galleries.
     Admin interface displays all images (including archived ones) with "Archiviata" badge for transparency. Public-facing pages filter archived images automatically.
 - **Blog Management**: Admin forms use React Hook Form with Zod validation, professional WYSIWYG editor (`RichTextEditor`), and a dual-storage image upload system (R2 for cold, Cloudinary for hot delivery). Public blog pages feature category filtering, pagination, and SEO considerations.
   - **Cover Image Control**: Administrators can control if and where the cover image appears within blog post content via `coverPosition` field with three options:
