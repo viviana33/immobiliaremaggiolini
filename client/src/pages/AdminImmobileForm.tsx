@@ -24,7 +24,7 @@ import {
   SelectValue,
 } from "@/components/ui/select";
 import { useToast } from "@/hooks/use-toast";
-import { ArrowLeft, Upload, X, RefreshCw } from "lucide-react";
+import { ArrowLeft, Upload, X, RefreshCw, ChevronLeft, ChevronRight } from "lucide-react";
 import { insertPropertySchema, type Property, type PropertyImage } from "@shared/schema";
 import { z } from "zod";
 
@@ -296,6 +296,24 @@ export default function AdminImmobileForm() {
 
   const handleDragEnd = () => {
     setDraggedIndex(null);
+  };
+
+  const moveImage = (index: number, direction: "left" | "right") => {
+    const newIndex = direction === "left" ? index - 1 : index + 1;
+    if (newIndex < 0 || newIndex >= existingImages.length) return;
+
+    const reordered = [...existingImages];
+    const [moved] = reordered.splice(index, 1);
+    reordered.splice(newIndex, 0, moved);
+
+    setExistingImages(reordered);
+
+    const updates = reordered.map((img, idx) => ({
+      id: img.id,
+      position: idx,
+    }));
+
+    reorderImagesMutation.mutate(updates);
   };
 
   const onSubmit = (data: FormData) => {
@@ -686,16 +704,45 @@ export default function AdminImmobileForm() {
                         <div className="absolute top-2 left-2 bg-black/70 text-white text-xs px-2 py-1 rounded">
                           {index + 1}
                         </div>
-                        <Button
-                          type="button"
-                          variant="destructive"
-                          size="icon"
-                          className="absolute top-2 right-2 opacity-0 group-hover:opacity-100 transition-opacity"
-                          onClick={() => removeExistingImage(img.id)}
-                          data-testid={`button-rimuovi-immagine-${img.id}`}
-                        >
-                          <X className="h-4 w-4" />
-                        </Button>
+                        
+                        <div className="absolute inset-0 bg-black/50 opacity-0 group-hover:opacity-100 transition-opacity flex items-center justify-center gap-2">
+                          <Button
+                            type="button"
+                            size="icon"
+                            variant="secondary"
+                            onClick={() => moveImage(index, "left")}
+                            disabled={index === 0 || reorderImagesMutation.isPending}
+                            className="h-8 w-8"
+                            data-testid={`button-move-left-${index}`}
+                          >
+                            <ChevronLeft className="h-4 w-4" />
+                          </Button>
+                          
+                          <Button
+                            type="button"
+                            size="icon"
+                            variant="destructive"
+                            onClick={() => removeExistingImage(img.id)}
+                            disabled={deleteImageMutation.isPending}
+                            className="h-8 w-8"
+                            data-testid={`button-rimuovi-immagine-${img.id}`}
+                          >
+                            <X className="h-4 w-4" />
+                          </Button>
+                          
+                          <Button
+                            type="button"
+                            size="icon"
+                            variant="secondary"
+                            onClick={() => moveImage(index, "right")}
+                            disabled={index === existingImages.length - 1 || reorderImagesMutation.isPending}
+                            className="h-8 w-8"
+                            data-testid={`button-move-right-${index}`}
+                          >
+                            <ChevronRight className="h-4 w-4" />
+                          </Button>
+                        </div>
+
                         {img.archiviato && (
                           <div className="absolute bottom-2 left-2 bg-black/70 text-white text-xs px-2 py-1 rounded">
                             Archiviata

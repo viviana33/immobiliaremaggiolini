@@ -28,11 +28,15 @@ Preferred communication style: Simple, everyday language.
 - **ORM**: Drizzle ORM with Neon serverless PostgreSQL driver.
 - **Database Schema**:
     - **Properties**: Includes details like title, description, price, type, area, rooms, bathrooms, energy class, zone, status, video link.
-    - **Property Images**: Stores foreign keys to properties, hot/cold URLs, file hashes, and archive flags.
+    - **Property Images**: Stores foreign keys to properties, hot/cold URLs, file hashes, archive flags, and position field for custom ordering. Supports drag-and-drop reordering in admin interface.
     - **Blog Posts**: Contains title, subtitle, slug, cover image, cover position (nascosta/inizio/fine), rich content, tags, category, author, status, SEO fields.
     - **Subscriptions**: Stores email, name, preferences (`blog_updates`, `new_listings`), consent data, and confirmation status.
     - **Leads**: Stores contact form submissions with nome, email, messaggio, fonte, contextId, newsletter consent, IP address, and creation timestamp.
 - **Property Management**: Supports URL-based filtering, detailed property pages with image galleries, video embeds, and related properties. Price formatting handles numeric strings from API ("180000.00") via `parseFloat(price.replace(/[^\d.-]/g, ''))` for correct locale-formatted display.
+  - **Image Ordering**: Admin interface supports dual-method reordering of property images:
+    * **Drag and Drop**: Images can be reordered by dragging them to the desired position with native browser drag-and-drop
+    * **Chevron Buttons**: On hover, left/right chevron buttons appear for accessible, step-by-step reordering
+    Images are displayed with position indicators (1, 2, 3...) showing the current order. The order is persisted in the database via the `position` field. Backend endpoint `/api/admin/properties/:id/images/reorder` validates that all images belong to the specified property before updating positions for security.
 - **Blog Management**: Admin forms use React Hook Form with Zod validation, professional WYSIWYG editor (`RichTextEditor`), and a dual-storage image upload system (R2 for cold, Cloudinary for hot delivery). Public blog pages feature category filtering, pagination, and SEO considerations.
   - **Cover Image Control**: Administrators can control if and where the cover image appears within blog post content via `coverPosition` field with three options:
     * **Nascosta** (Hidden): Cover image is used for SEO meta tags and social sharing but not displayed in the article content
