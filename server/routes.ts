@@ -655,7 +655,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
         await Promise.all(uploadPromises);
       }
       
-      if (updatedProperty.stato === "venduto" || updatedProperty.stato === "affittato") {
+      if (updatedProperty.stato === "venduto" || updatedProperty.stato === "affittato" || updatedProperty.stato === "archiviato") {
         await storage.archivePropertyImages(updatedProperty.id, 3);
       }
       
