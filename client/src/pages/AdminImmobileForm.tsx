@@ -641,6 +641,7 @@ export default function AdminImmobileForm() {
                           <SelectItem value="riservato">Riservato</SelectItem>
                           <SelectItem value="venduto">Venduto</SelectItem>
                           <SelectItem value="affittato">Affittato</SelectItem>
+                          <SelectItem value="archiviato">Archiviato</SelectItem>
                         </SelectContent>
                       </Select>
                       <FormMessage />
