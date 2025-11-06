@@ -375,10 +375,10 @@ export default function Privacy() {
 
             <div className="bg-secondary/30 p-6 rounded-md my-8">
               <p className="font-semibold mb-2">IMMOBILIARE MAGGIOLINI</p>
-              <p className="mb-1">[Indirizzo completo]</p>
-              <p className="mb-1">P.IVA: [P.IVA]</p>
-              <p className="mb-1">Email: <a href="mailto:email@immobiliaremaggiolini.it" className="text-primary hover:underline" data-testid="link-email-footer-privacy">email@immobiliaremaggiolini.it</a></p>
-              <p>Tel: [Numero telefono]</p>
+              <p className="mb-1">Via Paolo Castelnovo, 14, 20015 Parabiago (MI)</p>
+              <p className="mb-1">P.IVA: 13125670151</p>
+              <p className="mb-1">Email: <a href="mailto:immobiliaremaggiolini@gmail.com" className="text-primary hover:underline" data-testid="link-email-footer-privacy">immobiliaremaggiolini@gmail.com</a></p>
+              <p>Tel: 3293589090</p>
             </div>
           </section>
 
