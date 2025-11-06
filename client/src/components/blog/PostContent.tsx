@@ -74,6 +74,7 @@ const extractVideoLinks = (markdown: string): string[] => {
     /https?:\/\/(?:www\.)?facebook\.com\/[^\/]+\/videos\/\d+/g,
     /https?:\/\/(?:www\.)?fb\.watch\/[a-zA-Z0-9_-]+/g,
     /https?:\/\/(?:www\.)?facebook\.com\/reel\/\d+/g,
+    /https?:\/\/(?:www\.)?facebook\.com\/share\/v\/[a-zA-Z0-9_-]+/g,
     /https?:\/\/(?:www\.)?instagram\.com\/(?:p|reel)\/[a-zA-Z0-9_-]+/g,
   ];
   

@@ -37,6 +37,7 @@ const extractFacebookVideoUrl = (url: string): string | null => {
     /facebook\.com\/[^\/]+\/videos\/(\d+)/,
     /fb\.watch\/([a-zA-Z0-9_-]+)/,
     /facebook\.com\/reel\/(\d+)/,
+    /facebook\.com\/share\/v\/([a-zA-Z0-9_-]+)/,
   ];
   
   for (const pattern of patterns) {
