@@ -48,6 +48,7 @@ export default function AdminImmobileForm() {
   const { toast } = useToast();
   const [selectedFiles, setSelectedFiles] = useState<File[]>([]);
   const [existingImages, setExistingImages] = useState<PropertyImage[]>([]);
+  const [draggedIndex, setDraggedIndex] = useState<number | null>(null);
 
   const isEdit = Boolean(id);
 
@@ -212,6 +213,29 @@ export default function AdminImmobileForm() {
     },
   });
 
+  const reorderImagesMutation = useMutation({
+    mutationFn: async (imageOrders: { id: string; position: number }[]) => {
+      const res = await apiRequest("PUT", `/api/admin/properties/${id}/images/reorder`, {
+        imageOrders,
+      });
+      return res.json();
+    },
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ["/api/admin/properties", id] });
+      toast({
+        title: "Ordine aggiornato",
+        description: "L'ordine delle immagini è stato aggiornato con successo",
+      });
+    },
+    onError: () => {
+      toast({
+        title: "Errore",
+        description: "Errore nell'aggiornamento dell'ordine",
+        variant: "destructive",
+      });
+    },
+  });
+
   const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const files = Array.from(e.target.files || []);
     const totalFiles = selectedFiles.length + existingImages.length + files.length;
@@ -235,6 +259,43 @@ export default function AdminImmobileForm() {
   const removeExistingImage = (imageId: string) => {
     deleteImageMutation.mutate(imageId);
     setExistingImages((prev) => prev.filter((img) => img.id !== imageId));
+  };
+
+  const handleDragStart = (e: React.DragEvent<HTMLDivElement>, index: number) => {
+    setDraggedIndex(index);
+    e.dataTransfer.effectAllowed = "move";
+  };
+
+  const handleDragOver = (e: React.DragEvent<HTMLDivElement>) => {
+    e.preventDefault();
+    e.dataTransfer.dropEffect = "move";
+  };
+
+  const handleDrop = (e: React.DragEvent<HTMLDivElement>, dropIndex: number) => {
+    e.preventDefault();
+    
+    if (draggedIndex === null || draggedIndex === dropIndex) {
+      setDraggedIndex(null);
+      return;
+    }
+
+    const reordered = [...existingImages];
+    const [draggedItem] = reordered.splice(draggedIndex, 1);
+    reordered.splice(dropIndex, 0, draggedItem);
+
+    setExistingImages(reordered);
+    setDraggedIndex(null);
+
+    const updates = reordered.map((img, idx) => ({
+      id: img.id,
+      position: idx,
+    }));
+
+    reorderImagesMutation.mutate(updates);
+  };
+
+  const handleDragEnd = () => {
+    setDraggedIndex(null);
   };
 
   const onSubmit = (data: FormData) => {
@@ -601,16 +662,30 @@ export default function AdminImmobileForm() {
               {existingImages.length > 0 && (
                 <div>
                   <p className="text-sm text-muted-foreground mb-3">
-                    Immagini esistenti ({existingImages.length})
+                    Immagini esistenti ({existingImages.length}) - Trascina per riordinare
                   </p>
                   <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
-                    {existingImages.map((img) => (
-                      <div key={img.id} className="relative group">
+                    {existingImages.map((img, index) => (
+                      <div
+                        key={img.id}
+                        className={`relative group cursor-move ${
+                          draggedIndex === index ? "opacity-50" : ""
+                        }`}
+                        draggable
+                        onDragStart={(e) => handleDragStart(e, index)}
+                        onDragOver={handleDragOver}
+                        onDrop={(e) => handleDrop(e, index)}
+                        onDragEnd={handleDragEnd}
+                        data-testid={`image-container-${index}`}
+                      >
                         <img
                           src={img.urlHot}
                           alt="Immagine immobile"
                           className="w-full h-32 object-cover rounded"
                         />
+                        <div className="absolute top-2 left-2 bg-black/70 text-white text-xs px-2 py-1 rounded">
+                          {index + 1}
+                        </div>
                         <Button
                           type="button"
                           variant="destructive"

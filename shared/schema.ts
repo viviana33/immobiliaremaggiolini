@@ -38,6 +38,7 @@ export const propertiesImages = pgTable("properties_images", {
   urlCold: text("url_cold").notNull(),
   hashFile: text("hash_file").notNull(),
   archiviato: boolean("archiviato").notNull().default(false),
+  position: integer("position").notNull().default(0),
   createdAt: timestamp("created_at").notNull().default(sql`now()`),
 });
 

@@ -717,6 +717,49 @@ export async function registerRoutes(app: Express): Promise<Server> {
     }
   });
 
+  app.put("/api/admin/properties/:id/images/reorder", requireAdmin, async (req, res) => {
+    try {
+      const { imageOrders } = req.body;
+      const propertyId = req.params.id;
+      
+      if (!Array.isArray(imageOrders)) {
+        return res.status(400).json({ message: "imageOrders deve essere un array" });
+      }
+
+      // Validate each item has id and position
+      const isValid = imageOrders.every(
+        item => typeof item.id === 'string' && typeof item.position === 'number'
+      );
+      
+      if (!isValid) {
+        return res.status(400).json({ 
+          message: "Ogni elemento deve avere id (string) e position (number)" 
+        });
+      }
+
+      // Get all images for this property to verify they belong to it
+      const propertyImages = await storage.getPropertyImages(propertyId);
+      const propertyImageIds = new Set(propertyImages.map(img => img.id));
+      
+      // Check that all requested image IDs belong to this property
+      const allBelongToProperty = imageOrders.every(
+        item => propertyImageIds.has(item.id)
+      );
+      
+      if (!allBelongToProperty) {
+        return res.status(400).json({ 
+          message: "Alcune immagini non appartengono a questo immobile" 
+        });
+      }
+
+      await storage.updatePropertyImagePositions(imageOrders);
+      res.json({ message: "Ordine immagini aggiornato con successo" });
+    } catch (error) {
+      console.error("Error reordering property images:", error);
+      res.status(500).json({ message: "Errore nel riordinamento delle immagini" });
+    }
+  });
+
   const uploadPostImage = multer({
     storage: multer.memoryStorage(),
     limits: {

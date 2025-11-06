@@ -61,6 +61,7 @@ export interface IStorage {
   getPropertyImages(propertyId: string): Promise<PropertyImage[]>;
   createPropertyImage(image: InsertPropertyImage): Promise<PropertyImage>;
   deletePropertyImage(id: string): Promise<void>;
+  updatePropertyImagePositions(updates: { id: string; position: number }[]): Promise<void>;
   archivePropertyImages(propertyId: string, keepCount: number): Promise<void>;
   regeneratePropertyImageUrls(propertyId: string): Promise<PropertyImage[]>;
   
@@ -257,7 +258,11 @@ export class DbStorage implements IStorage {
   }
 
   async getPropertyImages(propertyId: string): Promise<PropertyImage[]> {
-    return db.select().from(propertiesImages).where(eq(propertiesImages.propertyId, propertyId));
+    return db
+      .select()
+      .from(propertiesImages)
+      .where(eq(propertiesImages.propertyId, propertyId))
+      .orderBy(asc(propertiesImages.position));
   }
 
   async createPropertyImage(image: InsertPropertyImage): Promise<PropertyImage> {
@@ -267,6 +272,15 @@ export class DbStorage implements IStorage {
 
   async deletePropertyImage(id: string): Promise<void> {
     await db.delete(propertiesImages).where(eq(propertiesImages.id, id));
+  }
+
+  async updatePropertyImagePositions(updates: { id: string; position: number }[]): Promise<void> {
+    for (const update of updates) {
+      await db
+        .update(propertiesImages)
+        .set({ position: update.position })
+        .where(eq(propertiesImages.id, update.id));
+    }
   }
 
   async archivePropertyImages(propertyId: string, keepCount: number): Promise<void> {
