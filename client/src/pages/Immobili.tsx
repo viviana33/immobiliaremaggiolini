@@ -5,7 +5,12 @@ import SortingControls from "@/components/SortingControls";
 import PaginationControls from "@/components/PaginationControls";
 import { useLocation } from "wouter";
 import { usePageMeta } from "@/lib/seo";
-import { useEffect } from "react";
+import { useEffect, useState } from "react";
+import { Input } from "@/components/ui/input";
+import { Button } from "@/components/ui/button";
+import { Search, X } from "lucide-react";
+import { Checkbox } from "@/components/ui/checkbox";
+import { Label } from "@/components/ui/label";
 
 interface Property {
   id: string;
@@ -36,12 +41,50 @@ export default function Immobili() {
     description: 'Trova il tuo immobile ideale tra le nostre proprietà selezionate in vendita e affitto a Milano, Monza e Brianza. Appartamenti, ville, attici e molto altro.',
   });
 
-  const [location] = useLocation();
+  const [location, setLocation] = useLocation();
   const queryParams = location.includes('?') ? location.split('?')[1] : '';
+  
+  // Parse URL params
+  const urlParams = new URLSearchParams(queryParams);
+  const [searchTerm, setSearchTerm] = useState(urlParams.get('search') || '');
+  const [includeArchived, setIncludeArchived] = useState(urlParams.get('includeArchived') === 'true');
 
   useEffect(() => {
     sessionStorage.setItem('propertyListSource', '/immobili');
   }, []);
+  
+  const handleSearch = () => {
+    const params = new URLSearchParams(queryParams);
+    
+    if (searchTerm.trim()) {
+      params.set('search', searchTerm.trim());
+    } else {
+      params.delete('search');
+    }
+    
+    if (includeArchived) {
+      params.set('includeArchived', 'true');
+    } else {
+      params.delete('includeArchived');
+    }
+    
+    // Reset to page 1 when searching
+    params.delete('page');
+    
+    const newQuery = params.toString();
+    setLocation(`/immobili${newQuery ? `?${newQuery}` : ''}`);
+  };
+  
+  const handleClearSearch = () => {
+    setSearchTerm('');
+    setIncludeArchived(false);
+    const params = new URLSearchParams(queryParams);
+    params.delete('search');
+    params.delete('includeArchived');
+    params.delete('page');
+    const newQuery = params.toString();
+    setLocation(`/immobili${newQuery ? `?${newQuery}` : ''}`);
+  };
 
   const queryKey = queryParams ? ['/api/properties', queryParams] : ['/api/properties'];
   const queryUrl = queryParams ? `/api/properties?${queryParams}` : '/api/properties';
@@ -77,6 +120,10 @@ export default function Immobili() {
     return (
       <div className="container mx-auto px-4 py-8">
         <h1 className="text-4xl font-bold mb-8">Lista Immobili</h1>
+        <div className="mb-6 space-y-4">
+          <div className="h-10 bg-muted rounded animate-pulse" />
+          <div className="h-5 w-48 bg-muted rounded animate-pulse" />
+        </div>
         <div className="flex flex-wrap items-center justify-between gap-4 mb-6">
           <div className="h-5 w-32 bg-muted rounded animate-pulse" />
           <div className="h-10 w-48 bg-muted rounded animate-pulse" />
@@ -91,9 +138,63 @@ export default function Immobili() {
   }
 
   if (!properties || properties.length === 0) {
+    const hasActiveFilters = searchTerm || includeArchived;
+    
     return (
       <div className="container mx-auto px-4 py-8">
         <h1 className="text-4xl font-bold mb-8" data-testid="heading-immobili">Lista Immobili</h1>
+        
+        {/* Search Bar */}
+        <div className="mb-6 space-y-4">
+          <div className="flex flex-wrap gap-2">
+            <div className="flex-1 min-w-[200px]">
+              <Input
+                type="text"
+                placeholder="Cerca immobile (es: trilocale, milano, via meda, 11...)"
+                value={searchTerm}
+                onChange={(e) => setSearchTerm(e.target.value)}
+                onKeyDown={(e) => {
+                  if (e.key === 'Enter') {
+                    handleSearch();
+                  }
+                }}
+                data-testid="input-search-property"
+              />
+            </div>
+            <Button 
+              onClick={handleSearch}
+              data-testid="button-search"
+            >
+              <Search className="w-4 h-4 mr-2" />
+              Cerca
+            </Button>
+            {(searchTerm || includeArchived) && (
+              <Button 
+                variant="outline"
+                onClick={handleClearSearch}
+                data-testid="button-clear-search"
+              >
+                <X className="w-4 h-4 mr-2" />
+                Cancella
+              </Button>
+            )}
+          </div>
+          
+          <div className="flex items-center space-x-2">
+            <Checkbox 
+              id="include-archived" 
+              checked={includeArchived}
+              onCheckedChange={(checked) => setIncludeArchived(checked as boolean)}
+              data-testid="checkbox-include-archived"
+            />
+            <Label 
+              htmlFor="include-archived" 
+              className="text-sm text-muted-foreground cursor-pointer"
+            >
+              Includi immobili archiviati
+            </Label>
+          </div>
+        </div>
         
         <div className="flex flex-wrap items-center justify-between gap-4 mb-6">
           <div>
@@ -106,8 +207,20 @@ export default function Immobili() {
         
         <div className="text-center py-12">
           <p className="text-muted-foreground text-lg" data-testid="text-no-properties">
-            Nessun immobile disponibile al momento.
+            {hasActiveFilters 
+              ? "Nessun immobile trovato con i criteri di ricerca selezionati."
+              : "Nessun immobile disponibile al momento."}
           </p>
+          {hasActiveFilters && (
+            <Button 
+              variant="outline" 
+              onClick={handleClearSearch}
+              className="mt-4"
+              data-testid="button-clear-filters"
+            >
+              Cancella filtri di ricerca
+            </Button>
+          )}
         </div>
       </div>
     );
@@ -116,6 +229,58 @@ export default function Immobili() {
   return (
     <div className="container mx-auto px-4 py-8">
       <h1 className="text-4xl font-bold mb-8" data-testid="heading-immobili">Lista Immobili</h1>
+      
+      {/* Search Bar */}
+      <div className="mb-6 space-y-4">
+        <div className="flex flex-wrap gap-2">
+          <div className="flex-1 min-w-[200px]">
+            <Input
+              type="text"
+              placeholder="Cerca immobile (es: trilocale, milano, via meda, 11...)"
+              value={searchTerm}
+              onChange={(e) => setSearchTerm(e.target.value)}
+              onKeyDown={(e) => {
+                if (e.key === 'Enter') {
+                  handleSearch();
+                }
+              }}
+              data-testid="input-search-property"
+            />
+          </div>
+          <Button 
+            onClick={handleSearch}
+            data-testid="button-search"
+          >
+            <Search className="w-4 h-4 mr-2" />
+            Cerca
+          </Button>
+          {(searchTerm || includeArchived) && (
+            <Button 
+              variant="outline"
+              onClick={handleClearSearch}
+              data-testid="button-clear-search"
+            >
+              <X className="w-4 h-4 mr-2" />
+              Cancella
+            </Button>
+          )}
+        </div>
+        
+        <div className="flex items-center space-x-2">
+          <Checkbox 
+            id="include-archived" 
+            checked={includeArchived}
+            onCheckedChange={(checked) => setIncludeArchived(checked as boolean)}
+            data-testid="checkbox-include-archived"
+          />
+          <Label 
+            htmlFor="include-archived" 
+            className="text-sm text-muted-foreground cursor-pointer"
+          >
+            Includi immobili archiviati
+          </Label>
+        </div>
+      </div>
       
       <div className="flex flex-wrap items-center justify-between gap-4 mb-6">
         <div>
