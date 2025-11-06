@@ -63,6 +63,7 @@ export interface IStorage {
   deletePropertyImage(id: string): Promise<void>;
   updatePropertyImagePositions(updates: { id: string; position: number }[]): Promise<void>;
   archivePropertyImages(propertyId: string, keepCount: number): Promise<void>;
+  unarchivePropertyImages(propertyId: string): Promise<void>;
   regeneratePropertyImageUrls(propertyId: string): Promise<PropertyImage[]>;
   
   getAllPosts(): Promise<Post[]>;
@@ -317,6 +318,13 @@ export class DbStorage implements IStorage {
           .where(eq(propertiesImages.id, img.id));
       }
     }
+  }
+
+  async unarchivePropertyImages(propertyId: string): Promise<void> {
+    await db
+      .update(propertiesImages)
+      .set({ archiviato: false })
+      .where(eq(propertiesImages.propertyId, propertyId));
   }
 
   async regeneratePropertyImageUrls(propertyId: string): Promise<PropertyImage[]> {
