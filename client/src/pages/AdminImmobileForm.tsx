@@ -256,6 +256,17 @@ export default function AdminImmobileForm() {
     setSelectedFiles((prev) => prev.filter((_, i) => i !== index));
   };
 
+  const moveSelectedFile = (index: number, direction: "left" | "right") => {
+    const newIndex = direction === "left" ? index - 1 : index + 1;
+    if (newIndex < 0 || newIndex >= selectedFiles.length) return;
+
+    const reordered = [...selectedFiles];
+    const [moved] = reordered.splice(index, 1);
+    reordered.splice(newIndex, 0, moved);
+
+    setSelectedFiles(reordered);
+  };
+
   const removeExistingImage = (imageId: string) => {
     deleteImageMutation.mutate(imageId);
     setExistingImages((prev) => prev.filter((img) => img.id !== imageId));
@@ -757,26 +768,56 @@ export default function AdminImmobileForm() {
               {selectedFiles.length > 0 && (
                 <div>
                   <p className="text-sm text-muted-foreground mb-3">
-                    Nuove immagini da caricare ({selectedFiles.length})
+                    Nuove immagini da caricare ({selectedFiles.length}) - Usa le frecce per riordinare
                   </p>
                   <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
                     {selectedFiles.map((file, index) => (
-                      <div key={index} className="relative group">
+                      <div key={index} className="relative group" data-testid={`file-container-${index}`}>
                         <img
                           src={URL.createObjectURL(file)}
                           alt={file.name}
                           className="w-full h-32 object-cover rounded"
                         />
-                        <Button
-                          type="button"
-                          variant="destructive"
-                          size="icon"
-                          className="absolute top-2 right-2 opacity-0 group-hover:opacity-100 transition-opacity"
-                          onClick={() => removeSelectedFile(index)}
-                          data-testid={`button-rimuovi-file-${index}`}
-                        >
-                          <X className="h-4 w-4" />
-                        </Button>
+                        <div className="absolute top-2 left-2 bg-black/70 text-white text-xs px-2 py-1 rounded">
+                          {index + 1}
+                        </div>
+                        
+                        <div className="absolute inset-0 bg-black/50 opacity-0 group-hover:opacity-100 transition-opacity flex items-center justify-center gap-2">
+                          <Button
+                            type="button"
+                            size="icon"
+                            variant="secondary"
+                            onClick={() => moveSelectedFile(index, "left")}
+                            disabled={index === 0}
+                            className="h-8 w-8"
+                            data-testid={`button-move-file-left-${index}`}
+                          >
+                            <ChevronLeft className="h-4 w-4" />
+                          </Button>
+                          
+                          <Button
+                            type="button"
+                            size="icon"
+                            variant="destructive"
+                            onClick={() => removeSelectedFile(index)}
+                            className="h-8 w-8"
+                            data-testid={`button-rimuovi-file-${index}`}
+                          >
+                            <X className="h-4 w-4" />
+                          </Button>
+                          
+                          <Button
+                            type="button"
+                            size="icon"
+                            variant="secondary"
+                            onClick={() => moveSelectedFile(index, "right")}
+                            disabled={index === selectedFiles.length - 1}
+                            className="h-8 w-8"
+                            data-testid={`button-move-file-right-${index}`}
+                          >
+                            <ChevronRight className="h-4 w-4" />
+                          </Button>
+                        </div>
                       </div>
                     ))}
                   </div>
