@@ -330,14 +330,6 @@ export default function BlogDettaglio() {
         </section>
       )}
 
-      {/* Contact Form */}
-      <section className="py-12 border-t border-border">
-        <div className="max-w-2xl mx-auto px-6 md:px-8">
-          <h3 className="text-2xl font-serif font-bold mb-6">Hai domande su questo articolo?</h3>
-          <ContactForm source="blog" contextId={post.slug} />
-        </div>
-      </section>
-
       {/* Subscription Box */}
       <section className="py-12 border-t border-border">
         <div className="max-w-2xl mx-auto px-6 md:px-8">
