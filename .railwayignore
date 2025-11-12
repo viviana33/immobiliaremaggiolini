@@ -1,0 +1,55 @@
+# Railway Ignore File
+# File e directory da escludere durante il deploy su Railway
+
+# Development
+.env
+.env.local
+.env.*.local
+*.log
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+
+# Build artifacts (verranno rigenerati)
+dist/
+node_modules/
+
+# Git
+.git/
+.gitignore
+.gitattributes
+
+# IDE
+.vscode/
+.idea/
+*.swp
+*.swo
+*~
+
+# OS
+.DS_Store
+Thumbs.db
+
+# Replit specific
+.replit
+replit.nix
+.config/
+.cache/
+.upm/
+
+# Test files
+*.test.ts
+*.test.js
+*.spec.ts
+*.spec.js
+__tests__/
+coverage/
+
+# Documentation (opzionale - rimuovi questa riga se vuoi includere i docs)
+*.md
+!RAILWAY.md
+
+# Temporary files
+tmp/
+temp/
+*.tmp

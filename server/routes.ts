@@ -209,7 +209,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
           email: validatedData.email,
           attributes,
           listIds: [brevo.getDefaultListId()],
-          redirectionUrl: `${process.env.REPLIT_DOMAINS ? `https://${process.env.REPLIT_DOMAINS.split(',')[0]}` : 'http://localhost:5000'}/preferenze?confirmed=true&email=${encodeURIComponent(validatedData.email)}`
+          redirectionUrl: `${process.env.APP_URL || 'http://localhost:5000'}/preferenze?confirmed=true&email=${encodeURIComponent(validatedData.email)}`
         });
         
         res.json({
@@ -1238,9 +1238,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
       }
 
       // Crea il link al post
-      const baseUrl = process.env.REPLIT_DOMAINS 
-        ? `https://${process.env.REPLIT_DOMAINS.split(',')[0]}`
-        : 'http://localhost:5000';
+      const baseUrl = process.env.APP_URL || 'http://localhost:5000';
       const postUrl = `${baseUrl}/blog/${post.slug}`;
 
       // Crea l'anteprima del post (primi 200 caratteri senza HTML)
@@ -1426,9 +1424,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
       }
 
       // Crea il link all'immobile
-      const baseUrl = process.env.REPLIT_DOMAINS 
-        ? `https://${process.env.REPLIT_DOMAINS.split(',')[0]}`
-        : 'http://localhost:5000';
+      const baseUrl = process.env.APP_URL || 'http://localhost:5000';
       const propertyUrl = `${baseUrl}/immobili/${property.slug}`;
 
       // Formatta il prezzo
@@ -1763,9 +1759,7 @@ ${rssItems}
   // Sitemap XML endpoint
   app.get("/api/sitemap.xml", async (req, res) => {
     try {
-      const siteUrl = process.env.REPLIT_DOMAINS 
-        ? `https://${process.env.REPLIT_DOMAINS.split(',')[0]}`
-        : 'https://immobiliare-maggiolini.replit.app';
+      const siteUrl = process.env.APP_URL || 'http://localhost:5000';
 
       // Recupera slug degli immobili disponibili
       const propertySlugs = await storage.getAvailablePropertySlugs();
