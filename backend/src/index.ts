@@ -1,21 +1,28 @@
 import express, { type Request, Response, NextFunction } from "express";
 import session from "express-session";
-import cors from "cors";
+import cors, { type CorsOptions } from "cors";
 import { registerRoutes } from "./routes";
 
 const app = express();
 
 // CORS configuration - allow requests from frontend
 const allowedOrigins = process.env.FRONTEND_URL 
-  ? [process.env.FRONTEND_URL, ...(process.env.ADDITIONAL_ORIGINS?.split(',') || [])]
+  ? [process.env.FRONTEND_URL, ...(process.env.ADDITIONAL_ORIGINS?.split(',').map(o => o.trim()) || [])]
   : ['http://localhost:5173', 'http://localhost:5000'];
 
+// Normalize origins for strict comparison (remove trailing slash)
+const normalizedOrigins = allowedOrigins.map(origin => origin.replace(/\/$/, ''));
+
 app.use(cors({
-  origin: (origin, callback) => {
+  origin: (origin: string | undefined, callback: (err: Error | null, allow?: boolean) => void) => {
     // Allow requests with no origin (mobile apps, Postman, etc.)
     if (!origin) return callback(null, true);
     
-    if (allowedOrigins.some(allowed => origin.startsWith(allowed))) {
+    // Normalize incoming origin for comparison
+    const normalizedOrigin = origin.replace(/\/$/, '');
+    
+    // Strict equality check to prevent subdomain attacks (e.g., allowed.app.evil.com)
+    if (normalizedOrigins.includes(normalizedOrigin)) {
       callback(null, true);
     } else {
       callback(new Error('Not allowed by CORS'));

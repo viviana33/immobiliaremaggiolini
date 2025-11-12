@@ -73,7 +73,7 @@ class UploadService {
       throw new Error(`Cloudinary upload failed: ${response.statusText}`);
     }
 
-    const data = await response.json();
+    const data = await response.json() as { secure_url: string };
     return data.secure_url;
   }
 
@@ -252,7 +252,7 @@ class UploadService {
         return false;
       }
 
-      const data = await response.json();
+      const data = await response.json() as { result: string };
       return data.result === "ok";
     } catch (error: any) {
       console.error(`Error deleting from Cloudinary: ${error.message}`);
