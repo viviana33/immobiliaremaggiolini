@@ -6,3 +6,10 @@ vite.config.ts.*
 *.tar.gz
 .env
 .env.local
+
+# Backup e Export
+exports/
+export-*.json
+backup-*.sql
+backup-*.dump
+*.csv
