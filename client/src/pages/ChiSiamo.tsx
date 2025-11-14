@@ -1,4 +1,4 @@
-import teamPhoto from "@assets/generated_images/Real_estate_team_photo_7f941344.png";
+import teamPhoto from "@assets/team-photo.jpeg";
 import { usePageMeta } from "@/lib/seo";
 
 export default function ChiSiamo() {
