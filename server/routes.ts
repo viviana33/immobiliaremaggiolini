@@ -27,8 +27,28 @@ export async function registerRoutes(app: Express): Promise<Server> {
     }
     
     if (token === adminToken) {
-      req.session.isAdmin = true;
-      return res.json({ success: true, message: "Login effettuato con successo" });
+      return req.session.regenerate((regenerateErr) => {
+        if (regenerateErr) {
+          console.error("Errore rigenerazione sessione:", regenerateErr);
+          return res.status(500).json({ 
+            success: false, 
+            message: "Errore durante la rigenerazione della sessione" 
+          });
+        }
+        
+        req.session.isAdmin = true;
+        
+        return req.session.save((saveErr) => {
+          if (saveErr) {
+            console.error("Errore salvataggio sessione:", saveErr);
+            return res.status(500).json({ 
+              success: false, 
+              message: "Errore durante il salvataggio della sessione" 
+            });
+          }
+          return res.json({ success: true, message: "Login effettuato con successo" });
+        });
+      });
     }
     
     return res.status(401).json({ success: false, message: "Token non valido" });
