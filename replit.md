@@ -92,9 +92,6 @@ Preferred communication style: Simple, everyday language.
   - **Image Alt Text**: Descriptive format `Property.title - immagine N` for all images (carousel main, thumbnails, property cards)
   - **Smart Image Prefetch**: Only the next image in carousel is prefetched using instance-scoped `<link rel="prefetch">` tags to optimize performance without aggressive resource loading
 
-### Analytics & Monitoring
-- **Vercel Analytics**: Integrated for privacy-friendly web analytics. No cookies, GDPR-compliant, lightweight tracking of page views and web vitals. Configured in `client/src/App.tsx`.
-
 ## External Dependencies
 
 ### Core & Runtime
@@ -120,6 +117,3 @@ Preferred communication style: Simple, everyday language.
 
 ### SEO
 - Implemented with sitemap.xml and JSON-LD structured data.
-
-### Analytics
-- `@vercel/analytics` (privacy-friendly, GDPR-compliant, no cookies).
