@@ -29,7 +29,8 @@ export default function Login() {
         title: "Accesso effettuato",
         description: "Benvenuto nell'area amministrativa",
       });
-      setLocation("/admin/dashboard");
+      // Force a full page reload to ensure auth status is updated
+      window.location.href = "/admin/dashboard";
     } catch (error) {
       toast({
         variant: "destructive",
