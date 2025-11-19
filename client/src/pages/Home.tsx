@@ -145,37 +145,18 @@ export default function Home() {
         </div>
       </section>
 
-      <section className="py-16 md:py-20 bg-secondary">
-        <div className="max-w-6xl mx-auto px-6 md:px-8">
-          <div className="text-center mb-12">
-            <h2 className="font-serif font-bold text-3xl md:text-4xl text-foreground mb-3">
-              Il nostro approccio
-            </h2>
-            <p className="text-muted-foreground text-lg">
-              Quando lavoriamo per te
-            </p>
-          </div>
-
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-6 max-w-5xl mx-auto">
-            {values.map((value, index) => {
-              const IconComponent = value.icon;
-              return (
-                <Card key={index} className="p-6 space-y-3 hover-elevate transition-all" data-testid={`card-value-${value.title.toLowerCase()}`}>
-                  <div className="w-12 h-12 rounded-md bg-primary/10 flex items-center justify-center">
-                    <IconComponent className="w-6 h-6 text-primary" aria-hidden="true" />
-                  </div>
-                  <h3 className="font-serif font-semibold text-xl text-foreground">
-                    {value.title}
-                  </h3>
-                  <p className="text-muted-foreground text-sm leading-relaxed">
-                    {value.description}
-                  </p>
-                </Card>
-              );
-            })}
+      {/* Separator between Properties and Blog */}
+      <div className="py-12 md:py-16">
+        <div className="max-w-7xl mx-auto px-6 md:px-8">
+          <div className="flex items-center gap-4">
+            <div className="flex-1 h-px bg-border"></div>
+            <div className="flex items-center gap-2 text-muted-foreground">
+              <span className="text-sm font-medium tracking-wider uppercase">Dal Nostro Blog</span>
+            </div>
+            <div className="flex-1 h-px bg-border"></div>
           </div>
         </div>
-      </section>
+      </div>
 
       <section className="py-20 md:py-24">
         <div className="max-w-7xl mx-auto px-6 md:px-8">
@@ -234,6 +215,38 @@ export default function Home() {
                 </p>
               </div>
             )}
+          </div>
+        </div>
+      </section>
+
+      <section className="py-16 md:py-20 bg-secondary">
+        <div className="max-w-6xl mx-auto px-6 md:px-8">
+          <div className="text-center mb-12">
+            <h2 className="font-serif font-bold text-3xl md:text-4xl text-foreground mb-3">
+              Il nostro approccio
+            </h2>
+            <p className="text-muted-foreground text-lg">
+              Quando lavoriamo per te
+            </p>
+          </div>
+
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-6 max-w-5xl mx-auto">
+            {values.map((value, index) => {
+              const IconComponent = value.icon;
+              return (
+                <Card key={index} className="p-6 space-y-3 hover-elevate transition-all" data-testid={`card-value-${value.title.toLowerCase()}`}>
+                  <div className="w-12 h-12 rounded-md bg-primary/10 flex items-center justify-center">
+                    <IconComponent className="w-6 h-6 text-primary" aria-hidden="true" />
+                  </div>
+                  <h3 className="font-serif font-semibold text-xl text-foreground">
+                    {value.title}
+                  </h3>
+                  <p className="text-muted-foreground text-sm leading-relaxed">
+                    {value.description}
+                  </p>
+                </Card>
+              );
+            })}
           </div>
         </div>
       </section>
