@@ -1,35 +1,81 @@
-import { useMemo, useCallback, useState, useEffect, useSyncExternalStore } from 'react';
+import { useMemo, useCallback, useSyncExternalStore } from 'react';
 import { useLocation } from 'wouter';
 
-// Store esterno per sincronizzare window.location.search con React
-function getSearchSnapshot() {
-  return window.location.search;
+// Singleton store per gestire i listener dell'URL
+// Questo garantisce che i listener rimangano attivi finché almeno un componente li usa
+class URLSearchStore {
+  private listeners = new Set<() => void>();
+  private originalPushState: typeof window.history.pushState | null = null;
+  private originalReplaceState: typeof window.history.replaceState | null = null;
+  
+  getSnapshot() {
+    return window.location.search;
+  }
+  
+  subscribe(callback: () => void) {
+    // Aggiungi il listener al set
+    this.listeners.add(callback);
+    
+    // Se è il primo listener, inizializza i wrapper
+    if (this.listeners.size === 1) {
+      this.initializeHistoryWrappers();
+    }
+    
+    // Ritorna funzione di cleanup
+    return () => {
+      this.listeners.delete(callback);
+      
+      // Se non ci sono più listener, ripristina i metodi originali
+      if (this.listeners.size === 0) {
+        this.cleanupHistoryWrappers();
+      }
+    };
+  }
+  
+  private initializeHistoryWrappers() {
+    // Salva i metodi originali
+    this.originalPushState = window.history.pushState.bind(window.history);
+    this.originalReplaceState = window.history.replaceState.bind(window.history);
+    
+    // Listener per popstate (back/forward del browser)
+    window.addEventListener('popstate', this.notifyListeners);
+    
+    // Wrapper per pushState
+    window.history.pushState = (...args) => {
+      this.originalPushState!.apply(window.history, args);
+      this.notifyListeners();
+    };
+    
+    // Wrapper per replaceState
+    window.history.replaceState = (...args) => {
+      this.originalReplaceState!.apply(window.history, args);
+      this.notifyListeners();
+    };
+  }
+  
+  private cleanupHistoryWrappers() {
+    // Rimuovi listener popstate
+    window.removeEventListener('popstate', this.notifyListeners);
+    
+    // Ripristina metodi originali
+    if (this.originalPushState) {
+      window.history.pushState = this.originalPushState;
+    }
+    if (this.originalReplaceState) {
+      window.history.replaceState = this.originalReplaceState;
+    }
+    
+    this.originalPushState = null;
+    this.originalReplaceState = null;
+  }
+  
+  private notifyListeners = () => {
+    this.listeners.forEach(listener => listener());
+  };
 }
 
-function subscribeToSearch(callback: () => void) {
-  // Listener per popstate (back/forward del browser)
-  window.addEventListener('popstate', callback);
-  
-  // Listener personalizzato per quando setLocation viene chiamato
-  const originalPushState = window.history.pushState;
-  const originalReplaceState = window.history.replaceState;
-  
-  window.history.pushState = function(...args) {
-    originalPushState.apply(window.history, args);
-    callback();
-  };
-  
-  window.history.replaceState = function(...args) {
-    originalReplaceState.apply(window.history, args);
-    callback();
-  };
-  
-  return () => {
-    window.removeEventListener('popstate', callback);
-    window.history.pushState = originalPushState;
-    window.history.replaceState = originalReplaceState;
-  };
-}
+// Singleton instance
+const urlSearchStore = new URLSearchStore();
 
 /**
  * Hook per gestire query string URL.
@@ -38,8 +84,12 @@ function subscribeToSearch(callback: () => void) {
 export function useQueryString() {
   const [, setLocation] = useLocation();
   
-  // Sincronizza con window.location.search usando useSyncExternalStore
-  const search = useSyncExternalStore(subscribeToSearch, getSearchSnapshot, getSearchSnapshot);
+  // Sincronizza con window.location.search usando useSyncExternalStore e il singleton store
+  const search = useSyncExternalStore(
+    urlSearchStore.subscribe.bind(urlSearchStore),
+    urlSearchStore.getSnapshot.bind(urlSearchStore),
+    urlSearchStore.getSnapshot.bind(urlSearchStore)
+  );
   
   // Estrai search params da window.location.search
   const searchParams = useMemo(() => {
