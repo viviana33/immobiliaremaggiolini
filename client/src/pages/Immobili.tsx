@@ -1,4 +1,3 @@
-import { useQuery } from "@tanstack/react-query";
 import PropertyCard from "@/components/PropertyCard";
 import PropertyCardSkeleton from "@/components/PropertyCardSkeleton";
 import SortingControls from "@/components/SortingControls";
@@ -6,7 +5,7 @@ import PaginationControls from "@/components/PaginationControls";
 import CitySearchBar from "@/components/CitySearchBar";
 import TypeFilter from "@/components/TypeFilter";
 import { usePageMeta } from "@/lib/seo";
-import { useEffect } from "react";
+import { useEffect, useState } from "react";
 import { useQueryString } from "@/hooks/useQueryString";
 
 interface Property {
@@ -39,29 +38,46 @@ export default function Immobili() {
   });
 
   const { searchParams } = useQueryString();
+  
+  const [properties, setProperties] = useState<Property[]>([]);
+  const [pagination, setPagination] = useState<PaginationData | undefined>(undefined);
+  const [isLoading, setIsLoading] = useState(true);
+  const [error, setError] = useState<string | null>(null);
 
   useEffect(() => {
     sessionStorage.setItem('propertyListSource', '/immobili');
   }, []);
 
-  const queryString = searchParams.toString();
-
-  const { data, isLoading, error} = useQuery<PropertiesResponse>({
-    queryKey: ['/api/properties', queryString],
-    queryFn: async () => {
-      const url = queryString ? `/api/properties?${queryString}` : '/api/properties';
-      const response = await fetch(url);
-      if (!response.ok) {
-        throw new Error('Failed to fetch properties');
+  // Fetch properties ogni volta che cambiano i parametri di ricerca
+  useEffect(() => {
+    const fetchProperties = async () => {
+      setIsLoading(true);
+      setError(null);
+      
+      try {
+        // Costruisci URL direttamente da window.location.search
+        const search = window.location.search;
+        const url = search ? `/api/properties${search}` : '/api/properties';
+        
+        const response = await fetch(url);
+        if (!response.ok) {
+          throw new Error('Errore nel caricamento degli immobili');
+        }
+        
+        const data: PropertiesResponse = await response.json();
+        setProperties(data.properties || []);
+        setPagination(data.pagination);
+      } catch (err) {
+        setError(err instanceof Error ? err.message : 'Errore sconosciuto');
+        setProperties([]);
+        setPagination(undefined);
+      } finally {
+        setIsLoading(false);
       }
-      return await response.json();
-    },
-    staleTime: 0, // Considera i dati sempre stale per ricaricarli quando cambia queryKey
-    gcTime: 0, // Non mantenere in cache i dati vecchi
-  });
+    };
 
-  const properties = data?.properties || [];
-  const pagination = data?.pagination;
+    fetchProperties();
+  }, [searchParams.toString()]); // Ricarica quando cambiano i parametri URL
 
   if (error) {
     return (

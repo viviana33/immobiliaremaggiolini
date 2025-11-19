@@ -3,11 +3,9 @@ import PropertyCardSkeleton from "@/components/PropertyCardSkeleton";
 import CitySearchBar from "@/components/CitySearchBar";
 import TypeFilter from "@/components/TypeFilter";
 import SortingControls from "@/components/SortingControls";
-import { useEffect } from "react";
-import { useQuery } from "@tanstack/react-query";
+import { useEffect, useState } from "react";
 import { usePageMeta } from "@/lib/seo";
 import { useQueryString } from "@/hooks/useQueryString";
-import { queryClient } from "@/lib/queryClient";
 
 interface Property {
   id: string;
@@ -38,37 +36,43 @@ export default function Proprieta() {
     description: 'Esplora le nostre proprietà selezionate in vendita e affitto. Trova casa a Milano, Monza e Brianza con Immobiliare Maggiolini.',
   });
   const { searchParams } = useQueryString();
+  
+  const [properties, setProperties] = useState<Property[]>([]);
+  const [isLoading, setIsLoading] = useState(true);
+  const [error, setError] = useState<string | null>(null);
 
   useEffect(() => {
     sessionStorage.setItem('propertyListSource', '/proprieta');
   }, []);
 
-  const queryString = searchParams.toString();
-  console.log('[PROPRIETA] window.location.search:', window.location.search);
-  console.log('[PROPRIETA] searchParams.toString():', queryString);
-  console.log('[PROPRIETA] queryKey will be:', ['/api/properties', queryString]);
-  
-  const { data, isLoading, error } = useQuery<PropertiesResponse>({
-    queryKey: ['/api/properties', queryString],
-    queryFn: async ({ queryKey }) => {
-      console.log('[PROPRIETA] queryFn called with queryKey:', queryKey);
-      // Usa queryKey invece di window.location.search perché wouter's setLocation è asincrono
-      const [, query] = queryKey;
-      const url = query ? `/api/properties?${query}` : '/api/properties';
-      console.log('[PROPRIETA] Fetching URL:', url);
-      const response = await fetch(url);
-      if (!response.ok) {
-        throw new Error('Failed to fetch properties');
+  // Fetch properties ogni volta che cambiano i parametri di ricerca
+  useEffect(() => {
+    const fetchProperties = async () => {
+      setIsLoading(true);
+      setError(null);
+      
+      try {
+        // Costruisci URL direttamente da window.location.search
+        const search = window.location.search;
+        const url = search ? `/api/properties${search}` : '/api/properties';
+        
+        const response = await fetch(url);
+        if (!response.ok) {
+          throw new Error('Errore nel caricamento delle proprietà');
+        }
+        
+        const data: PropertiesResponse = await response.json();
+        setProperties(data.properties || []);
+      } catch (err) {
+        setError(err instanceof Error ? err.message : 'Errore sconosciuto');
+        setProperties([]);
+      } finally {
+        setIsLoading(false);
       }
-      const json = await response.json();
-      console.log('[PROPRIETA] Received properties:', json.properties?.length);
-      return json;
-    },
-    staleTime: 0,
-    gcTime: 0,
-  });
+    };
 
-  const properties = data?.properties || [];
+    fetchProperties();
+  }, [searchParams.toString()]); // Ricarica quando cambiano i parametri URL
 
   return (
     <div className="min-h-screen bg-background">
