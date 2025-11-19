@@ -72,17 +72,15 @@ export default function Proprieta() {
         </div>
       </section>
 
-      <section className="py-16 md:py-20">
+      <section className="py-8 md:py-12">
         <div className="max-w-7xl mx-auto px-6 md:px-8">
-          <div className="mb-8 space-y-6">
-            <div className="flex flex-col md:flex-row gap-4 items-start md:items-end justify-between">
-              <div className="flex-1 w-full md:max-w-md">
+          <div className="mb-6">
+            <div className="flex flex-col lg:flex-row gap-4 mb-4">
+              <div className="flex-1">
                 <CitySearchBar />
               </div>
-              <div className="flex flex-col sm:flex-row gap-4 w-full md:w-auto">
-                <TypeFilter />
-                <SortingControls />
-              </div>
+              <TypeFilter />
+              <SortingControls />
             </div>
           </div>
 
