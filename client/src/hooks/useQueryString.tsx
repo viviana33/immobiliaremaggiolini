@@ -4,21 +4,21 @@ import { useLocation } from 'wouter';
 export function useQueryString() {
   const [_, setLocation] = useLocation();
   
-  const [searchParams, setSearchParams] = useState(() => {
-    return new URLSearchParams(window.location.search);
-  });
-
+  // Trigger per forzare re-render quando cambiano i params
+  const [updateTrigger, setUpdateTrigger] = useState(0);
+  
   useEffect(() => {
-    const handleLocationChange = () => {
-      setSearchParams(new URLSearchParams(window.location.search));
+    // Ascolta cambiamenti di history (back/forward)
+    const handlePopState = () => {
+      setUpdateTrigger(prev => prev + 1);
     };
-
-    window.addEventListener('popstate', handleLocationChange);
     
-    return () => {
-      window.removeEventListener('popstate', handleLocationChange);
-    };
+    window.addEventListener('popstate', handlePopState);
+    return () => window.removeEventListener('popstate', handlePopState);
   }, []);
+  
+  // Leggi sempre da window.location.search per evitare race conditions
+  const searchParams = new URLSearchParams(window.location.search);
 
   const updateParams = useCallback((updates: Record<string, string | null>, options?: { deletePage?: boolean }) => {
     const currentPath = window.location.pathname;
@@ -40,7 +40,10 @@ export function useQueryString() {
     const newLocation = newSearch ? `${currentPath}?${newSearch}` : currentPath;
     
     setLocation(newLocation);
-    setSearchParams(new URLSearchParams(newSearch));
+    // Aspetta che wouter aggiorni window.location, poi triggera re-render
+    setTimeout(() => {
+      setUpdateTrigger(prev => prev + 1);
+    }, 0);
   }, [setLocation]);
 
   return {

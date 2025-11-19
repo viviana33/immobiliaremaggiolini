@@ -56,6 +56,8 @@ export default function Immobili() {
       }
       return await response.json();
     },
+    staleTime: 0, // Considera i dati sempre stale per ricaricarli quando cambia queryKey
+    gcTime: 0, // Non mantenere in cache i dati vecchi
   });
 
   const properties = data?.properties || [];

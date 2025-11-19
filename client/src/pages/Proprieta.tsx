@@ -7,6 +7,7 @@ import { useEffect } from "react";
 import { useQuery } from "@tanstack/react-query";
 import { usePageMeta } from "@/lib/seo";
 import { useQueryString } from "@/hooks/useQueryString";
+import { queryClient } from "@/lib/queryClient";
 
 interface Property {
   id: string;
@@ -43,17 +44,28 @@ export default function Proprieta() {
   }, []);
 
   const queryString = searchParams.toString();
+  console.log('[PROPRIETA] window.location.search:', window.location.search);
+  console.log('[PROPRIETA] searchParams.toString():', queryString);
+  console.log('[PROPRIETA] queryKey will be:', ['/api/properties', queryString]);
   
   const { data, isLoading, error } = useQuery<PropertiesResponse>({
     queryKey: ['/api/properties', queryString],
-    queryFn: async () => {
-      const url = queryString ? `/api/properties?${queryString}` : '/api/properties';
+    queryFn: async ({ queryKey }) => {
+      console.log('[PROPRIETA] queryFn called with queryKey:', queryKey);
+      // Usa queryKey invece di window.location.search perché wouter's setLocation è asincrono
+      const [, query] = queryKey;
+      const url = query ? `/api/properties?${query}` : '/api/properties';
+      console.log('[PROPRIETA] Fetching URL:', url);
       const response = await fetch(url);
       if (!response.ok) {
         throw new Error('Failed to fetch properties');
       }
-      return await response.json();
+      const json = await response.json();
+      console.log('[PROPRIETA] Received properties:', json.properties?.length);
+      return json;
     },
+    staleTime: 0,
+    gcTime: 0,
   });
 
   const properties = data?.properties || [];
