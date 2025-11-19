@@ -40,7 +40,7 @@ export default function Privacy() {
               <p className="mb-1">Partita IVA/Codice Fiscale: 13125670151</p>
               <p className="mb-1">Email: <a href="mailto:immobiliaremaggiolini@gmail.com" className="text-primary hover:underline" data-testid="link-email-titolare">immobiliaremaggiolini@gmail.com</a></p>
               <p className="mb-1">PEC: immobiliare.maggiolini@pec.it</p>
-              <p>Telefono: 3293589090</p>
+              <p>Telefono: 3293589090 - 0331555588</p>
             </div>
             <p className="mb-4 leading-relaxed">
               Il Titolare non ha nominato un Responsabile della Protezione dei Dati (DPO) in quanto non ricorrono le condizioni di cui all'art. 37 del GDPR.

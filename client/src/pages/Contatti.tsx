@@ -6,7 +6,7 @@ import { usePageMeta } from "@/lib/seo";
 export default function Contatti() {
   usePageMeta({
     title: 'Contattaci',
-    description: 'Contatta Immobiliare Maggiolini per una consulenza personalizzata. Siamo disponibili in Via Paolo Castelnovo, 14, 20015 Parabiago (MI). Telefono: 3293589090. Email: immobiliaremaggiolini@gmail.com',
+    description: 'Contatta Immobiliare Maggiolini per una consulenza personalizzata. Siamo disponibili in Via Paolo Castelnovo, 14, 20015 Parabiago (MI). Telefono: 3293589090 - 0331555588. Email: immobiliaremaggiolini@gmail.com',
   });
   const contactInfo = [
     {
@@ -17,7 +17,7 @@ export default function Contatti() {
     {
       icon: Phone,
       title: "Telefono",
-      details: ["3293589090"],
+      details: ["3293589090", "0331555588"],
     },
     {
       icon: Mail,
