@@ -18,6 +18,11 @@ Preferred communication style: Simple, everyday language.
 - **Component Structure**: Organized by presentation, pages, UI primitives, and custom hooks.
 - **Image Carousel**: Custom `ImageCarousel` component with keyboard navigation (Arrow keys), touch/pointer swipe support, lazy loading for non-current images, smart prefetch (only next image), aspect ratio preservation, thumbnail navigation, descriptive alt text support, and full accessibility (ARIA labels, focus rings). Supports empty state with placeholder fallback. Uses instance-scoped prefetch to prevent conflicts when multiple carousels are mounted.
 - **Navigation UX**: Property listing pages (/proprieta and /immobili) set sessionStorage to track user's origin. Property detail pages read this value to correctly navigate back to the originating list when users click "Torna Indietro", with /immobili as safe fallback for direct links.
+- **Property Filters**: Both property listing pages (/proprieta and /immobili) feature advanced filtering and search capabilities:
+  * **City Search** (CitySearchBar): Search bar for filtering properties by city using case-insensitive partial matching
+  * **Type Filter** (TypeFilter): Select between "Tutti" (all), "Vendita" (sale), or "Affitto" (rent)
+  * **Sorting Controls** (SortingControls): Sort properties by most recent (default), price (ascending/descending), or area in square meters (ascending/descending)
+  * All filter components use `window.location.pathname` and `window.location.search` to read and preserve existing URL query parameters, ensuring filters work together correctly without dropping user selections
 
 ### Backend
 - **Runtime**: Node.js with Express.js.
