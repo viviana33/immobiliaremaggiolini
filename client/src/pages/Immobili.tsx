@@ -178,8 +178,10 @@ export default function Immobili() {
               <div className="flex-1">
                 <CitySearchBar />
               </div>
-              <TypeFilter />
-              <SortingControls />
+              <div className="flex flex-col sm:flex-row gap-4">
+                <TypeFilter />
+                <SortingControls />
+              </div>
             </div>
             
             <div className="flex items-center justify-between gap-4">
