@@ -9,6 +9,7 @@ import { Loader2, AlertCircle, Search, X, FileText, ChevronLeft, ChevronRight } 
 import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert";
 import { useLocation } from "wouter";
 import { usePageMeta } from "@/lib/seo";
+import { useQueryString } from "@/hooks/useQueryString";
 
 /**
  * SCELTA PAGINAZIONE: URL-based pagination (page param)
@@ -48,21 +49,17 @@ export default function Blog() {
     description: 'Consigli, guide e novità dal mondo immobiliare. Scopri i nostri articoli su mercato, tendenze, quartieri e tutto ciò che riguarda la casa e gli investimenti immobiliari.',
   });
 
-  const [location, setLocation] = useLocation();
-  
-  const queryParams = useMemo(() => {
-    return location.includes('?') ? location.split('?')[1] : '';
-  }, [location]);
+  const [, setLocation] = useLocation();
+  const { searchParams, updateParams } = useQueryString();
   
   const { categoria, searchQuery, selectedTag, currentPage } = useMemo(() => {
-    const searchParams = new URLSearchParams(queryParams);
     return {
       categoria: searchParams.get("categoria") || "",
       searchQuery: searchParams.get("search") || "",
       selectedTag: searchParams.get("tag") || "",
       currentPage: parseInt(searchParams.get("page") || "1"),
     };
-  }, [queryParams]);
+  }, [searchParams]);
   
   const [searchInput, setSearchInput] = useState(searchQuery);
   const [allPosts, setAllPosts] = useState<Post[]>([]);
@@ -83,7 +80,8 @@ export default function Blog() {
       setError(null);
       
       try {
-        const url = queryParams ? `/api/posts?${queryParams}` : '/api/posts';
+        const queryString = searchParams.toString();
+        const url = queryString ? `/api/posts?${queryString}` : '/api/posts';
         const response = await fetch(url, { signal: controller.signal });
         if (!response.ok) throw new Error("Failed to fetch posts");
         const data: PostsResponse = await response.json();
@@ -104,9 +102,9 @@ export default function Blog() {
 
     fetchPosts();
     
-    // Cancella fetch precedente se queryParams cambiano
+    // Cancella fetch precedente se searchParams cambiano
     return () => controller.abort();
-  }, [queryParams]); // Ricarica quando cambiano i parametri URL
+  }, [searchParams]); // Ricarica quando cambiano i parametri URL
 
   const hasActiveFilters = Boolean(categoria || searchQuery);
 
@@ -116,43 +114,25 @@ export default function Blog() {
     tag?: string;
     page?: number;
   }) => {
-    const params = new URLSearchParams(queryParams);
+    const paramsUpdate: Record<string, string | null> = {};
     
     if (updates.categoria !== undefined) {
-      if (updates.categoria) {
-        params.set("categoria", updates.categoria);
-      } else {
-        params.delete("categoria");
-      }
+      paramsUpdate.categoria = updates.categoria || null;
     }
     
     if (updates.search !== undefined) {
-      if (updates.search) {
-        params.set("search", updates.search);
-      } else {
-        params.delete("search");
-      }
+      paramsUpdate.search = updates.search || null;
     }
     
     if (updates.tag !== undefined) {
-      if (updates.tag) {
-        params.set("tag", updates.tag);
-      } else {
-        params.delete("tag");
-      }
+      paramsUpdate.tag = updates.tag || null;
     }
     
     if (updates.page !== undefined) {
-      if (updates.page > 1) {
-        params.set("page", updates.page.toString());
-      } else {
-        params.delete("page");
-      }
+      paramsUpdate.page = updates.page > 1 ? updates.page.toString() : null;
     }
 
-    const newQueryString = params.toString();
-    const newUrl = `/blog${newQueryString ? `?${newQueryString}` : ""}`;
-    setLocation(newUrl);
+    updateParams(paramsUpdate);
   };
 
   const handleSearch = (e: React.FormEvent) => {
