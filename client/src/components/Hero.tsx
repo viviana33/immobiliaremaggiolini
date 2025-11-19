@@ -24,26 +24,26 @@ export default function Hero() {
             Quarant'anni al tuo fianco, ben oltre la firma
           </p>
           <div className="flex flex-col sm:flex-row gap-4">
-            <Link href="/immobili">
+            <Link href="/immobili" className="w-full sm:w-auto">
               <Button
                 size="lg"
                 variant="default"
-                className="gap-2 text-base"
+                className="w-full sm:w-auto gap-2 text-lg sm:text-base"
                 data-testid="button-discover-properties"
               >
-                <Search className="w-5 h-5" aria-hidden="true" />
+                <Search className="w-6 h-6 sm:w-5 sm:h-5" aria-hidden="true" />
                 Scopri le Proprietà
               </Button>
             </Link>
-            <Link href="/contatti">
+            <Link href="/contatti" className="w-full sm:w-auto">
               <Button
                 size="lg"
                 variant="outline"
-                className="gap-2 text-base bg-background/20 backdrop-blur-sm border-primary-foreground/30 text-primary-foreground hover:bg-background/30"
+                className="w-full sm:w-auto gap-2 text-lg sm:text-base bg-background/20 backdrop-blur-sm border-primary-foreground/30 text-primary-foreground hover:bg-background/30"
                 data-testid="button-contact-us"
               >
                 Contattaci
-                <ArrowRight className="w-5 h-5" aria-hidden="true" />
+                <ArrowRight className="w-6 h-6 sm:w-5 sm:h-5" aria-hidden="true" />
               </Button>
             </Link>
           </div>
