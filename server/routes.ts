@@ -102,7 +102,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
       console.log(`[LEAD] Nuovo contatto ricevuto - ID: ${lead.id}, Email: ${lead.email}, Fonte: ${lead.fonte || 'N/A'}`);
       
       // Invio email (non bloccante - se fallisce il lead è comunque salvato)
-      const adminEmail = process.env.ADMIN_EMAIL;
+      const adminEmail = "info@immobiliaremaggiolini.it";
       
       if (adminEmail) {
         try {
