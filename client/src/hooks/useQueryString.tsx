@@ -1,18 +1,23 @@
-import { useMemo, useCallback } from 'react';
+import { useMemo, useCallback, useState, useEffect } from 'react';
 import { useLocation } from 'wouter';
 
 /**
- * Hook per gestire query string URL usando SOLO wouter (no window.location).
- * Risolve race conditions sincronizzando perfettamente location e params.
+ * Hook per gestire query string URL.
+ * Sincronizza wouter location con window.location.search per gestire correttamente i query parameters.
  */
 export function useQueryString() {
   const [location, setLocation] = useLocation();
+  const [search, setSearch] = useState(() => window.location.search);
   
-  // Estrai search params da wouter location (format: "/path?query=value")
-  const searchParams = useMemo(() => {
-    const searchString = location.includes('?') ? location.split('?')[1] : '';
-    return new URLSearchParams(searchString);
+  // Sincronizza search con window.location.search quando location cambia
+  useEffect(() => {
+    setSearch(window.location.search);
   }, [location]);
+  
+  // Estrai search params da window.location.search
+  const searchParams = useMemo(() => {
+    return new URLSearchParams(search);
+  }, [search]);
 
   // Funzione per aggiornare i parametri URL
   const updateParams = useCallback((
@@ -45,7 +50,7 @@ export function useQueryString() {
     
     // Aggiorna location tramite wouter
     setLocation(newLocation);
-  }, [location, setLocation]);
+  }, [setLocation]);
 
   return {
     searchParams,
