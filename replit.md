@@ -27,7 +27,7 @@ Preferred communication style: Simple, everyday language.
 ### Data Layer
 - **ORM**: Drizzle ORM with Neon serverless PostgreSQL driver.
 - **Database Schema**:
-    - **Properties**: Includes details like title, description, price, type, area, rooms, bathrooms, energy class, zone, status (disponibile, venduto, affittato, riservato, archiviato), video link.
+    - **Properties**: Includes details like city (città), title, description, price, type, area, rooms, bathrooms, energy class, zone, status (disponibile, venduto, affittato, riservato, archiviato), video link. The city field appears before the title in the admin form and is displayed together with the zone in the format "City, Zone" on property cards and detail pages.
     - **Property Images**: Stores foreign keys to properties, hot/cold URLs, file hashes, archive flags, and position field for custom ordering. Supports drag-and-drop reordering in admin interface.
     - **Blog Posts**: Contains title, subtitle, slug, cover image, cover position (nascosta/inizio/fine), rich content, tags, category, author, status, SEO fields.
     - **Subscriptions**: Stores email, name, preferences (`blog_updates`, `new_listings`), consent data, and confirmation status.
