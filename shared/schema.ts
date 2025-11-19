@@ -14,6 +14,7 @@ export const coverPositionEnum = pgEnum("cover_position", ["nascosta", "inizio",
 export const properties = pgTable("properties", {
   id: varchar("id").primaryKey().default(sql`gen_random_uuid()`),
   slug: text("slug").notNull().unique(),
+  citta: text("citta").notNull(),
   titolo: text("titolo").notNull(),
   descrizione: text("descrizione").notNull(),
   prezzo: decimal("prezzo", { precision: 10, scale: 2 }).notNull(),

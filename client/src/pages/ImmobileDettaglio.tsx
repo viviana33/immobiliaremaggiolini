@@ -338,7 +338,7 @@ export default function ImmobileDettaglio() {
               
               <div className="flex items-center gap-2 text-muted-foreground mb-4">
                 <MapPin className="w-5 h-5" />
-                <span className="text-lg" data-testid="text-location">{property.zona}</span>
+                <span className="text-lg" data-testid="text-location">{property.citta}, {property.zona}</span>
               </div>
 
               <div className="text-3xl font-bold mb-6" data-testid="text-price-main">
@@ -493,7 +493,7 @@ export default function ImmobileDettaglio() {
                   <PropertyCard
                     slug={similar.slug}
                     title={similar.titolo}
-                    location={similar.zona}
+                    location={`${similar.citta}, ${similar.zona}`}
                     price={similar.tipo === "affitto" 
                       ? `€ ${Number(similar.prezzo).toLocaleString()}/mese`
                       : `€ ${Number(similar.prezzo).toLocaleString()}`

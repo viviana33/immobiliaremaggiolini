@@ -61,6 +61,7 @@ export default function AdminImmobileForm() {
     resolver: zodResolver(formSchema),
     defaultValues: {
       slug: "",
+      citta: "",
       titolo: "",
       descrizione: "",
       prezzo: "",
@@ -80,6 +81,7 @@ export default function AdminImmobileForm() {
     if (property) {
       form.reset({
         slug: property.slug,
+        citta: property.citta,
         titolo: property.titolo,
         descrizione: property.descrizione,
         prezzo: String(property.prezzo),
@@ -401,6 +403,20 @@ export default function AdminImmobileForm() {
               <CardTitle>Informazioni Principali</CardTitle>
             </CardHeader>
             <CardContent className="space-y-4">
+              <FormField
+                control={form.control}
+                name="citta"
+                render={({ field }) => (
+                  <FormItem>
+                    <FormLabel>Città</FormLabel>
+                    <FormControl>
+                      <Input {...field} placeholder="Es: Milano" data-testid="input-citta" />
+                    </FormControl>
+                    <FormMessage />
+                  </FormItem>
+                )}
+              />
+
               <FormField
                 control={form.control}
                 name="titolo"
