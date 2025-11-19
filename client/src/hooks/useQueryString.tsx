@@ -19,11 +19,11 @@ export function useQueryString() {
     updates: Record<string, string | null>, 
     options?: { deletePage?: boolean }
   ) => {
-    // Ottieni path corrente e search params
-    const [currentPath] = location.split('?');
-    const newParams = new URLSearchParams(
-      location.includes('?') ? location.split('?')[1] : ''
-    );
+    // Leggi SEMPRE dall'URL del browser (window.location) per avere i parametri più recenti
+    // Questo previene race conditions quando setLocation non ha ancora aggiornato wouter
+    const currentUrl = new URL(window.location.href);
+    const currentPath = currentUrl.pathname;
+    const newParams = new URLSearchParams(currentUrl.search);
     
     // Applica gli aggiornamenti
     Object.entries(updates).forEach(([key, value]) => {
@@ -43,7 +43,7 @@ export function useQueryString() {
     const newSearch = newParams.toString();
     const newLocation = newSearch ? `${currentPath}?${newSearch}` : currentPath;
     
-    // Aggiorna location tramite wouter (sincrono dal punto di vista del componente)
+    // Aggiorna location tramite wouter
     setLocation(newLocation);
   }, [location, setLocation]);
 

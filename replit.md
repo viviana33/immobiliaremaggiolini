@@ -2,7 +2,7 @@
 
 ## Overview
 
-Immobiliare Maggiolini is a real estate platform for a boutique Italian agency, aiming to project trust, warmth, and human connection. Its core purpose is to showcase property listings for sale and rent, provide informative blog content, and introduce the agency's team. The platform integrates a robust admin authentication system for content management. The design is inspired by Italian aesthetics, focusing on rich media display for properties and engaging blog articles to build client trust and market presence.
+Immobiliare Maggiolini is a real estate platform for a boutique Italian agency, designed to showcase property listings for sale and rent, provide informative blog content, and introduce the agency's team. It aims to project trust, warmth, and human connection through a design inspired by Italian aesthetics, focusing on rich media display and engaging articles. The platform includes a robust admin authentication system for content management, building client trust and market presence.
 
 ## User Preferences
 
@@ -11,114 +11,54 @@ Preferred communication style: Simple, everyday language.
 ## System Architecture
 
 ### Frontend
-- **Framework**: React 18+ with TypeScript, Vite.
-- **Routing**: Wouter with sessionStorage-based navigation tracking for property detail back navigation.
+- **Framework**: React 18+ with TypeScript, Vite, and Wouter for routing.
+- **UI/UX**: shadcn/ui (Radix UI) with Tailwind CSS, custom Mediterranean color palette, responsive mobile-first design, and dark mode.
 - **State Management**: TanStack Query for server state, React Context API for themes/sessions.
-- **UI Framework**: shadcn/ui (Radix UI) with Tailwind CSS, custom Mediterranean color palette, responsive mobile-first design, dark mode.
-- **Component Structure**: Organized by presentation, pages, UI primitives, and custom hooks.
-- **Image Carousel**: Custom `ImageCarousel` component with keyboard navigation (Arrow keys), touch/pointer swipe support, lazy loading for non-current images, smart prefetch (only next image), aspect ratio preservation, thumbnail navigation, descriptive alt text support, and full accessibility (ARIA labels, focus rings). Supports empty state with placeholder fallback. Uses instance-scoped prefetch to prevent conflicts when multiple carousels are mounted.
-- **Navigation UX**: Property listing pages (/proprieta and /immobili) set sessionStorage to track user's origin. Property detail pages read this value to correctly navigate back to the originating list when users click "Torna Indietro", with /immobili as safe fallback for direct links.
-- **Property Filters**: Both property listing pages (/proprieta and /immobili) feature advanced filtering and search capabilities:
-  * **City Search** (CitySearchBar): Search bar for filtering properties by city using case-insensitive partial matching
-  * **Type Filter** (TypeFilter): Select between "Tutti" (all), "Vendita" (sale), or "Affitto" (rent)
-  * **Sorting Controls** (SortingControls): Sort properties by most recent (default), price (ascending/descending), or area in square meters (ascending/descending)
-  * All filter components use `window.location.pathname` and `window.location.search` to read and preserve existing URL query parameters, ensuring filters work together correctly without dropping user selections
+- **Key Features**:
+    - **Image Carousel**: Custom component with keyboard navigation, touch/pointer swipe, lazy loading, smart prefetch, and full accessibility.
+    - **Navigation UX**: SessionStorage-based tracking for "back to list" functionality on property detail pages.
+    - **Property Filters**: Advanced filtering and search with URL-based state management, including city search, type filters, and sorting controls. Data fetching uses AbortController to prevent stale data.
 
 ### Backend
 - **Runtime**: Node.js with Express.js.
-- **API Design**: RESTful API with JSON, protected admin routes via session-based middleware.
-- **Session Management**: Express-session with PostgreSQL storage, HTTP-only cookies.
+- **API**: RESTful API with JSON, protected admin routes via session-based middleware.
+- **Session Management**: Express-session with PostgreSQL storage and HTTP-only cookies.
 
 ### Data Layer
 - **ORM**: Drizzle ORM with Neon serverless PostgreSQL driver.
-- **Database Schema**:
-    - **Properties**: Includes details like city (città), title, description, price, type, area, rooms, bathrooms, energy class, zone, status (disponibile, venduto, affittato, riservato, archiviato), video link. The city field appears before the title in the admin form and is displayed together with the zone in the format "City, Zone" on property cards and detail pages.
-    - **Property Images**: Stores foreign keys to properties, hot/cold URLs, file hashes, archive flags, and position field for custom ordering. Supports drag-and-drop reordering in admin interface.
-    - **Blog Posts**: Contains title, subtitle, slug, cover image, cover position (nascosta/inizio/fine), rich content, tags, category, author, status, SEO fields.
-    - **Subscriptions**: Stores email, name, preferences (`blog_updates`, `new_listings`), consent data, and confirmation status.
-    - **Leads**: Stores contact form submissions with nome, email, messaggio, fonte, contextId, newsletter consent, IP address, and creation timestamp.
-- **Property Management**: Supports URL-based filtering, detailed property pages with image galleries, video embeds, and related properties. Price formatting handles numeric strings from API ("180000.00") via `parseFloat(price.replace(/[^\d.-]/g, ''))` for correct locale-formatted display.
-  - **Search & Archive**: Property search functionality allows users to find properties by keywords in the title (e.g., searching "trilocale milano via meda 11" will match properties containing "trilocale", "milano", "meda", or "11"). Archived properties are excluded from default searches but can be included via checkbox. Properties are ordered from most recent to oldest by default. Sold properties are deleted, while rented properties can be archived for future re-listing.
-  - **Image Ordering**: Admin interface supports dual-method reordering of property images:
-    * **Drag and Drop**: Images can be reordered by dragging them to the desired position with native browser drag-and-drop
-    * **Chevron Buttons**: On hover, left/right chevron buttons appear for accessible, step-by-step reordering
-    Images are displayed with position indicators (1, 2, 3...) showing the current order. The order is persisted in the database via the `position` field. Backend endpoint `/api/admin/properties/:id/images/reorder` validates that all images belong to the specified property before updating positions for security.
-  - **Image Archiving Logic**: Property images are automatically archived/restored based on property status to optimize storage while preserving complete data for re-listing:
-    * **Archived State** (affittato): Images are archived automatically when a property is rented, keeping only the first 3 images active. This saves storage space while maintaining basic visibility.
-    * **Active States** (disponibile, riservato, archiviato, venduto): All images are kept active and visible. When archiving a property for future re-use, all images are preserved intact. Sold properties also keep all images visible.
-    * **Automatic Restoration**: Transitioning from "affittato" to any other state automatically restores all archived images, ensuring properties can be re-published with complete galleries.
-    Admin interface displays all images (including archived ones) with "Archiviata" badge for transparency. Public-facing pages filter archived images automatically.
-- **Blog Management**: Admin forms use React Hook Form with Zod validation, professional WYSIWYG editor (`RichTextEditor`), and a dual-storage image upload system (R2 for cold, Cloudinary for hot delivery). Public blog pages feature category filtering, pagination, and SEO considerations.
-  - **Cover Image Control**: Administrators can control if and where the cover image appears within blog post content via `coverPosition` field with three options:
-    * **Nascosta** (Hidden): Cover image is used for SEO meta tags and social sharing but not displayed in the article content
-    * **Inizio** (Start): Cover image appears before the article content (default behavior)
-    * **Fine** (End): Cover image appears after the article content
-    The setting is managed through a select field in the admin post form and persisted in the database with default value "inizio" for backward compatibility.
-  - **RichTextEditor**: Professional Tiptap-based WYSIWYG editor providing complete creative control over blog content. Features include:
-    * **Text Formatting**: Bold, Italic, Underline, Strikethrough, Code with instant visual feedback
-    * **Headings**: Three levels (H1, H2, H3) with customizable sizes - perfect for main headlines and section headings
-    * **Colors & Highlighting**: Custom text colors and text highlights via intuitive color pickers - full creative freedom
-    * **Text Alignment**: Left, Center, Right alignment for any content block
-    * **Lists & Quotes**: Bullet lists, numbered lists, and blockquotes for structured content
-    * **Images**: Insert via file upload or URL, fully resizable by clicking/dragging with visual resize handles, automatic responsive sizing. File uploads use the same `/api/admin/upload-post-image` endpoint as cover images (JPEG, PNG, WebP, GIF, max 8MB). Images can be repositioned using cut/paste, delete/re-insert, or alignment buttons.
-    * **Undo/Redo**: Complete edit history with keyboard shortcuts
-    * **Real-Time WYSIWYG**: Inline editing shows exactly how content will appear - no preview tab needed
-    * **Security (Defense-in-Depth)**:
-      - Editor-level: Blocks data: URIs (`allowBase64: false`)
-      - HTML-level: rehype-sanitize blocks dangerous tags (script, iframe), event handlers (onclick, onerror), and dangerous protocols (javascript:)
-      - Protocol-level: Only http/https/mailto allowed in URLs
-      - CSS-level: Custom plugin whitelists only `color`, `background-color`, `text-align` and blocks all `url()` to prevent data: URI attacks
-      - All content sanitized before rendering - no XSS vulnerabilities
-    * **Persistence**: Content stored as HTML, preserving all formatting including colors, highlights, alignment
-    * **Mobile-Friendly**: Responsive toolbar adapts to screen size
-- **Newsletter System**: Manages user subscriptions with double opt-in via Brevo integration, including preference updates, confirmation flows, and rate limiting. It also includes a "Thank You" page with upgrade flows for subscription preferences and a dedicated "Preferences" page for managing subscriptions.
-- **Property Listing Notifications**: Automated email notifications for new or newly available properties sent to subscribed users, integrated with Brevo transactional emails.
-- **One-Click Unsubscribe**: Token-based unsubscribe system with personalized links in all automated emails (blog posts and property listings). When users click the unsubscribe link, they are immediately unsubscribed from all lists and redirected to the Preferences page with a confirmation message. Admin receives email notification when someone unsubscribes, including user details and previous subscription preferences.
-- **Lead Management**: Admin interface for viewing and managing contact form submissions. Features include searchable lead list, detailed view dialog showing all lead information (nome, email, messaggio, fonte, newsletter consent, IP, timestamp), and delete functionality with confirmation. Accessible via `/admin/lead` route with protected admin authentication. Public lead submission via `/api/lead` endpoint includes honeypot anti-spam protection and automatic email notifications to admin and user.
-- **Type Safety**: Zod schemas for validation, shared TypeScript types, strict mode.
+- **Database Schema**: Includes `Properties`, `Property Images`, `Blog Posts`, `Subscriptions`, and `Leads`.
+- **Property Management**:
+    - Supports URL-based filtering, detailed property pages, and video embeds.
+    - Advanced search functionality (keywords in title) with options to include archived properties.
+    - Dual-method image reordering (drag-and-drop, chevron buttons) in the admin interface, persisted via a `position` field.
+    - Automated image archiving/restoration based on property status (e.g., only first 3 images active when "affittato").
+- **Blog Management**:
+    - Admin forms use React Hook Form with Zod validation.
+    - Professional WYSIWYG editor (`RichTextEditor`) based on Tiptap, offering extensive text formatting, image handling, and security measures against XSS.
+    - Dual-storage image upload system (R2 for cold, Cloudinary for hot delivery).
+    - `coverPosition` field to control cover image visibility within blog posts (Hidden, Start, End).
+- **Newsletter System**: Manages user subscriptions with double opt-in via Brevo, including preference updates and one-click unsubscribe functionality.
+- **Property Listing Notifications**: Automated email notifications for new properties.
+- **Lead Management**: Admin interface for viewing and managing contact form submissions, with honeypot anti-spam protection on the public endpoint.
+- **Type Safety**: Zod schemas, shared TypeScript types, strict mode.
 - **Database Migrations**: Drizzle Kit.
 
 ### Authentication & Authorization
-- **Strategy**: Token-based admin authentication using a single `ADMIN_TOKEN`.
+- **Strategy**: Token-based admin authentication using `ADMIN_TOKEN`.
 - **Security**: Client-side `ProtectedRoute` and server-side `requireAdmin` middleware, secure HTTP-only cookies.
 
-### Build & Deployment
-- **Development**: `npm run dev` with Vite and `tsx`, HMR.
-- **Production**: Client built to `/dist/public`, Server to `/dist/index.js`.
-- **Assets**: Static assets in `/attached_assets/generated_images`, Vite image optimization.
-
 ### SEO & Discoverability
-- **Sitemap XML**: Dynamically generated for static pages, available properties, and published blog posts, adhering to sitemap.org schema with prioritized URLs and update frequencies.
-- **JSON-LD Structured Data**: Implements schemas for `RealEstateAgent` (site-wide), `Article` (blog posts), and `Product`/`RentAction` (property details) to enhance search engine understanding.
-- **Meta Tags Helper**: Centralized SEO utility (`client/src/lib/seo.ts`) with `usePageMeta` hook for setting default meta tags, Open Graph tags, and Twitter Cards. Applied to all pages including Home, Chi Siamo, Contatti, Immobili, Blog, Grazie, Preferenze, Not Found, and Proprieta. Individual property and blog post pages have custom meta tags with dynamic content.
-- **Property Page SEO Optimizations**:
-  - **Meta Title**: Format `Property.title | Immobiliare Maggiolini` for consistent branding
-  - **Meta Description**: Sanitized from property description (strips HTML and Markdown: bold, italic, code, headings, links, lists, blockquotes), limited to 150-160 characters including ellipsis, truncated at word boundaries
-  - **Image Alt Text**: Descriptive format `Property.title - immagine N` for all images (carousel main, thumbnails, property cards)
-  - **Smart Image Prefetch**: Only the next image in carousel is prefetched using instance-scoped `<link rel="prefetch">` tags to optimize performance without aggressive resource loading
+- **Sitemap XML**: Dynamically generated for static pages, properties, and blog posts.
+- **JSON-LD Structured Data**: Implements schemas for `RealEstateAgent`, `Article`, and `Product`/`RentAction`.
+- **Meta Tags**: Centralized SEO utility with `usePageMeta` hook for default, Open Graph, and Twitter Card tags.
+- **Property Page SEO**: Optimized meta titles, descriptions (sanitized and truncated), and descriptive image alt text. Smart image prefetch for carousels.
 
 ## External Dependencies
 
-### Core & Runtime
-- `express`, `react`, `react-dom`, `typescript`, `vite`.
-
-### Database & ORM
-- `drizzle-orm`, `@neondatabase/serverless`, `drizzle-kit`, `drizzle-zod`.
-
-### UI & Styling
-- `tailwindcss`, `@radix-ui/react-*`, `shadcn/ui` components, `lucide-react`.
-
-### State & Data Fetching
-- `@tanstack/react-query`, `wouter`, `react-hook-form`, `zod`.
-
-### Session & Authentication
-- `express-session`, `connect-pg-simple`.
-
-### Image Upload & Storage
-- `sharp` (image processing), `@aws-sdk/client-s3` (Cloudflare R2), `multer`, `cloudinary`.
-
-### Email Marketing
-- `@getbrevo/brevo` (for newsletter and transactional emails).
-
-### SEO
-- Implemented with sitemap.xml and JSON-LD structured data.
+- **Core & Runtime**: `express`, `react`, `react-dom`, `typescript`, `vite`.
+- **Database & ORM**: `drizzle-orm`, `@neondatabase/serverless`, `drizzle-kit`, `drizzle-zod`.
+- **UI & Styling**: `tailwindcss`, `@radix-ui/react-*`, `shadcn/ui` components, `lucide-react`.
+- **State & Data Fetching**: `@tanstack/react-query`, `wouter`, `react-hook-form`, `zod`.
+- **Session & Authentication**: `express-session`, `connect-pg-simple`.
+- **Image Upload & Storage**: `sharp`, `@aws-sdk/client-s3` (Cloudflare R2), `multer`, `cloudinary`.
+- **Email Marketing**: `@getbrevo/brevo`.

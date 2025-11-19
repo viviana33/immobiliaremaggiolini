@@ -1,41 +1,47 @@
 import { Label } from "@/components/ui/label";
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
-import { useState, useEffect } from "react";
+import { Button } from "@/components/ui/button";
 import { useQueryString } from "@/hooks/useQueryString";
 
 export default function TypeFilter() {
   const { searchParams, updateParams } = useQueryString();
   
-  const [typeValue, setTypeValue] = useState(() => searchParams.get("tipo") || "tutti");
+  // Leggi valore direttamente dall'URL
+  const activeType = searchParams.get("tipo") || "tutti";
 
-  useEffect(() => {
-    const urlTipo = searchParams.get("tipo") || "tutti";
-    setTypeValue(urlTipo);
-  }, [searchParams]);
-
-  const handleTypeChange = (value: string) => {
-    updateParams({ tipo: value });
+  const handleTypeClick = (type: string) => {
+    // Se "tutti", rimuovi il parametro passando null
+    updateParams({ tipo: type === 'tutti' ? null : type });
   };
 
   return (
     <div className="flex flex-col gap-2">
-      <Label htmlFor="type-select" className="text-sm font-medium">
-        Tipo
-      </Label>
-      <Select value={typeValue} onValueChange={handleTypeChange}>
-        <SelectTrigger 
-          id="type-select"
-          className="w-[160px]" 
-          data-testid="select-type"
+      <Label className="text-sm font-medium">Tipo</Label>
+      <div className="flex gap-2">
+        <Button
+          variant={activeType === "tutti" ? "default" : "outline"}
+          size="sm"
+          onClick={() => handleTypeClick("tutti")}
+          data-testid="filter-type-tutti"
         >
-          <SelectValue placeholder="Seleziona tipo" />
-        </SelectTrigger>
-        <SelectContent>
-          <SelectItem value="tutti" data-testid="option-type-tutti">Tutti</SelectItem>
-          <SelectItem value="vendita" data-testid="option-type-vendita">Vendita</SelectItem>
-          <SelectItem value="affitto" data-testid="option-type-affitto">Affitto</SelectItem>
-        </SelectContent>
-      </Select>
+          Tutti
+        </Button>
+        <Button
+          variant={activeType === "vendita" ? "default" : "outline"}
+          size="sm"
+          onClick={() => handleTypeClick("vendita")}
+          data-testid="filter-type-vendita"
+        >
+          Vendita
+        </Button>
+        <Button
+          variant={activeType === "affitto" ? "default" : "outline"}
+          size="sm"
+          onClick={() => handleTypeClick("affitto")}
+          data-testid="filter-type-affitto"
+        >
+          Affitto
+        </Button>
+      </div>
     </div>
   );
 }

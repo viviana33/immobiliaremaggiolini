@@ -1,4 +1,3 @@
-import { useState, useEffect } from "react";
 import {
   Select,
   SelectContent,
@@ -12,15 +11,12 @@ import { useQueryString } from "@/hooks/useQueryString";
 export default function SortingControls() {
   const { searchParams, updateParams } = useQueryString();
   
-  const [sortValue, setSortValue] = useState(() => searchParams.get("sort") || "recente");
-
-  useEffect(() => {
-    const urlSort = searchParams.get("sort") || "recente";
-    setSortValue(urlSort);
-  }, [searchParams]);
+  // Leggi valore direttamente dall'URL (no state locale)
+  const sortValue = searchParams.get("sort") || "recente";
 
   const handleSortChange = (value: string) => {
-    updateParams({ sort: value });
+    // Se "recente", rimuovi il parametro passando null
+    updateParams({ sort: value === 'recente' ? null : value });
   };
 
   return (
