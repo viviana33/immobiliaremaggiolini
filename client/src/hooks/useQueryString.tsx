@@ -1,18 +1,45 @@
-import { useMemo, useCallback, useState, useEffect } from 'react';
+import { useMemo, useCallback, useState, useEffect, useSyncExternalStore } from 'react';
 import { useLocation } from 'wouter';
+
+// Store esterno per sincronizzare window.location.search con React
+function getSearchSnapshot() {
+  return window.location.search;
+}
+
+function subscribeToSearch(callback: () => void) {
+  // Listener per popstate (back/forward del browser)
+  window.addEventListener('popstate', callback);
+  
+  // Listener personalizzato per quando setLocation viene chiamato
+  const originalPushState = window.history.pushState;
+  const originalReplaceState = window.history.replaceState;
+  
+  window.history.pushState = function(...args) {
+    originalPushState.apply(window.history, args);
+    callback();
+  };
+  
+  window.history.replaceState = function(...args) {
+    originalReplaceState.apply(window.history, args);
+    callback();
+  };
+  
+  return () => {
+    window.removeEventListener('popstate', callback);
+    window.history.pushState = originalPushState;
+    window.history.replaceState = originalReplaceState;
+  };
+}
 
 /**
  * Hook per gestire query string URL.
- * Sincronizza wouter location con window.location.search per gestire correttamente i query parameters.
+ * Usa useSyncExternalStore per sincronizzare automaticamente con window.location.search.
  */
 export function useQueryString() {
-  const [location, setLocation] = useLocation();
-  const [search, setSearch] = useState(() => window.location.search);
+  const [, setLocation] = useLocation();
   
-  // Sincronizza search con window.location.search quando location cambia
-  useEffect(() => {
-    setSearch(window.location.search);
-  }, [location]);
+  // Sincronizza con window.location.search usando useSyncExternalStore
+  const search = useSyncExternalStore(subscribeToSearch, getSearchSnapshot, getSearchSnapshot);
   
   // Estrai search params da window.location.search
   const searchParams = useMemo(() => {
