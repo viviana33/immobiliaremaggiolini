@@ -201,9 +201,11 @@ export class DbStorage implements IStorage {
   private getOrderBy(sort?: string) {
     switch (sort) {
       case "prezzo_asc":
-        return asc(properties.prezzo);
+        // Converte prezzo in numeric per ordinamento corretto
+        return asc(sql`CAST(${properties.prezzo} AS NUMERIC)`);
       case "prezzo_desc":
-        return desc(properties.prezzo);
+        // Converte prezzo in numeric per ordinamento corretto
+        return desc(sql`CAST(${properties.prezzo} AS NUMERIC)`);
       case "mq_asc":
         return asc(properties.mq);
       case "mq_desc":
