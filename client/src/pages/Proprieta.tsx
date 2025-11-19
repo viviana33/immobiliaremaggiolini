@@ -79,7 +79,7 @@ export default function Proprieta() {
               <div className="flex-1">
                 <CitySearchBar />
               </div>
-              <div className="flex flex-col sm:flex-row gap-4">
+              <div className="flex flex-row gap-4">
                 <TypeFilter />
                 <SortingControls />
               </div>
