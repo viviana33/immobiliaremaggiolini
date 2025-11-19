@@ -3,6 +3,8 @@ import PropertyCard from "@/components/PropertyCard";
 import PropertyCardSkeleton from "@/components/PropertyCardSkeleton";
 import SortingControls from "@/components/SortingControls";
 import PaginationControls from "@/components/PaginationControls";
+import CitySearchBar from "@/components/CitySearchBar";
+import TypeFilter from "@/components/TypeFilter";
 import { useLocation } from "wouter";
 import { usePageMeta } from "@/lib/seo";
 import { useEffect } from "react";
@@ -89,9 +91,20 @@ export default function Immobili() {
 
         <section className="py-16 md:py-20">
           <div className="max-w-7xl mx-auto px-6 md:px-8">
-            <div className="flex flex-wrap items-center justify-between gap-4 mb-8">
-              <div className="h-5 w-32 bg-muted rounded animate-pulse" />
-              <div className="h-10 w-48 bg-muted rounded animate-pulse" />
+            <div className="mb-8 space-y-6">
+              <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+                <div className="lg:col-span-2">
+                  <CitySearchBar />
+                </div>
+                <div className="flex flex-wrap gap-4">
+                  <TypeFilter />
+                  <SortingControls />
+                </div>
+              </div>
+              
+              <div className="flex items-center justify-between gap-4">
+                <div className="h-5 w-32 bg-muted rounded animate-pulse" />
+              </div>
             </div>
             <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
               {Array.from({ length: 6 }).map((_, i) => (
@@ -120,13 +133,22 @@ export default function Immobili() {
 
         <section className="py-16 md:py-20">
           <div className="max-w-7xl mx-auto px-6 md:px-8">
-            <div className="flex flex-wrap items-center justify-between gap-4 mb-8">
-              <div>
+            <div className="mb-8 space-y-6">
+              <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+                <div className="lg:col-span-2">
+                  <CitySearchBar />
+                </div>
+                <div className="flex flex-wrap gap-4">
+                  <TypeFilter />
+                  <SortingControls />
+                </div>
+              </div>
+              
+              <div className="flex items-center justify-between gap-4">
                 <p className="text-sm text-muted-foreground" data-testid="text-results-count">
                   0 immobili trovati
                 </p>
               </div>
-              <SortingControls />
             </div>
             
             <div className="text-center py-20">
@@ -155,13 +177,22 @@ export default function Immobili() {
 
       <section className="py-16 md:py-20">
         <div className="max-w-7xl mx-auto px-6 md:px-8">
-          <div className="flex flex-wrap items-center justify-between gap-4 mb-8">
-            <div>
+          <div className="mb-8 space-y-6">
+            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+              <div className="lg:col-span-2">
+                <CitySearchBar />
+              </div>
+              <div className="flex flex-wrap gap-4">
+                <TypeFilter />
+                <SortingControls />
+              </div>
+            </div>
+            
+            <div className="flex items-center justify-between gap-4">
               <p className="text-sm text-muted-foreground" data-testid="text-results-count">
                 {pagination?.total || 0} {pagination?.total === 1 ? "immobile trovato" : "immobili trovati"}
               </p>
             </div>
-            <SortingControls />
           </div>
           
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
