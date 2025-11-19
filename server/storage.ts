@@ -103,6 +103,12 @@ export interface IStorage {
 }
 
 export class DbStorage implements IStorage {
+  // Helper per escapare caratteri speciali SQL LIKE (%, _, \)
+  // Prima esegue l'escape dei backslash, poi dei caratteri jolly
+  private escapeLikePattern(input: string): string {
+    return input.replace(/\\/g, '\\\\').replace(/[%_]/g, '\\$&');
+  }
+
   async getUser(id: string): Promise<User | undefined> {
     const [user] = await db.select().from(users).where(eq(users.id, id));
     return user;
@@ -128,17 +134,19 @@ export class DbStorage implements IStorage {
     // Ricerca per parole chiave nel titolo
     if (filters.search) {
       const searchTerms = filters.search.trim().split(/\s+/);
-      const searchConditions = searchTerms.map(term => 
-        ilike(properties.titolo, `%${term}%`)
-      );
+      const searchConditions = searchTerms.map(term => {
+        const escapedTerm = this.escapeLikePattern(term);
+        return ilike(properties.titolo, `%${escapedTerm}%`);
+      });
       if (searchConditions.length > 0) {
         conditions.push(or(...searchConditions));
       }
     }
     
-    // Ricerca per città (match esatto, case-insensitive)
+    // Ricerca per città (ricerca parziale, case-insensitive)
     if (filters.citta) {
-      conditions.push(sql`LOWER(${properties.citta}) = LOWER(${filters.citta})`);
+      const escapedCitta = this.escapeLikePattern(filters.citta);
+      conditions.push(ilike(properties.citta, `%${escapedCitta}%`));
     }
     
     // Escludi immobili archiviati per default, a meno che non sia specificato
@@ -375,7 +383,8 @@ export class DbStorage implements IStorage {
     }
     
     if (filters.search) {
-      const searchTerm = `%${filters.search}%`;
+      const escapedSearch = this.escapeLikePattern(filters.search);
+      const searchTerm = `%${escapedSearch}%`;
       // Ricerca intelligente: cerca in titolo, sottotitolo, contenuto e tag
       // Gli hashtag aiutano la ricerca semantica senza essere visibili
       conditions.push(
