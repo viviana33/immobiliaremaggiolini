@@ -76,18 +76,24 @@ export default function Blog() {
 
   // Fetch posts ogni volta che cambiano i parametri URL
   useEffect(() => {
+    const controller = new AbortController();
+    
     const fetchPosts = async () => {
       setIsLoading(true);
       setError(null);
       
       try {
         const url = queryParams ? `/api/posts?${queryParams}` : '/api/posts';
-        const response = await fetch(url);
+        const response = await fetch(url, { signal: controller.signal });
         if (!response.ok) throw new Error("Failed to fetch posts");
         const data: PostsResponse = await response.json();
         setAllPosts(data.posts || []);
         setPagination(data.pagination);
       } catch (err) {
+        // Ignora errori di cancellazione
+        if (err instanceof Error && err.name === 'AbortError') {
+          return;
+        }
         setError(err instanceof Error ? err : new Error('Unknown error'));
         setAllPosts([]);
         setPagination(undefined);
@@ -97,6 +103,9 @@ export default function Blog() {
     };
 
     fetchPosts();
+    
+    // Cancella fetch precedente se queryParams cambiano
+    return () => controller.abort();
   }, [queryParams]); // Ricarica quando cambiano i parametri URL
 
   const hasActiveFilters = Boolean(categoria || searchQuery);

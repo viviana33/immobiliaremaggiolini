@@ -50,6 +50,8 @@ export default function Immobili() {
 
   // Fetch properties ogni volta che cambiano i parametri URL
   useEffect(() => {
+    const controller = new AbortController();
+    
     const fetchProperties = async () => {
       setIsLoading(true);
       setError(null);
@@ -58,7 +60,7 @@ export default function Immobili() {
         // Usa queryString da wouter location
         const url = queryString ? `/api/properties?${queryString}` : '/api/properties';
         
-        const response = await fetch(url);
+        const response = await fetch(url, { signal: controller.signal });
         if (!response.ok) {
           throw new Error('Errore nel caricamento degli immobili');
         }
@@ -67,6 +69,10 @@ export default function Immobili() {
         setProperties(data.properties || []);
         setPagination(data.pagination);
       } catch (err) {
+        // Ignora errori di cancellazione
+        if (err instanceof Error && err.name === 'AbortError') {
+          return;
+        }
         setError(err instanceof Error ? err.message : 'Errore sconosciuto');
         setProperties([]);
         setPagination(undefined);
@@ -76,6 +82,9 @@ export default function Immobili() {
     };
 
     fetchProperties();
+    
+    // Cancella fetch precedente se queryString cambia
+    return () => controller.abort();
   }, [queryString]); // Ricarica quando cambia queryString da wouter
 
   if (error) {

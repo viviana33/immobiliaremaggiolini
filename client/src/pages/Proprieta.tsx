@@ -47,6 +47,8 @@ export default function Proprieta() {
 
   // Fetch properties ogni volta che cambiano i parametri URL
   useEffect(() => {
+    const controller = new AbortController();
+    
     const fetchProperties = async () => {
       setIsLoading(true);
       setError(null);
@@ -55,7 +57,7 @@ export default function Proprieta() {
         // Usa queryString da wouter location
         const url = queryString ? `/api/properties?${queryString}` : '/api/properties';
         
-        const response = await fetch(url);
+        const response = await fetch(url, { signal: controller.signal });
         if (!response.ok) {
           throw new Error('Errore nel caricamento delle proprietà');
         }
@@ -63,6 +65,10 @@ export default function Proprieta() {
         const data: PropertiesResponse = await response.json();
         setProperties(data.properties || []);
       } catch (err) {
+        // Ignora errori di cancellazione
+        if (err instanceof Error && err.name === 'AbortError') {
+          return;
+        }
         setError(err instanceof Error ? err.message : 'Errore sconosciuto');
         setProperties([]);
       } finally {
@@ -71,6 +77,9 @@ export default function Proprieta() {
     };
 
     fetchProperties();
+    
+    // Cancella fetch precedente se queryString cambia
+    return () => controller.abort();
   }, [queryString]); // Ricarica quando cambia queryString da wouter
 
   return (
