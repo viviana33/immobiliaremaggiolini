@@ -1,7 +1,7 @@
 import { Button } from "@/components/ui/button";
 import { ArrowRight, Search } from "lucide-react";
 import { Link } from "wouter";
-import heroImage from "@assets/WhatsApp Image 2025-11-19 at 16.53.37_1763567640518.jpeg";
+import heroImage from "@assets/generated_images/Italian_villa_hero_image_8b4b5e4b.png";
 
 export default function Hero() {
   return (
@@ -10,7 +10,7 @@ export default function Hero() {
         className="absolute inset-0 bg-cover bg-center"
         style={{ backgroundImage: `url(${heroImage})` }}
         role="img"
-        aria-label="Ufficio moderno e accogliente"
+        aria-label="Villa italiana di lusso con giardino"
       >
         <div className="absolute inset-0 bg-gradient-to-r from-black/50 via-black/30 to-transparent" />
       </div>
