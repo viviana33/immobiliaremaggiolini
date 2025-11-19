@@ -100,6 +100,12 @@ export default function Contatti() {
           <p className="text-lg md:text-xl text-primary-foreground/90 leading-relaxed">
             Vieni a trovarci nel nostro ufficio. Un caffè è sempre pronto per i nostri ospiti!
           </p>
+          <div className="flex items-center justify-center gap-2 text-primary-foreground/95">
+            <MapPin className="w-5 h-5" />
+            <p className="text-lg font-medium">
+              Via Paolo Castelnovo, 14, 20015 Parabiago (MI)
+            </p>
+          </div>
           <div className="flex flex-col sm:flex-row gap-4 justify-center pt-4">
             <div className="bg-primary-foreground/10 backdrop-blur-sm border border-primary-foreground/20 rounded-md px-6 py-3">
               <p className="text-sm text-primary-foreground/80">Lunedì - Venerdì</p>
