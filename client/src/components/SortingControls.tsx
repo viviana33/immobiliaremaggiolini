@@ -51,7 +51,7 @@ export default function SortingControls() {
       <Select value={sortValue} onValueChange={handleSortChange}>
         <SelectTrigger 
           id="sort-select"
-          className="w-full min-w-[180px]" 
+          className="w-[160px]" 
           data-testid="select-sort"
         >
           <SelectValue placeholder="Seleziona ordinamento" />
