@@ -113,8 +113,8 @@ class BrevoService {
       sendSmtpEmail.sender = params.sender;
     } else {
       sendSmtpEmail.sender = {
-        email: process.env.BREVO_SENDER_EMAIL || "noreply@maggiolini.com",
-        name: process.env.BREVO_SENDER_NAME || "Maggiolini Real Estate"
+        email: process.env.BREVO_SENDER_EMAIL || "info@immobiliaremaggiolini.it",
+        name: process.env.BREVO_SENDER_NAME || "Immobiliare Maggiolini"
       };
     }
 
@@ -122,6 +122,9 @@ class BrevoService {
       await this.emailApiInstance.sendTransacEmail(sendSmtpEmail);
     } catch (error: any) {
       console.error("Errore Brevo sendTransactionalEmail:", error.response?.body || error.message);
+      console.error("Dettagli completi errore:", JSON.stringify(error.response?.body, null, 2));
+      console.error("Email mittente:", sendSmtpEmail.sender);
+      console.error("Email destinatario:", sendSmtpEmail.to);
       throw new Error("Errore nell'invio dell'email");
     }
   }
