@@ -1,5 +1,8 @@
 import PropertyCard from "@/components/PropertyCard";
 import PropertyCardSkeleton from "@/components/PropertyCardSkeleton";
+import CitySearchBar from "@/components/CitySearchBar";
+import TypeFilter from "@/components/TypeFilter";
+import SortingControls from "@/components/SortingControls";
 import { useEffect } from "react";
 import { useQuery } from "@tanstack/react-query";
 import { useLocation } from "wouter";
@@ -71,6 +74,18 @@ export default function Proprieta() {
 
       <section className="py-16 md:py-20">
         <div className="max-w-7xl mx-auto px-6 md:px-8">
+          <div className="mb-8 space-y-6">
+            <div className="flex flex-col md:flex-row gap-4 items-start md:items-end justify-between">
+              <div className="flex-1 w-full md:max-w-md">
+                <CitySearchBar />
+              </div>
+              <div className="flex flex-col sm:flex-row gap-4 w-full md:w-auto">
+                <TypeFilter />
+                <SortingControls />
+              </div>
+            </div>
+          </div>
+
           {isLoading ? (
             <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
               {Array.from({ length: 6 }).map((_, i) => (
