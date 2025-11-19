@@ -37,7 +37,7 @@ export default function Immobili() {
     description: 'Trova il tuo immobile ideale tra le nostre proprietà selezionate in vendita e affitto a Milano, Monza e Brianza. Appartamenti, ville, attici e molto altro.',
   });
 
-  const { searchParams } = useQueryString();
+  const { queryString } = useQueryString();
   
   const [properties, setProperties] = useState<Property[]>([]);
   const [pagination, setPagination] = useState<PaginationData | undefined>(undefined);
@@ -48,16 +48,15 @@ export default function Immobili() {
     sessionStorage.setItem('propertyListSource', '/immobili');
   }, []);
 
-  // Fetch properties ogni volta che cambiano i parametri di ricerca
+  // Fetch properties ogni volta che cambiano i parametri URL
   useEffect(() => {
     const fetchProperties = async () => {
       setIsLoading(true);
       setError(null);
       
       try {
-        // Costruisci URL direttamente da window.location.search
-        const search = window.location.search;
-        const url = search ? `/api/properties${search}` : '/api/properties';
+        // Usa queryString da wouter location
+        const url = queryString ? `/api/properties?${queryString}` : '/api/properties';
         
         const response = await fetch(url);
         if (!response.ok) {
@@ -77,7 +76,7 @@ export default function Immobili() {
     };
 
     fetchProperties();
-  }, [searchParams.toString()]); // Ricarica quando cambiano i parametri URL
+  }, [queryString]); // Ricarica quando cambia queryString da wouter
 
   if (error) {
     return (

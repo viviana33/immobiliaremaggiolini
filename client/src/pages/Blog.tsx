@@ -4,7 +4,6 @@ import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { Input } from "@/components/ui/input";
 import { useState, useEffect, useMemo } from "react";
-import { useQuery } from "@tanstack/react-query";
 import type { Post } from "@shared/schema";
 import { Loader2, AlertCircle, Search, X, FileText, ChevronLeft, ChevronRight } from "lucide-react";
 import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert";
@@ -66,26 +65,39 @@ export default function Blog() {
   }, [queryParams]);
   
   const [searchInput, setSearchInput] = useState(searchQuery);
+  const [allPosts, setAllPosts] = useState<Post[]>([]);
+  const [pagination, setPagination] = useState<PostsResponse['pagination'] | undefined>(undefined);
+  const [isLoading, setIsLoading] = useState(true);
+  const [error, setError] = useState<Error | null>(null);
 
   useEffect(() => {
     setSearchInput(searchQuery);
   }, [searchQuery]);
 
-  const queryKey = queryParams ? ['/api/posts', queryParams] : ['/api/posts'];
+  // Fetch posts ogni volta che cambiano i parametri URL
+  useEffect(() => {
+    const fetchPosts = async () => {
+      setIsLoading(true);
+      setError(null);
+      
+      try {
+        const url = queryParams ? `/api/posts?${queryParams}` : '/api/posts';
+        const response = await fetch(url);
+        if (!response.ok) throw new Error("Failed to fetch posts");
+        const data: PostsResponse = await response.json();
+        setAllPosts(data.posts || []);
+        setPagination(data.pagination);
+      } catch (err) {
+        setError(err instanceof Error ? err : new Error('Unknown error'));
+        setAllPosts([]);
+        setPagination(undefined);
+      } finally {
+        setIsLoading(false);
+      }
+    };
 
-  const { data, isLoading, error } = useQuery<PostsResponse>({
-    queryKey,
-    queryFn: async ({ queryKey }) => {
-      const params = queryKey[1] as string | undefined;
-      const url = params ? `/api/posts?${params}` : '/api/posts';
-      const response = await fetch(url);
-      if (!response.ok) throw new Error("Failed to fetch posts");
-      return response.json();
-    },
-  });
-
-  const allPosts = data?.posts || [];
-  const pagination = data?.pagination;
+    fetchPosts();
+  }, [queryParams]); // Ricarica quando cambiano i parametri URL
 
   const hasActiveFilters = Boolean(categoria || searchQuery);
 

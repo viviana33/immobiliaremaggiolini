@@ -1,29 +1,31 @@
-import { useState, useEffect, useCallback } from 'react';
+import { useMemo, useCallback } from 'react';
 import { useLocation } from 'wouter';
 
+/**
+ * Hook per gestire query string URL usando SOLO wouter (no window.location).
+ * Risolve race conditions sincronizzando perfettamente location e params.
+ */
 export function useQueryString() {
-  const [_, setLocation] = useLocation();
+  const [location, setLocation] = useLocation();
   
-  // Trigger per forzare re-render quando cambiano i params
-  const [updateTrigger, setUpdateTrigger] = useState(0);
-  
-  useEffect(() => {
-    // Ascolta cambiamenti di history (back/forward)
-    const handlePopState = () => {
-      setUpdateTrigger(prev => prev + 1);
-    };
-    
-    window.addEventListener('popstate', handlePopState);
-    return () => window.removeEventListener('popstate', handlePopState);
-  }, []);
-  
-  // Leggi sempre da window.location.search per evitare race conditions
-  const searchParams = new URLSearchParams(window.location.search);
+  // Estrai search params da wouter location (format: "/path?query=value")
+  const searchParams = useMemo(() => {
+    const searchString = location.includes('?') ? location.split('?')[1] : '';
+    return new URLSearchParams(searchString);
+  }, [location]);
 
-  const updateParams = useCallback((updates: Record<string, string | null>, options?: { deletePage?: boolean }) => {
-    const currentPath = window.location.pathname;
-    const newParams = new URLSearchParams(window.location.search);
+  // Funzione per aggiornare i parametri URL
+  const updateParams = useCallback((
+    updates: Record<string, string | null>, 
+    options?: { deletePage?: boolean }
+  ) => {
+    // Ottieni path corrente e search params
+    const [currentPath] = location.split('?');
+    const newParams = new URLSearchParams(
+      location.includes('?') ? location.split('?')[1] : ''
+    );
     
+    // Applica gli aggiornamenti
     Object.entries(updates).forEach(([key, value]) => {
       if (value === null || value === '' || value === 'tutti' || value === 'recente') {
         newParams.delete(key);
@@ -32,19 +34,18 @@ export function useQueryString() {
       }
     });
     
+    // Rimuovi page se richiesto (default: true quando si applicano filtri)
     if (options?.deletePage !== false) {
       newParams.delete('page');
     }
     
+    // Costruisci nuovo URL
     const newSearch = newParams.toString();
     const newLocation = newSearch ? `${currentPath}?${newSearch}` : currentPath;
     
+    // Aggiorna location tramite wouter (sincrono dal punto di vista del componente)
     setLocation(newLocation);
-    // Aspetta che wouter aggiorni window.location, poi triggera re-render
-    setTimeout(() => {
-      setUpdateTrigger(prev => prev + 1);
-    }, 0);
-  }, [setLocation]);
+  }, [location, setLocation]);
 
   return {
     searchParams,

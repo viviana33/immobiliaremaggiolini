@@ -35,7 +35,7 @@ export default function Proprieta() {
     title: 'Proprietà in Vendita e Affitto',
     description: 'Esplora le nostre proprietà selezionate in vendita e affitto. Trova casa a Milano, Monza e Brianza con Immobiliare Maggiolini.',
   });
-  const { searchParams } = useQueryString();
+  const { queryString } = useQueryString();
   
   const [properties, setProperties] = useState<Property[]>([]);
   const [isLoading, setIsLoading] = useState(true);
@@ -45,16 +45,15 @@ export default function Proprieta() {
     sessionStorage.setItem('propertyListSource', '/proprieta');
   }, []);
 
-  // Fetch properties ogni volta che cambiano i parametri di ricerca
+  // Fetch properties ogni volta che cambiano i parametri URL
   useEffect(() => {
     const fetchProperties = async () => {
       setIsLoading(true);
       setError(null);
       
       try {
-        // Costruisci URL direttamente da window.location.search
-        const search = window.location.search;
-        const url = search ? `/api/properties${search}` : '/api/properties';
+        // Usa queryString da wouter location
+        const url = queryString ? `/api/properties?${queryString}` : '/api/properties';
         
         const response = await fetch(url);
         if (!response.ok) {
@@ -72,7 +71,7 @@ export default function Proprieta() {
     };
 
     fetchProperties();
-  }, [searchParams.toString()]); // Ricarica quando cambiano i parametri URL
+  }, [queryString]); // Ricarica quando cambia queryString da wouter
 
   return (
     <div className="min-h-screen bg-background">
