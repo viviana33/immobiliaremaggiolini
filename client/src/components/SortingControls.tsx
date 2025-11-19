@@ -26,7 +26,9 @@ export default function SortingControls() {
   }, [queryString]);
 
   const handleSortChange = (value: string) => {
-    const newSearchParams = new URLSearchParams(queryString);
+    const currentPath = window.location.pathname;
+    const currentQueryString = window.location.search.replace('?', '');
+    const newSearchParams = new URLSearchParams(currentQueryString);
     
     if (value === "recente") {
       newSearchParams.delete("sort");

@@ -6,9 +6,8 @@ import { useLocation } from "wouter";
 
 export default function CitySearchBar() {
   const [location, setLocation] = useLocation();
-  const currentPath = location.split('?')[0];
-  const queryString = location.includes('?') ? location.split('?')[1] : '';
   
+  const queryString = location.includes('?') ? location.split('?')[1] : '';
   const [searchValue, setSearchValue] = useState(() => {
     const params = new URLSearchParams(queryString);
     return params.get("citta") || "";
@@ -21,7 +20,9 @@ export default function CitySearchBar() {
   }, [queryString]);
 
   const handleSearch = (value: string) => {
-    const newSearchParams = new URLSearchParams(queryString);
+    const currentPath = window.location.pathname;
+    const currentQueryString = window.location.search.replace('?', '');
+    const newSearchParams = new URLSearchParams(currentQueryString);
     
     if (value.trim() === "") {
       newSearchParams.delete("citta");

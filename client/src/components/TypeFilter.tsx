@@ -5,9 +5,8 @@ import { useLocation } from "wouter";
 
 export default function TypeFilter() {
   const [location, setLocation] = useLocation();
-  const currentPath = location.split('?')[0];
-  const queryString = location.includes('?') ? location.split('?')[1] : '';
   
+  const queryString = location.includes('?') ? location.split('?')[1] : '';
   const [typeValue, setTypeValue] = useState(() => {
     const params = new URLSearchParams(queryString);
     return params.get("tipo") || "tutti";
@@ -20,7 +19,9 @@ export default function TypeFilter() {
   }, [queryString]);
 
   const handleTypeChange = (value: string) => {
-    const newSearchParams = new URLSearchParams(queryString);
+    const currentPath = window.location.pathname;
+    const currentQueryString = window.location.search.replace('?', '');
+    const newSearchParams = new URLSearchParams(currentQueryString);
     
     if (value === "tutti") {
       newSearchParams.delete("tipo");
