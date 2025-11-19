@@ -44,14 +44,14 @@ export default function SortingControls() {
   };
 
   return (
-    <div className="flex items-center gap-3">
-      <Label htmlFor="sort-select" className="text-sm font-medium whitespace-nowrap">
-        Ordina per:
+    <div className="flex flex-col gap-2">
+      <Label htmlFor="sort-select" className="text-sm font-medium">
+        Ordina per
       </Label>
       <Select value={sortValue} onValueChange={handleSortChange}>
         <SelectTrigger 
           id="sort-select"
-          className="w-[180px]" 
+          className="w-full min-w-[180px]" 
           data-testid="select-sort"
         >
           <SelectValue placeholder="Seleziona ordinamento" />
