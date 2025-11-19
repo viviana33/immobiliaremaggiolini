@@ -199,6 +199,7 @@ export type User = typeof users.$inferSelect;
 // Property filters schema
 export const propertyFiltersSchema = z.object({
   search: z.string().optional(),
+  citta: z.string().optional(),
   tipo: z.enum(["vendita", "affitto"]).optional(),
   prezzoMin: z.coerce.number().positive().optional(),
   prezzoMax: z.coerce.number().positive().optional(),
