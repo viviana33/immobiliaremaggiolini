@@ -89,17 +89,15 @@ export default function Immobili() {
           </div>
         </section>
 
-        <section className="py-16 md:py-20">
+        <section className="py-8 md:py-12">
           <div className="max-w-7xl mx-auto px-6 md:px-8">
-            <div className="mb-8 space-y-6">
-              <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
-                <div className="lg:col-span-2">
+            <div className="mb-6">
+              <div className="flex flex-col lg:flex-row gap-4 mb-4">
+                <div className="flex-1">
                   <CitySearchBar />
                 </div>
-                <div className="flex flex-wrap gap-4">
-                  <TypeFilter />
-                  <SortingControls />
-                </div>
+                <TypeFilter />
+                <SortingControls />
               </div>
               
               <div className="flex items-center justify-between gap-4">
@@ -131,17 +129,15 @@ export default function Immobili() {
           </div>
         </section>
 
-        <section className="py-16 md:py-20">
+        <section className="py-8 md:py-12">
           <div className="max-w-7xl mx-auto px-6 md:px-8">
-            <div className="mb-8 space-y-6">
-              <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
-                <div className="lg:col-span-2">
+            <div className="mb-6">
+              <div className="flex flex-col lg:flex-row gap-4 mb-4">
+                <div className="flex-1">
                   <CitySearchBar />
                 </div>
-                <div className="flex flex-wrap gap-4">
-                  <TypeFilter />
-                  <SortingControls />
-                </div>
+                <TypeFilter />
+                <SortingControls />
               </div>
               
               <div className="flex items-center justify-between gap-4">
@@ -175,17 +171,15 @@ export default function Immobili() {
         </div>
       </section>
 
-      <section className="py-16 md:py-20">
+      <section className="py-8 md:py-12">
         <div className="max-w-7xl mx-auto px-6 md:px-8">
-          <div className="mb-8 space-y-6">
-            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
-              <div className="lg:col-span-2">
+          <div className="mb-6">
+            <div className="flex flex-col lg:flex-row gap-4 mb-4">
+              <div className="flex-1">
                 <CitySearchBar />
               </div>
-              <div className="flex flex-wrap gap-4">
-                <TypeFilter />
-                <SortingControls />
-              </div>
+              <TypeFilter />
+              <SortingControls />
             </div>
             
             <div className="flex items-center justify-between gap-4">
