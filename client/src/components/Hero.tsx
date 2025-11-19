@@ -5,9 +5,9 @@ import heroImage from "@assets/generated_images/Italian_villa_hero_image_8b4b5e4
 
 export default function Hero() {
   return (
-    <section className="relative min-h-[70vh] flex items-center overflow-hidden">
+    <section className="relative min-h-[50vh] md:min-h-[55vh] flex items-start overflow-hidden">
       <div
-        className="absolute inset-0 bg-cover bg-center"
+        className="absolute inset-0 bg-cover bg-top md:bg-center"
         style={{ backgroundImage: `url(${heroImage})` }}
         role="img"
         aria-label="Villa italiana di lusso con giardino"
@@ -15,7 +15,7 @@ export default function Hero() {
         <div className="absolute inset-0 bg-gradient-to-r from-black/50 via-black/30 to-transparent" />
       </div>
 
-      <div className="relative z-10 max-w-7xl mx-auto px-6 md:px-8 py-16">
+      <div className="relative z-10 max-w-7xl mx-auto px-6 md:px-8 pt-12 md:pt-16 pb-8 md:pb-12">
         <div className="max-w-3xl">
           <h1 className="font-serif font-bold text-4xl md:text-5xl lg:text-6xl text-primary-foreground mb-4 leading-tight">
             Ancora qui quando ti serve
