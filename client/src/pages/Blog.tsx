@@ -132,7 +132,14 @@ export default function Blog() {
       paramsUpdate.page = updates.page > 1 ? updates.page.toString() : null;
     }
 
-    updateParams(paramsUpdate);
+    // Se stiamo solo cambiando la pagina (paginazione) e la pagina è > 1, non cancellare il parametro page
+    // In tutti gli altri casi (cambio filtri, o navigazione a page 1), cancella la pagina
+    const isOnlyPageUpdate = updates.page !== undefined && 
+      updates.categoria === undefined && 
+      updates.search === undefined && 
+      updates.tag === undefined;
+    
+    updateParams(paramsUpdate, { deletePage: !(isOnlyPageUpdate && updates.page && updates.page > 1) });
   };
 
   const handleSearch = (e: React.FormEvent) => {
