@@ -20,7 +20,7 @@ export default function Hero() {
           <h1 className="font-serif font-bold text-4xl md:text-5xl lg:text-6xl text-primary-foreground mb-4 leading-tight">
             Ancora qui quando ti serve
           </h1>
-          <p className="text-base md:text-lg text-primary-foreground/90 mb-6 leading-relaxed">
+          <p className="text-base md:text-lg text-primary-foreground/90 mb-8 leading-relaxed">
             Quarant'anni al tuo fianco, ben oltre la firma
           </p>
           <div className="flex flex-col sm:flex-row gap-4">
