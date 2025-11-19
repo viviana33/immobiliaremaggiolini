@@ -5,9 +5,9 @@ import SortingControls from "@/components/SortingControls";
 import PaginationControls from "@/components/PaginationControls";
 import CitySearchBar from "@/components/CitySearchBar";
 import TypeFilter from "@/components/TypeFilter";
-import { useLocation } from "wouter";
 import { usePageMeta } from "@/lib/seo";
 import { useEffect } from "react";
+import { useQueryString } from "@/hooks/useQueryString";
 
 interface Property {
   id: string;
@@ -38,24 +38,23 @@ export default function Immobili() {
     description: 'Trova il tuo immobile ideale tra le nostre proprietà selezionate in vendita e affitto a Milano, Monza e Brianza. Appartamenti, ville, attici e molto altro.',
   });
 
-  const [location] = useLocation();
-  const queryParams = location.includes('?') ? location.split('?')[1] : '';
+  const { searchParams } = useQueryString();
 
   useEffect(() => {
     sessionStorage.setItem('propertyListSource', '/immobili');
   }, []);
 
-  const queryKey = queryParams ? ['/api/properties', queryParams] : ['/api/properties'];
-  const queryUrl = queryParams ? `/api/properties?${queryParams}` : '/api/properties';
+  const queryString = searchParams.toString();
 
-  const { data, isLoading, error } = useQuery<PropertiesResponse>({
-    queryKey,
+  const { data, isLoading, error} = useQuery<PropertiesResponse>({
+    queryKey: ['/api/properties', queryString],
     queryFn: async () => {
-      const response = await fetch(queryUrl);
+      const url = queryString ? `/api/properties?${queryString}` : '/api/properties';
+      const response = await fetch(url);
       if (!response.ok) {
         throw new Error('Failed to fetch properties');
       }
-      return response.json();
+      return await response.json();
     },
   });
 

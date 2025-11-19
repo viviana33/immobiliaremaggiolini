@@ -5,8 +5,8 @@ import TypeFilter from "@/components/TypeFilter";
 import SortingControls from "@/components/SortingControls";
 import { useEffect } from "react";
 import { useQuery } from "@tanstack/react-query";
-import { useLocation } from "wouter";
 import { usePageMeta } from "@/lib/seo";
+import { useQueryString } from "@/hooks/useQueryString";
 
 interface Property {
   id: string;
@@ -36,24 +36,23 @@ export default function Proprieta() {
     title: 'Proprietà in Vendita e Affitto',
     description: 'Esplora le nostre proprietà selezionate in vendita e affitto. Trova casa a Milano, Monza e Brianza con Immobiliare Maggiolini.',
   });
-  const [location] = useLocation();
+  const { searchParams } = useQueryString();
 
   useEffect(() => {
     sessionStorage.setItem('propertyListSource', '/proprieta');
   }, []);
 
-  const queryParams = location.includes('?') ? location.split('?')[1] : '';
-  const queryKey = queryParams ? ['/api/properties', queryParams] : ['/api/properties'];
-  const queryUrl = queryParams ? `/api/properties?${queryParams}` : '/api/properties';
-
+  const queryString = searchParams.toString();
+  
   const { data, isLoading, error } = useQuery<PropertiesResponse>({
-    queryKey,
+    queryKey: ['/api/properties', queryString],
     queryFn: async () => {
-      const response = await fetch(queryUrl);
+      const url = queryString ? `/api/properties?${queryString}` : '/api/properties';
+      const response = await fetch(url);
       if (!response.ok) {
         throw new Error('Failed to fetch properties');
       }
-      return response.json();
+      return await response.json();
     },
   });
 

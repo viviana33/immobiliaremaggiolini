@@ -2,39 +2,20 @@ import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Search } from "lucide-react";
 import { useState, useEffect } from "react";
-import { useLocation } from "wouter";
+import { useQueryString } from "@/hooks/useQueryString";
 
 export default function CitySearchBar() {
-  const [location, setLocation] = useLocation();
+  const { searchParams, updateParams } = useQueryString();
   
-  const queryString = location.includes('?') ? location.split('?')[1] : '';
-  const [searchValue, setSearchValue] = useState(() => {
-    const params = new URLSearchParams(queryString);
-    return params.get("citta") || "";
-  });
+  const [searchValue, setSearchValue] = useState(() => searchParams.get("citta") || "");
 
   useEffect(() => {
-    const params = new URLSearchParams(queryString);
-    const urlCitta = params.get("citta") || "";
+    const urlCitta = searchParams.get("citta") || "";
     setSearchValue(urlCitta);
-  }, [queryString]);
+  }, [searchParams]);
 
   const handleSearch = (value: string) => {
-    const currentPath = window.location.pathname;
-    const currentQueryString = window.location.search.replace('?', '');
-    const newSearchParams = new URLSearchParams(currentQueryString);
-    
-    if (value.trim() === "") {
-      newSearchParams.delete("citta");
-    } else {
-      newSearchParams.set("citta", value.trim());
-    }
-    
-    newSearchParams.delete("page");
-    
-    const newQueryString = newSearchParams.toString();
-    const newLocation = newQueryString ? `${currentPath}?${newQueryString}` : currentPath;
-    setLocation(newLocation);
+    updateParams({ citta: value.trim() || null });
   };
 
   const handleKeyDown = (e: React.KeyboardEvent<HTMLInputElement>) => {

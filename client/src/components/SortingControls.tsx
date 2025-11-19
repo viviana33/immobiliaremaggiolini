@@ -1,5 +1,4 @@
 import { useState, useEffect } from "react";
-import { useLocation } from "wouter";
 import {
   Select,
   SelectContent,
@@ -8,39 +7,20 @@ import {
   SelectValue,
 } from "@/components/ui/select";
 import { Label } from "@/components/ui/label";
+import { useQueryString } from "@/hooks/useQueryString";
 
 export default function SortingControls() {
-  const [location, setLocation] = useLocation();
-  const currentPath = location.split('?')[0];
-  const queryString = location.includes('?') ? location.split('?')[1] : '';
+  const { searchParams, updateParams } = useQueryString();
   
-  const [sortValue, setSortValue] = useState(() => {
-    const params = new URLSearchParams(queryString);
-    return params.get("sort") || "recente";
-  });
+  const [sortValue, setSortValue] = useState(() => searchParams.get("sort") || "recente");
 
   useEffect(() => {
-    const params = new URLSearchParams(queryString);
-    const urlSort = params.get("sort") || "recente";
+    const urlSort = searchParams.get("sort") || "recente";
     setSortValue(urlSort);
-  }, [queryString]);
+  }, [searchParams]);
 
   const handleSortChange = (value: string) => {
-    const currentPath = window.location.pathname;
-    const currentQueryString = window.location.search.replace('?', '');
-    const newSearchParams = new URLSearchParams(currentQueryString);
-    
-    if (value === "recente") {
-      newSearchParams.delete("sort");
-    } else {
-      newSearchParams.set("sort", value);
-    }
-    
-    newSearchParams.delete("page");
-    
-    const newQueryString = newSearchParams.toString();
-    const newLocation = newQueryString ? `${currentPath}?${newQueryString}` : currentPath;
-    setLocation(newLocation);
+    updateParams({ sort: value });
   };
 
   return (

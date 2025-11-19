@@ -1,39 +1,20 @@
 import { Label } from "@/components/ui/label";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { useState, useEffect } from "react";
-import { useLocation } from "wouter";
+import { useQueryString } from "@/hooks/useQueryString";
 
 export default function TypeFilter() {
-  const [location, setLocation] = useLocation();
+  const { searchParams, updateParams } = useQueryString();
   
-  const queryString = location.includes('?') ? location.split('?')[1] : '';
-  const [typeValue, setTypeValue] = useState(() => {
-    const params = new URLSearchParams(queryString);
-    return params.get("tipo") || "tutti";
-  });
+  const [typeValue, setTypeValue] = useState(() => searchParams.get("tipo") || "tutti");
 
   useEffect(() => {
-    const params = new URLSearchParams(queryString);
-    const urlTipo = params.get("tipo") || "tutti";
+    const urlTipo = searchParams.get("tipo") || "tutti";
     setTypeValue(urlTipo);
-  }, [queryString]);
+  }, [searchParams]);
 
   const handleTypeChange = (value: string) => {
-    const currentPath = window.location.pathname;
-    const currentQueryString = window.location.search.replace('?', '');
-    const newSearchParams = new URLSearchParams(currentQueryString);
-    
-    if (value === "tutti") {
-      newSearchParams.delete("tipo");
-    } else {
-      newSearchParams.set("tipo", value);
-    }
-    
-    newSearchParams.delete("page");
-    
-    const newQueryString = newSearchParams.toString();
-    const newLocation = newQueryString ? `${currentPath}?${newQueryString}` : currentPath;
-    setLocation(newLocation);
+    updateParams({ tipo: value });
   };
 
   return (

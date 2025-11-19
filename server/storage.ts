@@ -136,9 +136,9 @@ export class DbStorage implements IStorage {
       }
     }
     
-    // Ricerca per città
+    // Ricerca per città (match esatto, case-insensitive)
     if (filters.citta) {
-      conditions.push(ilike(properties.citta, `%${filters.citta}%`));
+      conditions.push(sql`LOWER(${properties.citta}) = LOWER(${filters.citta})`);
     }
     
     // Escludi immobili archiviati per default, a meno che non sia specificato
