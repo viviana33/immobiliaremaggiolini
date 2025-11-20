@@ -29,7 +29,7 @@ import { insertPropertySchema, type Property, type PropertyImage } from "@shared
 import { z } from "zod";
 
 const formSchema = insertPropertySchema.extend({
-  piano: z.coerce.number().min(-10, "Piano non valido"),
+  piano: z.string().min(1, "Piano richiesto"),
   mq: z.coerce.number().min(1, "Metratura minima 1 mq"),
   stanze: z.coerce.number().min(0, "Numero stanze non valido"),
   bagni: z.coerce.number().min(0, "Numero bagni non valido"),
@@ -69,7 +69,7 @@ export default function AdminImmobileForm() {
       mq: 0,
       stanze: 0,
       bagni: 0,
-      piano: 0,
+      piano: "Pianoterra",
       classeEnergetica: "G",
       zona: "",
       stato: "disponibile",
@@ -569,14 +569,25 @@ export default function AdminImmobileForm() {
                   render={({ field }) => (
                     <FormItem>
                       <FormLabel>Piano</FormLabel>
-                      <FormControl>
-                        <Input
-                          {...field}
-                          type="number"
-                          placeholder="2"
-                          data-testid="input-piano"
-                        />
-                      </FormControl>
+                      <Select
+                        onValueChange={field.onChange}
+                        value={field.value}
+                      >
+                        <FormControl>
+                          <SelectTrigger data-testid="select-piano">
+                            <SelectValue placeholder="Seleziona piano" />
+                          </SelectTrigger>
+                        </FormControl>
+                        <SelectContent>
+                          <SelectItem value="Pianoterra">Pianoterra</SelectItem>
+                          <SelectItem value="Rialzato">Rialzato</SelectItem>
+                          {Array.from({ length: 15 }, (_, i) => i + 1).map((num) => (
+                            <SelectItem key={num} value={String(num)}>
+                              {num}
+                            </SelectItem>
+                          ))}
+                        </SelectContent>
+                      </Select>
                       <FormMessage />
                     </FormItem>
                   )}
