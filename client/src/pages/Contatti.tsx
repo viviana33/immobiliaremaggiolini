@@ -45,21 +45,10 @@ export default function Contatti() {
         <div className="max-w-7xl mx-auto px-6 md:px-8">
           <div className="grid grid-cols-1 lg:grid-cols-2 gap-12">
             <div className="space-y-8">
-              <div>
-                <h2 className="font-serif font-bold text-2xl md:text-3xl text-foreground mb-4">
-                  Inviaci un Messaggio
-                </h2>
-                <p className="text-muted-foreground mb-6">
-                  Compila il form e ti risponderemo entro 24 ore. Oppure chiamaci direttamente 
-                  per una consulenza immediata.
-                </p>
-              </div>
-              <ContactForm source="contatti" />
-              
-              <div className="pt-8 space-y-6">
-                <h3 className="font-serif font-bold text-2xl md:text-3xl text-foreground">
+              <div className="space-y-6">
+                <h2 className="font-serif font-bold text-2xl md:text-3xl text-foreground">
                   Un consulente sa già cosa fare
-                </h3>
+                </h2>
                 <div className="space-y-4 text-muted-foreground leading-relaxed">
                   <p>
                     Prima che tu debba chiedere. Prima che diventi un problema.
@@ -82,6 +71,17 @@ export default function Contatti() {
                   </p>
                 </div>
               </div>
+              
+              <div>
+                <h3 className="font-serif font-bold text-2xl md:text-3xl text-foreground mb-4">
+                  Inviaci un Messaggio
+                </h3>
+                <p className="text-muted-foreground mb-6">
+                  Compila il form e ti risponderemo entro 24 ore. Oppure chiamaci direttamente 
+                  per una consulenza immediata.
+                </p>
+              </div>
+              <ContactForm source="contatti" />
             </div>
 
             <div className="space-y-8">
