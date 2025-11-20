@@ -164,22 +164,31 @@ export function getUserLeadConfirmationTemplate(nome: string): string {
                   </h2>
                   
                   <p style="margin: 0 0 15px 0; color: #333333; font-size: 16px; line-height: 1.6;">
-                    Grazie per averci contattato! Abbiamo ricevuto il tuo messaggio e lo stiamo esaminando con attenzione.
+                    Grazie per averci contattato.
                   </p>
                   
                   <p style="margin: 0 0 15px 0; color: #333333; font-size: 16px; line-height: 1.6;">
-                    Il nostro team ti risponderà il prima possibile, solitamente entro 24 ore lavorative.
+                    Abbiamo ricevuto il tuo messaggio e ti richiameremo entro domani per capire esattamente cosa ti serve.
                   </p>
                   
-                  <div style="margin: 30px 0; padding: 20px; background-color: #f9f9f9; border-radius: 6px; border-left: 4px solid #1a1a1a;">
-                    <p style="margin: 0; color: #555; font-size: 14px; line-height: 1.6;">
-                      <strong>Nel frattempo,</strong> puoi visitare il nostro sito web per scoprire le nostre ultime proposte immobiliari o leggere i nostri articoli sul blog.
+                  <div style="margin: 30px 0; padding: 20px; background-color: #f9f9f9; border-radius: 6px; border-left: 4px solid #8B2332;">
+                    <p style="margin: 0 0 10px 0; color: #333; font-size: 15px; line-height: 1.6;">
+                      <strong>Nel frattempo, se hai bisogno di parlarci subito:</strong>
+                    </p>
+                    <p style="margin: 5px 0; color: #333; font-size: 15px; line-height: 1.8;">
+                      📞 Chiamaci: <strong><a href="tel:+393293589090" style="color: #8B2332; text-decoration: none;">329 358 9090</a></strong> / <strong><a href="tel:+390331555588" style="color: #8B2332; text-decoration: none;">0331 555588</a></strong>
+                    </p>
+                    <p style="margin: 5px 0; color: #333; font-size: 15px; line-height: 1.8;">
+                      📍 Vieni in agenzia: <strong>Via Paolo Castelnovo, 14<br>20015 Parabiago (MI)</strong>
+                    </p>
+                    <p style="margin: 5px 0 0 0; color: #555; font-size: 14px; line-height: 1.6;">
+                      🕒 Lunedì - Venerdì: 9:30-13:00 / 14:30-18:30
                     </p>
                   </div>
                   
                   <p style="margin: 20px 0 0 0; color: #333333; font-size: 16px; line-height: 1.6;">
                     A presto,<br>
-                    <strong>Il Team Maggiolini</strong>
+                    <strong>Il team Maggiolini</strong>
                   </p>
                 </td>
               </tr>
@@ -193,8 +202,8 @@ export function getUserLeadConfirmationTemplate(nome: string): string {
                         <p style="margin: 0 0 5px 0; color: #1a1a1a; font-size: 16px; font-weight: 600;">
                           Immobiliare Maggiolini
                         </p>
-                        <p style="margin: 0; color: #888; font-size: 13px;">
-                          Da oltre 20 anni al vostro fianco
+                        <p style="margin: 0; color: #888; font-size: 13px; font-style: italic;">
+                          Da quarant'anni qui quando serve
                         </p>
                       </td>
                     </tr>

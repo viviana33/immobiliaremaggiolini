@@ -120,7 +120,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
           // 2. Email di cortesia all'utente
           await brevo.sendTransactionalEmail({
             to: [{ email: lead.email, name: lead.nome }],
-            subject: "Abbiamo ricevuto il tuo messaggio - Immobiliare Maggiolini",
+            subject: "Abbiamo ricevuto la tua richiesta",
             htmlContent: getUserLeadConfirmationTemplate(lead.nome)
           });
           
