@@ -38,9 +38,6 @@ export default function Contatti() {
           <h1 className="font-serif font-bold text-4xl md:text-5xl lg:text-6xl text-foreground mb-4">
             Contattaci
           </h1>
-          <p className="text-muted-foreground text-lg max-w-2xl">
-            Siamo qui per aiutarti. Scrivici o vieni a trovarci in ufficio
-          </p>
         </div>
       </section>
 
@@ -58,6 +55,33 @@ export default function Contatti() {
                 </p>
               </div>
               <ContactForm source="contatti" />
+              
+              <div className="pt-8 space-y-6">
+                <h3 className="font-serif font-bold text-2xl md:text-3xl text-foreground">
+                  Un consulente sa già cosa fare
+                </h3>
+                <div className="space-y-4 text-muted-foreground leading-relaxed">
+                  <p>
+                    Prima che tu debba chiedere. Prima che diventi un problema.
+                  </p>
+                  <p>
+                    Quando affidi la vendita o la locazione del tuo immobile, stai scegliendo chi ti 
+                    risparmierà tempo, stress e preoccupazioni.
+                  </p>
+                  <p>
+                    Un consulente vero verifica prima di proporre. Conosce il territorio perché ci ha 
+                    costruito relazioni, non perché lo naviga su un portale. Rimane disponibile, anche 
+                    quando il contratto è storia di anni fa.
+                  </p>
+                  <p>
+                    Dopo quarant'anni, non siamo diventati solo agenti immobiliari. Siamo diventati 
+                    consulenti di fiducia per centinaia di famiglie.
+                  </p>
+                  <p className="font-medium">
+                    Perché sappiamo quanto vale risolvere problemi invece di crearli.
+                  </p>
+                </div>
+              </div>
             </div>
 
             <div className="space-y-8">
