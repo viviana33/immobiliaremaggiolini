@@ -14,8 +14,15 @@ app.set('trust proxy', 1);
 
 // Configure PostgreSQL session store
 const PgSession = ConnectPgSimple(session);
+
+// Ensure DATABASE_URL is set
+if (!process.env.DATABASE_URL) {
+  throw new Error("DATABASE_URL environment variable is not set");
+}
+
 const pool = new pg.Pool({
   connectionString: process.env.DATABASE_URL,
+  ssl: process.env.NODE_ENV === 'production' ? { rejectUnauthorized: false } : false,
 });
 
 app.use(
