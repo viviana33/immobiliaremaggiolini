@@ -69,7 +69,7 @@ export default function AdminImmobileForm() {
       mq: 0,
       stanze: 0,
       bagni: 0,
-      piano: "Pianoterra",
+      piano: "Piano terra",
       classeEnergetica: "G",
       zona: "",
       stato: "disponibile",
@@ -579,8 +579,9 @@ export default function AdminImmobileForm() {
                           </SelectTrigger>
                         </FormControl>
                         <SelectContent>
-                          <SelectItem value="Pianoterra">Pianoterra</SelectItem>
+                          <SelectItem value="Piano terra">Piano terra</SelectItem>
                           <SelectItem value="Rialzato">Rialzato</SelectItem>
+                          <SelectItem value="Su più livelli">Su più livelli</SelectItem>
                           {Array.from({ length: 15 }, (_, i) => i + 1).map((num) => (
                             <SelectItem key={num} value={String(num)}>
                               {num}

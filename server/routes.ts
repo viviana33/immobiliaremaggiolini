@@ -589,7 +589,6 @@ export async function registerRoutes(app: Express): Promise<Server> {
         mq: parseInt(req.body.mq),
         stanze: parseInt(req.body.stanze),
         bagni: parseInt(req.body.bagni),
-        piano: parseInt(req.body.piano),
         prezzo: req.body.prezzo,
       };
       
@@ -650,7 +649,6 @@ export async function registerRoutes(app: Express): Promise<Server> {
       if (req.body.mq) formData.mq = parseInt(req.body.mq);
       if (req.body.stanze) formData.stanze = parseInt(req.body.stanze);
       if (req.body.bagni) formData.bagni = parseInt(req.body.bagni);
-      if (req.body.piano) formData.piano = parseInt(req.body.piano);
       
       const validatedData = insertPropertySchema.partial().parse(formData);
       
