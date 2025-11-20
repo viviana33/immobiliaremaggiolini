@@ -11,8 +11,8 @@ import type { Property, Post } from "@shared/schema";
 
 export default function Home() {
   usePageMeta({
-    title: 'Vendita e Affitto Immobili a Milano, Monza e Brianza',
-    description: 'Agenzia immobiliare specializzata in vendita e affitto di proprietà a Milano, Monza e Brianza. Professionalità, esperienza e servizio personalizzato dal 1985.',
+    title: 'Vendita e Affitto Immobili a Milano e Varese',
+    description: 'Agenzia immobiliare specializzata in vendita e affitto di proprietà a Milano e Varese. Professionalità, esperienza e servizio personalizzato dal 1985.',
   });
 
   const values = [

@@ -12,7 +12,7 @@ interface MetaTagsOptions {
 
 const DEFAULT_VALUES = {
   siteName: 'Maggiolini Immobiliare',
-  description: 'Agenzia immobiliare specializzata in vendita e affitto di proprietà a Milano, Monza e Brianza. Professionalità, esperienza e servizio personalizzato dal 1985.',
+  description: 'Agenzia immobiliare specializzata in vendita e affitto di proprietà a Milano e Varese. Professionalità, esperienza e servizio personalizzato dal 1985.',
   image: '/og-default.jpg',
   type: 'website' as const,
 };

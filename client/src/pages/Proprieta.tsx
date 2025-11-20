@@ -33,7 +33,7 @@ interface PropertiesResponse {
 export default function Proprieta() {
   usePageMeta({
     title: 'Proprietà in Vendita e Affitto',
-    description: 'Esplora le nostre proprietà selezionate in vendita e affitto. Trova casa a Milano, Monza e Brianza con Immobiliare Maggiolini.',
+    description: 'Esplora le nostre proprietà selezionate in vendita e affitto. Trova casa a Milano e Varese con Immobiliare Maggiolini.',
   });
   const { queryString } = useQueryString();
   

@@ -34,7 +34,7 @@ interface PropertiesResponse {
 export default function Immobili() {
   usePageMeta({
     title: 'Immobili in Vendita e Affitto',
-    description: 'Trova il tuo immobile ideale tra le nostre proprietà selezionate in vendita e affitto a Milano, Monza e Brianza. Appartamenti, ville, attici e molto altro.',
+    description: 'Trova il tuo immobile ideale tra le nostre proprietà selezionate in vendita e affitto a Milano e Varese. Appartamenti, ville, attici e molto altro.',
   });
 
   const { queryString } = useQueryString();
