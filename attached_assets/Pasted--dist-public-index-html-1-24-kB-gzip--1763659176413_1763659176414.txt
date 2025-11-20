@@ -1,0 +1,46 @@
+../dist/public/index.html                                                            1.24 kB │ gzip:   0.62 kB
+../dist/public/assets/team-photo-ZwaMlVl6.jpeg                                     230.74 kB
+../dist/public/assets/Logo Geometrico su Fondo Rosso_1761237729319-lHO8GZvt.png  1,084.36 kB
+../dist/public/assets/Italian_villa_hero_image_8b4b5e4b-COIMfWeX.png             2,385.69 kB
+../dist/public/assets/index-CgdxlILL.css                                           142.79 kB │ gzip:  19.97 kB
+../dist/public/assets/index-qebO012s.js                                          1,404.33 kB │ gzip: 425.03 kB
+(!) Some chunks are larger than 500 kB after minification. Consider:
+- Using dynamic import() to code-split the application
+- Use build.rollupOptions.output.manualChunks to improve chunking: https://rollupjs.org/configuration-options/#output-manualchunks
+- Adjust chunk size limit for this warning via build.chunkSizeWarningLimit.
+✓ built in 6.73s
+  dist/index.js  187.9kb
+⚡ Done in 9ms
+==> Uploading build...
+==> Uploaded in 7.9s. Compression took 3.8s
+==> Build successful 🎉
+==> Deploying...
+==> Running 'npm start'
+> rest-express@1.0.0 start
+> NODE_ENV=production node dist/index.js
+5:17:56 PM [express] serving on port 10000
+==> Your service is live 🎉
+==> 
+==> ///////////////////////////////////////////////////////////
+==> 
+==> Available at your primary URL https://immobiliaremaggiolini.it + 2 more domains
+==> 
+==> ///////////////////////////////////////////////////////////
+Error: getaddrinfo ENOTFOUND base
+    at /opt/render/project/src/node_modules/pg-pool/index.js:45:11
+    at process.processTicksAndRejections (node:internal/process/task_queues:105:5)
+    at async PGStore._asyncQuery (/opt/render/project/src/node_modules/connect-pg-simple/index.js:322:21)
+    at async PGStore._rawEnsureSessionStoreTable (/opt/render/project/src/node_modules/connect-pg-simple/index.js:177:19)
+    at async PGStore._asyncQuery (/opt/render/project/src/node_modules/connect-pg-simple/index.js:315:7)
+Error: getaddrinfo ENOTFOUND base
+    at /opt/render/project/src/node_modules/pg-pool/index.js:45:11
+    at process.processTicksAndRejections (node:internal/process/task_queues:105:5)
+    at async PGStore._asyncQuery (/opt/render/project/src/node_modules/connect-pg-simple/index.js:322:21)
+    at async PGStore._rawEnsureSessionStoreTable (/opt/render/project/src/node_modules/connect-pg-simple/index.js:177:19)
+    at async PGStore._asyncQuery (/opt/render/project/src/node_modules/connect-pg-simple/index.js:315:7)
+Error: getaddrinfo ENOTFOUND base
+    at /opt/render/project/src/node_modules/pg-pool/index.js:45:11
+    at process.processTicksAndRejections (node:internal/process/task_queues:105:5)
+    at async PGStore._asyncQuery (/opt/render/project/src/node_modules/connect-pg-simple/index.js:322:21)
+    at async PGStore._rawEnsureSessionStoreTable (/opt/render/project/src/node_modules/connect-pg-simple/index.js:177:19)
+    at async PGStore._asyncQuery (/opt/render/project/src/node_modules/connect-pg-simple/index.js:315:7)
