@@ -171,18 +171,32 @@ export function getUserLeadConfirmationTemplate(nome: string): string {
                     Abbiamo ricevuto il tuo messaggio e ti richiameremo entro domani per capire esattamente cosa ti serve.
                   </p>
                   
-                  <div style="margin: 30px 0; padding: 20px; background-color: #f9f9f9; border-radius: 6px; border-left: 4px solid #8B2332;">
-                    <p style="margin: 0 0 10px 0; color: #333; font-size: 15px; line-height: 1.6;">
+                  <div style="margin: 30px 0; padding: 25px; background-color: #f9f9f9; border-radius: 6px; border-left: 4px solid #8B2332;">
+                    <p style="margin: 0 0 20px 0; color: #333; font-size: 15px; line-height: 1.6;">
                       <strong>Nel frattempo, se hai bisogno di parlarci subito:</strong>
                     </p>
-                    <p style="margin: 5px 0; color: #333; font-size: 15px; line-height: 1.8;">
-                      📞 Chiamaci: <strong><a href="tel:+393293589090" style="color: #8B2332; text-decoration: none;">329 358 9090</a></strong> / <strong><a href="tel:+390331555588" style="color: #8B2332; text-decoration: none;">0331 555588</a></strong>
+                    
+                    <p style="margin: 0 0 8px 0; color: #333; font-size: 15px; line-height: 1.8;">
+                      📞 <strong>Chiamaci:</strong>
                     </p>
-                    <p style="margin: 5px 0; color: #333; font-size: 15px; line-height: 1.8;">
-                      📍 Vieni in agenzia: <strong>Via Paolo Castelnovo, 14<br>20015 Parabiago (MI)</strong>
+                    <p style="margin: 0 0 18px 0; padding-left: 25px; color: #333; font-size: 15px; line-height: 1.6;">
+                      <a href="tel:+393293589090" style="color: #8B2332; text-decoration: none; font-weight: 600;">329 358 9090</a> / 
+                      <a href="tel:+390331555588" style="color: #8B2332; text-decoration: none; font-weight: 600;">0331 555588</a>
                     </p>
-                    <p style="margin: 5px 0 0 0; color: #555; font-size: 14px; line-height: 1.6;">
-                      🕒 Lunedì - Venerdì: 9:30-13:00 / 14:30-18:30
+                    
+                    <p style="margin: 0 0 8px 0; color: #333; font-size: 15px; line-height: 1.8;">
+                      📍 <strong>Vieni in agenzia:</strong>
+                    </p>
+                    <p style="margin: 0 0 18px 0; padding-left: 25px; color: #333; font-size: 15px; line-height: 1.6;">
+                      Via Paolo Castelnovo, 14<br>
+                      20015 Parabiago (MI)
+                    </p>
+                    
+                    <p style="margin: 0 0 8px 0; color: #555; font-size: 14px; line-height: 1.6;">
+                      🕒 <strong>Orari:</strong>
+                    </p>
+                    <p style="margin: 0; padding-left: 25px; color: #555; font-size: 14px; line-height: 1.6;">
+                      Lunedì - Venerdì: 9:30-13:00 / 14:30-18:30
                     </p>
                   </div>
                   
