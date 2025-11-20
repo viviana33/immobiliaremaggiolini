@@ -20,15 +20,17 @@ if (!process.env.DATABASE_URL) {
   throw new Error("DATABASE_URL environment variable is not set");
 }
 
+// Create pool with explicit connection string to avoid PG* env var issues
 const pool = new pg.Pool({
   connectionString: process.env.DATABASE_URL,
   ssl: process.env.NODE_ENV === 'production' ? { rejectUnauthorized: false } : false,
 });
 
+// Use conString instead of pool to ensure connect-pg-simple doesn't use PG* env vars
 app.use(
   session({
     store: new PgSession({
-      pool,
+      conString: process.env.DATABASE_URL,
       tableName: "session",
       createTableIfMissing: true,
     }),
