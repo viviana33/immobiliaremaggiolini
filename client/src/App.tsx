@@ -27,10 +27,13 @@ import AdminLeads from "@/pages/AdminLeads";
 import NotFound from "@/pages/not-found";
 import { ProtectedRoute } from "@/components/ProtectedRoute";
 import OrganizationSchema from "@/components/OrganizationSchema";
+import ScrollToTop from "@/components/ScrollToTop";
 
 function Router() {
   return (
-    <Switch>
+    <>
+      <ScrollToTop />
+      <Switch>
       <Route path="/login" component={Login} />
       <Route path="/admin" component={Login} />
       <Route path="/admin/dashboard">
@@ -101,6 +104,7 @@ function Router() {
         )}
       </Route>
     </Switch>
+    </>
   );
 }
 
