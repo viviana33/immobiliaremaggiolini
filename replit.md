@@ -15,7 +15,7 @@ Preferred communication style: Simple, everyday language.
 - **UI/UX**: shadcn/ui (Radix UI) with Tailwind CSS, custom Mediterranean color palette, responsive mobile-first design, and dark mode.
 - **State Management**: TanStack Query for server state, React Context API for themes/sessions.
 - **Key Features**:
-    - **Image Carousel**: Custom component with keyboard navigation, touch/pointer swipe, lazy loading, smart prefetch, and full accessibility.
+    - **Image Carousel**: Custom component with keyboard navigation, touch/pointer swipe, lazy loading, smart prefetch, full accessibility, and fullscreen lightbox viewer. Images use object-cover to fill container space without gaps, especially important for vertical images on mobile.
     - **Navigation UX**: SessionStorage-based tracking for "back to list" functionality on property detail pages.
     - **Property Filters**: Advanced filtering and search with URL-based state management, including city search, type filters, and sorting controls. Data fetching uses AbortController to prevent stale data.
 

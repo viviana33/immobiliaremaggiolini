@@ -1,7 +1,9 @@
 import { useState, useEffect, useRef } from "react";
-import { ChevronLeft, ChevronRight } from "lucide-react";
+import { ChevronLeft, ChevronRight, X } from "lucide-react";
 import { Button } from "@/components/ui/button";
+import { Dialog, DialogContent, DialogTitle, DialogDescription } from "@/components/ui/dialog";
 import { cn } from "@/lib/utils";
+import { VisuallyHidden } from "@radix-ui/react-visually-hidden";
 
 interface ImageCarouselProps {
   images: string[];
@@ -19,6 +21,8 @@ export default function ImageCarousel({
   const [current, setCurrent] = useState(0);
   const [touchStart, setTouchStart] = useState<number | null>(null);
   const [touchEnd, setTouchEnd] = useState<number | null>(null);
+  const [isLightboxOpen, setIsLightboxOpen] = useState(false);
+  const [lightboxIndex, setLightboxIndex] = useState(0);
   const carouselRef = useRef<HTMLDivElement>(null);
   const instanceIdRef = useRef(Math.random().toString(36).substring(7));
 
@@ -36,6 +40,12 @@ export default function ImageCarousel({
     e?.stopPropagation();
     setCurrent((prev) => (prev === totalImages - 1 ? 0 : prev + 1));
   };
+
+  useEffect(() => {
+    if (!isLightboxOpen) {
+      setCurrent(lightboxIndex);
+    }
+  }, [isLightboxOpen, lightboxIndex]);
 
   const handleThumbnailClick = (index: number, e?: React.MouseEvent) => {
     e?.preventDefault();
@@ -73,20 +83,31 @@ export default function ImageCarousel({
 
   useEffect(() => {
     const handleKeyDown = (e: KeyboardEvent) => {
-      if (!carouselRef.current?.contains(document.activeElement)) return;
-      
-      if (e.key === "ArrowLeft") {
-        e.preventDefault();
-        handlePrevious();
-      } else if (e.key === "ArrowRight") {
-        e.preventDefault();
-        handleNext();
+      if (isLightboxOpen) {
+        if (e.key === "ArrowLeft") {
+          e.preventDefault();
+          setLightboxIndex((prev) => (prev === 0 ? totalImages - 1 : prev - 1));
+        } else if (e.key === "ArrowRight") {
+          e.preventDefault();
+          setLightboxIndex((prev) => (prev === totalImages - 1 ? 0 : prev + 1));
+        } else if (e.key === "Escape") {
+          e.preventDefault();
+          setIsLightboxOpen(false);
+        }
+      } else if (carouselRef.current?.contains(document.activeElement)) {
+        if (e.key === "ArrowLeft") {
+          e.preventDefault();
+          handlePrevious();
+        } else if (e.key === "ArrowRight") {
+          e.preventDefault();
+          handleNext();
+        }
       }
     };
 
     window.addEventListener("keydown", handleKeyDown);
     return () => window.removeEventListener("keydown", handleKeyDown);
-  }, [totalImages]);
+  }, [totalImages, isLightboxOpen]);
 
   const minSwipeDistance = 50;
 
@@ -167,7 +188,7 @@ export default function ImageCarousel({
     >
       <div className="relative w-full aspect-video bg-muted rounded-md overflow-hidden">
         <div
-          className="relative w-full h-full select-none cursor-grab active:cursor-grabbing"
+          className="relative w-full h-full select-none"
           onTouchStart={onTouchStart}
           onTouchMove={onTouchMove}
           onTouchEnd={onTouchEnd}
@@ -186,18 +207,30 @@ export default function ImageCarousel({
               : `Immagine ${index + 1} di ${totalImages}`;
             
             return (
-              <img
+              <button
                 key={index}
-                src={image}
-                alt={altText}
+                type="button"
                 className={cn(
-                  "absolute inset-0 w-full h-full object-contain transition-opacity duration-300",
-                  index === current ? "opacity-100 z-10" : "opacity-0 z-0"
+                  "absolute inset-0 w-full h-full block border-0 p-0 transition-opacity duration-300",
+                  index === current ? "opacity-100 z-10" : "opacity-0 z-0 pointer-events-none"
                 )}
-                loading={index === current ? "eager" : "lazy"}
-                style={{ aspectRatio: "16/9" }}
+                onClick={(e) => {
+                  e.preventDefault();
+                  e.stopPropagation();
+                  setLightboxIndex(current);
+                  setIsLightboxOpen(true);
+                }}
+                aria-label={`Apri ${altText} a schermo intero`}
                 data-testid={`carousel-image-${index}`}
-              />
+              >
+                <img
+                  src={image}
+                  alt={altText}
+                  className="w-full h-full object-cover cursor-pointer"
+                  loading={index === current ? "eager" : "lazy"}
+                  draggable={false}
+                />
+              </button>
             );
           })}
         </div>
@@ -241,7 +274,11 @@ export default function ImageCarousel({
             return (
               <button
                 key={index}
-                onClick={(e) => handleThumbnailClick(index, e)}
+                onClick={(e) => {
+                  handleThumbnailClick(index, e);
+                  setLightboxIndex(index);
+                  setIsLightboxOpen(true);
+                }}
                 className={cn(
                   "relative flex-shrink-0 w-20 h-20 rounded-md overflow-hidden border-2 transition-all hover-elevate",
                   index === current
@@ -263,6 +300,76 @@ export default function ImageCarousel({
           })}
         </div>
       )}
+
+      <Dialog open={isLightboxOpen} onOpenChange={setIsLightboxOpen}>
+        <DialogContent className="max-w-[100vw] w-full h-full p-0 gap-0 border-0 bg-black">
+          <VisuallyHidden>
+            <DialogTitle>
+              {title ? `Galleria immagini - ${title}` : "Galleria immagini"}
+            </DialogTitle>
+            <DialogDescription>
+              Visualizzazione a schermo intero delle immagini. Usa le frecce per navigare o premi ESC per chiudere.
+            </DialogDescription>
+          </VisuallyHidden>
+          <div className="relative w-full h-full flex items-center justify-center">
+            <Button
+              variant="ghost"
+              size="icon"
+              className="absolute top-4 right-4 z-50 bg-black/50 hover:bg-black/70 text-white no-default-hover-elevate no-default-active-elevate"
+              onClick={() => setIsLightboxOpen(false)}
+              data-testid="button-close-lightbox"
+              aria-label="Chiudi visualizzazione a schermo intero"
+            >
+              <X className="h-6 w-6" aria-hidden="true" />
+            </Button>
+
+            {totalImages > 1 && (
+              <>
+                <Button
+                  variant="ghost"
+                  size="icon"
+                  className="absolute left-4 top-1/2 -translate-y-1/2 z-50 bg-black/50 hover:bg-black/70 text-white no-default-hover-elevate no-default-active-elevate"
+                  onClick={(e) => {
+                    e.stopPropagation();
+                    setLightboxIndex((prev) => (prev === 0 ? totalImages - 1 : prev - 1));
+                  }}
+                  data-testid="button-lightbox-prev"
+                  aria-label="Immagine precedente"
+                >
+                  <ChevronLeft className="h-8 w-8" aria-hidden="true" />
+                </Button>
+
+                <Button
+                  variant="ghost"
+                  size="icon"
+                  className="absolute right-4 top-1/2 -translate-y-1/2 z-50 bg-black/50 hover:bg-black/70 text-white no-default-hover-elevate no-default-active-elevate"
+                  onClick={(e) => {
+                    e.stopPropagation();
+                    setLightboxIndex((prev) => (prev === totalImages - 1 ? 0 : prev + 1));
+                  }}
+                  data-testid="button-lightbox-next"
+                  aria-label="Immagine successiva"
+                >
+                  <ChevronRight className="h-8 w-8" aria-hidden="true" />
+                </Button>
+              </>
+            )}
+
+            <img
+              src={displayImages[lightboxIndex]}
+              alt={title ? `${title} - immagine ${lightboxIndex + 1}` : `Immagine ${lightboxIndex + 1}`}
+              className="max-w-full max-h-full w-auto h-auto object-contain"
+              data-testid="lightbox-image"
+            />
+
+            {totalImages > 1 && (
+              <div className="absolute bottom-4 left-1/2 -translate-x-1/2 z-50 bg-black/50 text-white px-4 py-2 rounded-full text-sm font-medium">
+                {lightboxIndex + 1} / {totalImages}
+              </div>
+            )}
+          </div>
+        </DialogContent>
+      </Dialog>
     </div>
   );
 }
