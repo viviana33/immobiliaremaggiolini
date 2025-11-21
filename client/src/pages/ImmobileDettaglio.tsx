@@ -350,6 +350,7 @@ export default function ImmobileDettaglio() {
               images={property.images.map(img => img.urlHot)}
               showThumbnails={true}
               title={property.titolo}
+              aspectRatio="aspect-video"
             />
 
             <div>

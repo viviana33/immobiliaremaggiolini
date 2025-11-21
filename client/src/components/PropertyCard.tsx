@@ -37,7 +37,7 @@ export default function PropertyCard({
         className="overflow-hidden hover-elevate active-elevate-2 transition-all cursor-pointer group"
         data-testid={`card-property-${title.toLowerCase().replace(/\s+/g, "-")}`}
       >
-        <div className="relative aspect-[4/3] overflow-visible">
+        <div className="relative aspect-[3/4] md:aspect-[4/3] overflow-visible">
           <ImageCarousel 
             images={displayImages}
             showThumbnails={false}

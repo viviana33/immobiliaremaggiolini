@@ -10,13 +10,15 @@ interface ImageCarouselProps {
   className?: string;
   showThumbnails?: boolean;
   title?: string;
+  aspectRatio?: string;
 }
 
 export default function ImageCarousel({ 
   images, 
   className,
   showThumbnails = true,
-  title 
+  title,
+  aspectRatio = "aspect-[3/4] md:aspect-[4/3]"
 }: ImageCarouselProps) {
   const [current, setCurrent] = useState(0);
   const [touchStart, setTouchStart] = useState<number | null>(null);
@@ -186,7 +188,7 @@ export default function ImageCarousel({
       aria-label="Carosello immagini"
       aria-live="polite"
     >
-      <div className="relative w-full aspect-video bg-muted rounded-md overflow-hidden">
+      <div className={cn("relative w-full bg-muted rounded-md overflow-hidden", aspectRatio)}>
         <div
           className="relative w-full h-full select-none"
           onTouchStart={onTouchStart}
@@ -226,7 +228,7 @@ export default function ImageCarousel({
                 <img
                   src={image}
                   alt={altText}
-                  className="w-full h-full object-cover cursor-pointer"
+                  className="w-full h-full object-contain cursor-pointer"
                   loading={index === current ? "eager" : "lazy"}
                   draggable={false}
                 />
