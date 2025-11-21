@@ -16,7 +16,7 @@ Preferred communication style: Simple, everyday language.
 - **State Management**: TanStack Query for server state, React Context API for themes/sessions.
 - **Key Features**:
     - **Image Carousel**: Custom component with keyboard navigation, touch/pointer swipe, lazy loading, smart prefetch, full accessibility, and conditional fullscreen lightbox viewer. Uses responsive aspect ratios (3:4 portrait on mobile, 4:3 landscape on desktop for listing cards; 16:9 for detail pages) optimized for phone-captured photos. Images display complete (object-contain) to avoid cropping important details. Lightbox behavior is controlled via `enableLightbox` prop: disabled in listing cards to allow direct navigation, enabled only on property detail pages for fullscreen viewing.
-    - **Navigation UX**: SessionStorage-based tracking for "back to list" functionality on property detail pages.
+    - **Navigation UX**: SessionStorage-based tracking for "back to list" functionality on property detail pages. Automatic scroll-to-top on all route changes ensures new pages always appear from the beginning.
     - **Property Filters**: Advanced filtering and search with URL-based state management, including city search, type filters, and sorting controls. Data fetching uses AbortController to prevent stale data.
 
 ### Backend
