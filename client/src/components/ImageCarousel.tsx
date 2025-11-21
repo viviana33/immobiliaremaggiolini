@@ -11,6 +11,7 @@ interface ImageCarouselProps {
   showThumbnails?: boolean;
   title?: string;
   aspectRatio?: string;
+  enableLightbox?: boolean;
 }
 
 export default function ImageCarousel({ 
@@ -18,7 +19,8 @@ export default function ImageCarousel({
   className,
   showThumbnails = true,
   title,
-  aspectRatio = "aspect-[3/4] md:aspect-[4/3]"
+  aspectRatio = "aspect-[3/4] md:aspect-[4/3]",
+  enableLightbox = false
 }: ImageCarouselProps) {
   const [current, setCurrent] = useState(0);
   const [touchStart, setTouchStart] = useState<number | null>(null);
@@ -208,32 +210,49 @@ export default function ImageCarousel({
               ? `${title} - immagine ${index + 1}`
               : `Immagine ${index + 1} di ${totalImages}`;
             
-            return (
-              <button
-                key={index}
-                type="button"
-                className={cn(
-                  "absolute inset-0 w-full h-full block border-0 p-0 transition-opacity duration-300",
-                  index === current ? "opacity-100 z-10" : "opacity-0 z-0 pointer-events-none"
-                )}
-                onClick={(e) => {
-                  e.preventDefault();
-                  e.stopPropagation();
-                  setLightboxIndex(current);
-                  setIsLightboxOpen(true);
-                }}
-                aria-label={`Apri ${altText} a schermo intero`}
-                data-testid={`carousel-image-${index}`}
-              >
+            if (enableLightbox) {
+              return (
+                <button
+                  key={index}
+                  type="button"
+                  className={cn(
+                    "absolute inset-0 w-full h-full block border-0 p-0 transition-opacity duration-300",
+                    index === current ? "opacity-100 z-10" : "opacity-0 z-0 pointer-events-none"
+                  )}
+                  onClick={(e) => {
+                    e.preventDefault();
+                    e.stopPropagation();
+                    setLightboxIndex(current);
+                    setIsLightboxOpen(true);
+                  }}
+                  aria-label={`Apri ${altText} a schermo intero`}
+                  data-testid={`carousel-image-${index}`}
+                >
+                  <img
+                    src={image}
+                    alt={altText}
+                    className="w-full h-full object-contain cursor-pointer"
+                    loading={index === current ? "eager" : "lazy"}
+                    draggable={false}
+                  />
+                </button>
+              );
+            } else {
+              return (
                 <img
+                  key={index}
                   src={image}
                   alt={altText}
-                  className="w-full h-full object-contain cursor-pointer"
+                  className={cn(
+                    "absolute inset-0 w-full h-full object-contain transition-opacity duration-300",
+                    index === current ? "opacity-100 z-10" : "opacity-0 z-0"
+                  )}
                   loading={index === current ? "eager" : "lazy"}
                   draggable={false}
+                  data-testid={`carousel-image-${index}`}
                 />
-              </button>
-            );
+              );
+            }
           })}
         </div>
 
@@ -278,8 +297,10 @@ export default function ImageCarousel({
                 key={index}
                 onClick={(e) => {
                   handleThumbnailClick(index, e);
-                  setLightboxIndex(index);
-                  setIsLightboxOpen(true);
+                  if (enableLightbox) {
+                    setLightboxIndex(index);
+                    setIsLightboxOpen(true);
+                  }
                 }}
                 className={cn(
                   "relative flex-shrink-0 w-20 h-20 rounded-md overflow-hidden border-2 transition-all hover-elevate",
@@ -303,7 +324,8 @@ export default function ImageCarousel({
         </div>
       )}
 
-      <Dialog open={isLightboxOpen} onOpenChange={setIsLightboxOpen}>
+      {enableLightbox && (
+        <Dialog open={isLightboxOpen} onOpenChange={setIsLightboxOpen}>
         <DialogContent className="max-w-[100vw] w-full h-full p-0 gap-0 border-0 bg-black">
           <VisuallyHidden>
             <DialogTitle>
@@ -372,6 +394,7 @@ export default function ImageCarousel({
           </div>
         </DialogContent>
       </Dialog>
+      )}
     </div>
   );
 }

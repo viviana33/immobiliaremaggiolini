@@ -351,6 +351,7 @@ export default function ImmobileDettaglio() {
               showThumbnails={true}
               title={property.titolo}
               aspectRatio="aspect-video"
+              enableLightbox={true}
             />
 
             <div>
