@@ -6,7 +6,7 @@ import { z } from "zod";
 // Enums per i tipi
 export const propertyTypeEnum = pgEnum("property_type", ["vendita", "affitto"]);
 export const propertyStatusEnum = pgEnum("property_status", ["disponibile", "venduto", "affittato", "riservato", "archiviato"]);
-export const energyClassEnum = pgEnum("energy_class", ["A4", "A3", "A2", "A1", "B", "C", "D", "E", "F", "G"]);
+export const energyClassEnum = pgEnum("energy_class", ["A4", "A3", "A2", "A1", "B", "C", "D", "E", "F", "G", "esente"]);
 export const postStatusEnum = pgEnum("post_status", ["bozza", "pubblicato", "archiviato"]);
 export const coverPositionEnum = pgEnum("cover_position", ["nascosta", "inizio", "fine"]);
 
@@ -25,6 +25,7 @@ export const properties = pgTable("properties", {
   piano: text("piano").notNull(),
   classeEnergetica: energyClassEnum("classe_energetica").notNull(),
   zona: text("zona").notNull(),
+  indirizzo: text("indirizzo"),
   stato: propertyStatusEnum("stato").notNull().default("disponibile"),
   linkVideo: text("link_video"),
   createdAt: timestamp("created_at").notNull().default(sql`now()`),

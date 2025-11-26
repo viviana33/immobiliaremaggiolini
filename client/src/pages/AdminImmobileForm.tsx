@@ -72,6 +72,7 @@ export default function AdminImmobileForm() {
       piano: "Piano terra",
       classeEnergetica: "G",
       zona: "",
+      indirizzo: "",
       stato: "disponibile",
       linkVideo: "",
     },
@@ -92,6 +93,7 @@ export default function AdminImmobileForm() {
         piano: property.piano,
         classeEnergetica: property.classeEnergetica,
         zona: property.zona,
+        indirizzo: property.indirizzo || "",
         stato: property.stato,
         linkVideo: property.linkVideo || "",
       });
@@ -610,9 +612,9 @@ export default function AdminImmobileForm() {
                           </SelectTrigger>
                         </FormControl>
                         <SelectContent>
-                          {["A4", "A3", "A2", "A1", "B", "C", "D", "E", "F", "G"].map((classe) => (
+                          {["A4", "A3", "A2", "A1", "B", "C", "D", "E", "F", "G", "esente"].map((classe) => (
                             <SelectItem key={classe} value={classe}>
-                              {classe}
+                              {classe === "esente" ? "Esente" : classe}
                             </SelectItem>
                           ))}
                         </SelectContent>
@@ -651,32 +653,51 @@ export default function AdminImmobileForm() {
 
                 <FormField
                   control={form.control}
-                  name="stato"
+                  name="indirizzo"
                   render={({ field }) => (
                     <FormItem>
-                      <FormLabel>Stato</FormLabel>
-                      <Select
-                        onValueChange={field.onChange}
-                        value={field.value}
-                      >
-                        <FormControl>
-                          <SelectTrigger data-testid="select-stato">
-                            <SelectValue placeholder="Seleziona stato" />
-                          </SelectTrigger>
-                        </FormControl>
-                        <SelectContent>
-                          <SelectItem value="disponibile">Disponibile</SelectItem>
-                          <SelectItem value="riservato">Riservato</SelectItem>
-                          <SelectItem value="venduto">Venduto</SelectItem>
-                          <SelectItem value="affittato">Affittato</SelectItem>
-                          <SelectItem value="archiviato">Archiviato</SelectItem>
-                        </SelectContent>
-                      </Select>
+                      <FormLabel>Indirizzo (opzionale)</FormLabel>
+                      <FormControl>
+                        <Input
+                          {...field}
+                          value={field.value || ""}
+                          placeholder="Es: Via Roma, 15"
+                          data-testid="input-indirizzo"
+                        />
+                      </FormControl>
                       <FormMessage />
                     </FormItem>
                   )}
                 />
               </div>
+
+              <FormField
+                control={form.control}
+                name="stato"
+                render={({ field }) => (
+                  <FormItem>
+                    <FormLabel>Stato</FormLabel>
+                    <Select
+                      onValueChange={field.onChange}
+                      value={field.value}
+                    >
+                      <FormControl>
+                        <SelectTrigger data-testid="select-stato">
+                          <SelectValue placeholder="Seleziona stato" />
+                        </SelectTrigger>
+                      </FormControl>
+                      <SelectContent>
+                        <SelectItem value="disponibile">Disponibile</SelectItem>
+                        <SelectItem value="riservato">Riservato</SelectItem>
+                        <SelectItem value="venduto">Venduto</SelectItem>
+                        <SelectItem value="affittato">Affittato</SelectItem>
+                        <SelectItem value="archiviato">Archiviato</SelectItem>
+                      </SelectContent>
+                    </Select>
+                    <FormMessage />
+                  </FormItem>
+                )}
+              />
 
               <FormField
                 control={form.control}
