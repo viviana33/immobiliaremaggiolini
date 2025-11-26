@@ -1,7 +1,7 @@
 import ContactForm from "@/components/ContactForm";
 import { Button } from "@/components/ui/button";
 import { Card } from "@/components/ui/card";
-import { MapPin, Phone, Clock, Search, Map, Handshake, MessageCircle, Zap } from "lucide-react";
+import { MapPin, Phone, Clock, Search, Map, Handshake } from "lucide-react";
 import { usePageMeta } from "@/lib/seo";
 
 export default function Contatti() {
@@ -32,16 +32,6 @@ export default function Contatti() {
       icon: Handshake,
       title: "Rimaniamo anche dopo",
       description: "Contratto firmato? Per noi è solo l'inizio. Problema con l'inquilino? Chiamaci. Dubbio su una clausola? Siamo qui. Anche anni dopo, se serve."
-    },
-    {
-      icon: MessageCircle,
-      title: "Sempre disponibili",
-      description: "Hai un dubbio? Chiamaci. Serve un chiarimento? Siamo qui. Non ti lasciamo mai a chiederti \"ma l'agenzia dov'è finita?\"."
-    },
-    {
-      icon: Zap,
-      title: "Gestiamo gli imprevisti al posto tuo",
-      description: "Caldaia rotta? Inquilino che non risponde? Documenti mancanti? Ci pensiamo noi. Tu vai avanti con la tua vita."
     },
   ];
 
