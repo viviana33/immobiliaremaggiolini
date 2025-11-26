@@ -24,7 +24,11 @@ const contactFormSchema = z.object({
   nome: z.string().min(1, "Il nome è obbligatorio"),
   email: z.string().email("Inserisci un'email valida"),
   telefono: z.string().optional(),
-  messaggio: z.string().min(1, "Il messaggio è obbligatorio"),
+  indirizzoImmobile: z.string().min(1, "L'indirizzo dell'immobile è obbligatorio"),
+  tipoRichiesta: z.enum(["vendita", "affitto"], {
+    required_error: "Seleziona se si tratta di vendita o affitto",
+  }),
+  messaggio: z.string().optional(),
   privacy: z.boolean().refine((val) => val === true, {
     message: "Devi accettare la privacy policy",
   }),
@@ -50,6 +54,8 @@ export default function ContactForm({ source, contextId }: ContactFormProps) {
       nome: "",
       email: "",
       telefono: "",
+      indirizzoImmobile: "",
+      tipoRichiesta: undefined,
       messaggio: "",
       privacy: false,
       preferenzaContatto: "email",
@@ -79,7 +85,12 @@ export default function ContactForm({ source, contextId }: ContactFormProps) {
   });
 
   const onSubmit = (data: ContactFormData) => {
-    let messaggioCompleto = data.messaggio;
+    let messaggioCompleto = `Indirizzo immobile: ${data.indirizzoImmobile}`;
+    messaggioCompleto += `\nTipo richiesta: ${data.tipoRichiesta === "vendita" ? "Vendita" : "Affitto"}`;
+    
+    if (data.messaggio) {
+      messaggioCompleto += `\n\nMessaggio: ${data.messaggio}`;
+    }
     
     if (data.telefono) {
       messaggioCompleto += `\n\nTelefono: ${data.telefono}`;
@@ -162,10 +173,68 @@ export default function ContactForm({ source, contextId }: ContactFormProps) {
 
           <FormField
             control={form.control}
+            name="indirizzoImmobile"
+            render={({ field }) => (
+              <FormItem>
+                <FormLabel>Indirizzo dell'Immobile *</FormLabel>
+                <FormControl>
+                  <Input
+                    placeholder="Via Roma 123, Milano"
+                    data-testid="input-indirizzo-immobile"
+                    {...field}
+                  />
+                </FormControl>
+                <FormMessage />
+              </FormItem>
+            )}
+          />
+
+          <FormField
+            control={form.control}
+            name="tipoRichiesta"
+            render={({ field }) => (
+              <FormItem>
+                <FormLabel>Tipo di Richiesta *</FormLabel>
+                <FormControl>
+                  <RadioGroup
+                    onValueChange={field.onChange}
+                    value={field.value}
+                    className="flex flex-col space-y-2"
+                    data-testid="radiogroup-tipo-richiesta"
+                  >
+                    <div className="flex items-center space-x-2">
+                      <RadioGroupItem
+                        value="vendita"
+                        id="tipo-vendita"
+                        data-testid="radio-vendita"
+                      />
+                      <Label htmlFor="tipo-vendita" className="font-normal cursor-pointer">
+                        Vendita
+                      </Label>
+                    </div>
+                    <div className="flex items-center space-x-2">
+                      <RadioGroupItem
+                        value="affitto"
+                        id="tipo-affitto"
+                        data-testid="radio-affitto"
+                      />
+                      <Label htmlFor="tipo-affitto" className="font-normal cursor-pointer">
+                        Affitto
+                      </Label>
+                    </div>
+                  </RadioGroup>
+                </FormControl>
+                <FormMessage />
+              </FormItem>
+            )}
+          />
+
+          <FormField
+            control={form.control}
             name="messaggio"
             render={({ field }) => (
               <FormItem>
-                <FormLabel>Messaggio *</FormLabel>
+                <FormLabel>Messaggio (facoltativo)</FormLabel>
                 <FormControl>
                   <Textarea
                     placeholder="Scrivici le tue esigenze, ti contatteremo al più presto..."
