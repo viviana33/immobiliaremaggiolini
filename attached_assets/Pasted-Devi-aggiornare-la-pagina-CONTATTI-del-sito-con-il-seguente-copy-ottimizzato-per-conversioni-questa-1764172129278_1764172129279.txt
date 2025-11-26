@@ -1,0 +1,112 @@
+Devi aggiornare la pagina CONTATTI del sito con il seguente copy ottimizzato per conversioni (questa pagina fungerà da landing page).
+
+IMPORTANTE - STRUTTURA DELLA PAGINA:
+
+1. HEADLINE (H1, molto visibile):
+"Vendere casa non dovrebbe tenerti sveglio la notte"
+
+2. SOTTOTITOLO (paragrafo introduttivo):
+"Eppure succede. Quando non sai se l'inquilino pagherà. Quando l'agente sparisce dopo la firma. Quando scopri troppo tardi che qualcosa non andava.
+
+Dopo quarant'anni, abbiamo capito che il valore di un consulente immobiliare si misura in quanti problemi ti evita, non in quanto velocemente chiude."
+
+3. CTA BUTTON (bottone rosso prominente che scrolla al form esistente):
+Testo bottone: "CONTATTACI"
+Il bottone deve portare direttamente al form di contatto già presente nel sito.
+
+---
+
+4. SEZIONE "COME LAVORIAMO" (con spaziatura generosa):
+
+🔍 Verifichiamo tutto, prima
+Non ti proponiamo il primo che bussa. Controlliamo referenze, situazione finanziaria, storico. Se qualcosa non torna, te lo diciamo.
+
+🗺️ Conosciamo ogni angolo di questa zona
+Non solo le vie. Le persone. I proprietari affidabili. Gli inquilini seri. I prezzi veri, non quelli dei portali. Quarant'anni di relazioni contano.
+
+🤝 Rimaniamo anche dopo
+Contratto firmato? Per noi è solo l'inizio. Problema con l'inquilino? Chiamaci. Dubbio su una clausola? Siamo qui. Anche anni dopo, se serve.
+
+💬 Sempre disponibili
+Hai un dubbio? Chiamaci. Serve un chiarimento? Siamo qui. Non ti lasciamo mai a chiederti "ma l'agenzia dov'è finita?".
+
+⚡ Gestiamo gli imprevisti al posto tuo
+Caldaia rotta? Inquilino che non risponde? Documenti mancanti? Ci pensiamo noi. Tu vai avanti con la tua vita.
+
+---
+
+5. SEZIONE "LA NOSTRA STORIA" (con spaziatura generosa, testo ben leggibile):
+
+Nel 1985, quando abbiamo aperto, il mercato immobiliare era completamente diverso.
+
+Gli affitti te li buttavano dietro. Bastava un cartello "Vendesi" e il telefono squillava. Le persone si fidavano.
+
+Oggi è tutto più complicato. Proprietari che temono inquilini inaffidabili. Acquirenti scottati da valutazioni gonfiate. Agenti che spariscono dopo aver incassato la provvigione.
+
+In quarant'anni abbiamo visto colleghi aprire e chiudere. Abbiamo visto agenzie bruciare reputazioni per chiudere contratti veloci. Abbiamo visto proprietari e inquilini scottati da accordi che sulla carta sembravano perfetti.
+
+Noi siamo ancora qui perché quarant'anni fa abbiamo fatto una scelta: costruire relazioni che durano, non chiudere contratti che poi esplodono. Significa dire dei no. No a proprietari che vogliono affittare a chiunque pur di incassare subito. No a inquilini che cercano soluzioni troppo rischiose. Significa verificare tutto quello che può essere verificato, prima di proporti qualcosa. E significa esserci anche dopo, quando gli altri hanno già dimenticato il tuo nome.
+
+Dopo quarant'anni su questo territorio, abbiamo costruito una rete di relazioni – con notai, amministratori, proprietari, inquilini – che ci permette di sapere esattamente chi è affidabile e chi no. Conosciamo i palazzi, le famiglie, i prezzi veri. Non quelli dei portali.
+
+E sappiamo che un accordo funziona solo se entrambe le parti dormono tranquille. Non solo il giorno della firma, ma anche sei mesi dopo.
+
+Non siamo intermediari. Siamo consulenti.
+
+Risolviamo problemi. Non li creiamo.
+
+---
+
+6. SEZIONE CTA FINALE (prima del form):
+
+Titolo: "FACCIAMO UNA COSA"
+
+Testo:
+"Raccontaci cosa ti serve. Ti richiamiamo entro domani e ti diciamo esattamente come possiamo aiutarti.
+
+Niente impegno. Niente commissioni anticipate. Solo una consulenza onesta."
+
+---
+
+7. FORM DI CONTATTO (usa il form già esistente nel sito, NON crearne uno nuovo)
+
+---
+
+8. INFORMAZIONI DI CONTATTO (dopo il form):
+
+Titolo: "Preferisci chiamare direttamente?"
+
+📞 [Numero di telefono esistente] — Rispondiamo sempre
+📍 [Indirizzo esistente] — Vieni quando vuoi
+⏰ Lun-Ven 9-19 | Sab 9-13
+
+Chiusura:
+"Stesso posto. Stesse facce. Da quarant'anni."
+
+---
+
+REQUISITI TECNICI E DI DESIGN:
+
+1. OTTIMIZZAZIONE PER CONVERSIONI:
+- Il bottone "CONTATTACI" deve essere molto visibile (rosso, grande)
+- Usa spaziatura generosa tra le sezioni per facilitare la lettura
+- Font size adeguato per leggibilità (soprattutto per utenti 45+)
+- Il form deve essere facilmente raggiungibile e visibile
+
+2. COERENZA CON LO STILE DEL SITO:
+- Mantieni i colori, font e stile grafico esistente
+- Usa gli stessi elementi grafici/icone del resto del sito
+- Assicurati che la pagina sia responsive (mobile-friendly)
+
+3. GERARCHIA VISIVA:
+- H1 per headline principale
+- H2 per i titoli di sezione
+- H3 per i sottotitoli dei benefit (🔍, 🗺️, ecc.)
+- Paragrafi ben spaziati e leggibili
+
+4. LANDING PAGE OPTIMIZATION:
+- La pagina deve essere veloce nel caricamento
+- Il form deve essere funzionante e connesso al sistema esistente
+- Aggiungi meta description SEO ottimizzata se possibile
+
+Implementa tutto questo mantenendo la massima coerenza con il design esistente del sito.
