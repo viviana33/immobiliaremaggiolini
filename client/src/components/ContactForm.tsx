@@ -73,7 +73,17 @@ export default function ContactForm({ source, contextId }: ContactFormProps) {
         title: "Messaggio inviato!",
         description: data.message || "Ti contatteremo presto.",
       });
-      form.reset();
+      form.reset({
+        nome: "",
+        email: "",
+        telefono: "",
+        indirizzoImmobile: "",
+        tipoRichiesta: undefined,
+        messaggio: "",
+        privacy: false,
+        preferenzaContatto: "email",
+        website: "",
+      }, { keepErrors: false });
     },
     onError: (error: any) => {
       toast({
@@ -257,7 +267,7 @@ export default function ContactForm({ source, contextId }: ContactFormProps) {
                 <FormControl>
                   <RadioGroup
                     onValueChange={field.onChange}
-                    defaultValue={field.value}
+                    value={field.value}
                     className="flex flex-col space-y-2"
                     data-testid="radiogroup-preferenza"
                   >
