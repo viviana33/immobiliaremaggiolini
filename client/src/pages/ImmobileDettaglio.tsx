@@ -36,6 +36,7 @@ const energyClassMap: Record<string, string> = {
   E: "E - Bassa",
   F: "F - Bassa",
   G: "G - Molto Bassa",
+  esente: "Esente",
 };
 
 export default function ImmobileDettaglio() {
@@ -360,7 +361,7 @@ export default function ImmobileDettaglio() {
                 {property.descrizione.split('\n\n').map((paragraph, index) => (
                   <p 
                     key={index} 
-                    className="text-muted-foreground mb-4 last:mb-0" 
+                    className="text-muted-foreground mb-4 last:mb-0 whitespace-pre-line" 
                     data-testid={index === 0 ? "text-description" : undefined}
                   >
                     {paragraph}
