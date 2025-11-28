@@ -200,6 +200,7 @@ export default function Home() {
                 <BlogCard
                   key={post.id}
                   id={post.id}
+                  slug={post.slug}
                   title={post.titolo}
                   excerpt={post.sottotitolo || post.contenuto.substring(0, 150) + '...'}
                   image={post.cover || 'https://images.unsplash.com/photo-1560518883-ce09059eeffa?w=800&h=600&fit=crop'}
