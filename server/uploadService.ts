@@ -105,7 +105,8 @@ class UploadService {
   }
 
   async uploadImage(buffer: Buffer, filename: string): Promise<UploadResult> {
-    const resizedBuffer = await this.resizeImage(buffer, 2560);
+    // Ridimensiona a max 1920px per ottimizzare memoria e upload
+    const resizedBuffer = await this.resizeImage(buffer, 1920);
     const hashFile = this.calculateFileHash(resizedBuffer);
 
     const urlHot = await this.uploadToCloudinary(resizedBuffer, filename);
@@ -160,17 +161,19 @@ class UploadService {
         processedImage = image.resize({ ...resizeOptions, fit: 'inside', withoutEnlargement: true });
       }
       
+      // Usa qualità 85% per un buon compromesso tra dimensione e qualità
       if (format === 'jpeg' || format === 'jpg') {
-        return await processedImage.jpeg({ quality: 90, progressive: true }).toBuffer();
+        return await processedImage.jpeg({ quality: 85, progressive: true }).toBuffer();
       } else if (format === 'png') {
-        return await processedImage.png({ compressionLevel: 9, progressive: true }).toBuffer();
+        // Converti PNG in JPEG per ridurre dimensione (a meno che non sia trasparente)
+        return await processedImage.jpeg({ quality: 85, progressive: true }).toBuffer();
       } else if (format === 'webp') {
-        return await processedImage.webp({ quality: 90 }).toBuffer();
+        return await processedImage.webp({ quality: 85 }).toBuffer();
       } else if (format === 'gif') {
         return await processedImage.gif().toBuffer();
       }
       
-      return await processedImage.jpeg({ quality: 90, progressive: true }).toBuffer();
+      return await processedImage.jpeg({ quality: 85, progressive: true }).toBuffer();
     } catch (error: any) {
       if (error.message?.includes('INVALID_IMAGE:')) {
         throw error;

@@ -423,7 +423,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
   const upload = multer({ 
     storage: multer.memoryStorage(),
     limits: { 
-      fileSize: 10 * 1024 * 1024,
+      fileSize: 30 * 1024 * 1024, // 30MB per file - immagini verranno ridimensionate automaticamente
       files: 15
     }
   });
@@ -598,17 +598,28 @@ export async function registerRoutes(app: Express): Promise<Server> {
       
       const files = req.files as Express.Multer.File[];
       if (files && files.length > 0) {
-        const uploadPromises = files.map(async (file) => {
-          const result = await uploadService.uploadImage(file.buffer, file.originalname);
-          return storage.createPropertyImage({
-            propertyId: property.id,
-            urlHot: result.urlHot,
-            urlCold: result.urlCold,
-            hashFile: result.hashFile,
-          });
-        });
+        console.log(`[UPLOAD] Elaborazione ${files.length} immagini per immobile ${property.id}`);
         
-        await Promise.all(uploadPromises);
+        // Elabora le immagini in sequenza per evitare problemi di memoria
+        for (let i = 0; i < files.length; i++) {
+          const file = files[i];
+          try {
+            console.log(`[UPLOAD] Immagine ${i + 1}/${files.length}: ${file.originalname} (${(file.size / 1024 / 1024).toFixed(2)}MB)`);
+            const result = await uploadService.uploadImage(file.buffer, file.originalname);
+            await storage.createPropertyImage({
+              propertyId: property.id,
+              urlHot: result.urlHot,
+              urlCold: result.urlCold,
+              hashFile: result.hashFile,
+            });
+            console.log(`[UPLOAD] Immagine ${i + 1}/${files.length} completata con successo`);
+          } catch (uploadError: any) {
+            console.error(`[UPLOAD] Errore immagine ${i + 1}/${files.length} (${file.originalname}):`, uploadError.message);
+            // Continua con le altre immagini anche se una fallisce
+          }
+        }
+        
+        console.log(`[UPLOAD] Completato upload immagini per immobile ${property.id}`);
       }
       
       // Invia notifica se l'immobile è disponibile
@@ -660,17 +671,28 @@ export async function registerRoutes(app: Express): Promise<Server> {
       
       const files = req.files as Express.Multer.File[];
       if (files && files.length > 0) {
-        const uploadPromises = files.map(async (file) => {
-          const result = await uploadService.uploadImage(file.buffer, file.originalname);
-          return storage.createPropertyImage({
-            propertyId: updatedProperty.id,
-            urlHot: result.urlHot,
-            urlCold: result.urlCold,
-            hashFile: result.hashFile,
-          });
-        });
+        console.log(`[UPLOAD] Elaborazione ${files.length} nuove immagini per immobile ${updatedProperty.id}`);
         
-        await Promise.all(uploadPromises);
+        // Elabora le immagini in sequenza per evitare problemi di memoria
+        for (let i = 0; i < files.length; i++) {
+          const file = files[i];
+          try {
+            console.log(`[UPLOAD] Immagine ${i + 1}/${files.length}: ${file.originalname} (${(file.size / 1024 / 1024).toFixed(2)}MB)`);
+            const result = await uploadService.uploadImage(file.buffer, file.originalname);
+            await storage.createPropertyImage({
+              propertyId: updatedProperty.id,
+              urlHot: result.urlHot,
+              urlCold: result.urlCold,
+              hashFile: result.hashFile,
+            });
+            console.log(`[UPLOAD] Immagine ${i + 1}/${files.length} completata con successo`);
+          } catch (uploadError: any) {
+            console.error(`[UPLOAD] Errore immagine ${i + 1}/${files.length} (${file.originalname}):`, uploadError.message);
+            // Continua con le altre immagini anche se una fallisce
+          }
+        }
+        
+        console.log(`[UPLOAD] Completato upload immagini per immobile ${updatedProperty.id}`);
       }
       
       // Archivia immagini solo per affittato
