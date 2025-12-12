@@ -24,7 +24,7 @@ import {
   SelectValue,
 } from "@/components/ui/select";
 import { useToast } from "@/hooks/use-toast";
-import { ArrowLeft, Upload, X, RefreshCw, ChevronLeft, ChevronRight } from "lucide-react";
+import { ArrowLeft, Upload, X, RefreshCw, GripVertical } from "lucide-react";
 import { insertPropertySchema, type Property, type PropertyImage } from "@shared/schema";
 import { z } from "zod";
 
@@ -49,6 +49,9 @@ export default function AdminImmobileForm() {
   const [selectedFiles, setSelectedFiles] = useState<File[]>([]);
   const [existingImages, setExistingImages] = useState<PropertyImage[]>([]);
   const [draggedIndex, setDraggedIndex] = useState<number | null>(null);
+  const [dragOverIndex, setDragOverIndex] = useState<number | null>(null);
+  const [draggedFileIndex, setDraggedFileIndex] = useState<number | null>(null);
+  const [dragOverFileIndex, setDragOverFileIndex] = useState<number | null>(null);
 
   const isEdit = Boolean(id);
 
@@ -260,17 +263,6 @@ export default function AdminImmobileForm() {
     setSelectedFiles((prev) => prev.filter((_, i) => i !== index));
   };
 
-  const moveSelectedFile = (index: number, direction: "left" | "right") => {
-    const newIndex = direction === "left" ? index - 1 : index + 1;
-    if (newIndex < 0 || newIndex >= selectedFiles.length) return;
-
-    const reordered = [...selectedFiles];
-    const [moved] = reordered.splice(index, 1);
-    reordered.splice(newIndex, 0, moved);
-
-    setSelectedFiles(reordered);
-  };
-
   const removeExistingImage = (imageId: string) => {
     deleteImageMutation.mutate(imageId);
     setExistingImages((prev) => prev.filter((img) => img.id !== imageId));
@@ -279,15 +271,24 @@ export default function AdminImmobileForm() {
   const handleDragStart = (e: React.DragEvent<HTMLDivElement>, index: number) => {
     setDraggedIndex(index);
     e.dataTransfer.effectAllowed = "move";
+    e.dataTransfer.setData("text/plain", index.toString());
   };
 
-  const handleDragOver = (e: React.DragEvent<HTMLDivElement>) => {
+  const handleDragOver = (e: React.DragEvent<HTMLDivElement>, index: number) => {
     e.preventDefault();
     e.dataTransfer.dropEffect = "move";
+    if (draggedIndex !== null && draggedIndex !== index) {
+      setDragOverIndex(index);
+    }
+  };
+
+  const handleDragLeave = () => {
+    setDragOverIndex(null);
   };
 
   const handleDrop = (e: React.DragEvent<HTMLDivElement>, dropIndex: number) => {
     e.preventDefault();
+    setDragOverIndex(null);
     
     if (draggedIndex === null || draggedIndex === dropIndex) {
       setDraggedIndex(null);
@@ -311,24 +312,47 @@ export default function AdminImmobileForm() {
 
   const handleDragEnd = () => {
     setDraggedIndex(null);
+    setDragOverIndex(null);
   };
 
-  const moveImage = (index: number, direction: "left" | "right") => {
-    const newIndex = direction === "left" ? index - 1 : index + 1;
-    if (newIndex < 0 || newIndex >= existingImages.length) return;
+  const handleFileDragStart = (e: React.DragEvent<HTMLDivElement>, index: number) => {
+    setDraggedFileIndex(index);
+    e.dataTransfer.effectAllowed = "move";
+    e.dataTransfer.setData("text/plain", index.toString());
+  };
 
-    const reordered = [...existingImages];
-    const [moved] = reordered.splice(index, 1);
-    reordered.splice(newIndex, 0, moved);
+  const handleFileDragOver = (e: React.DragEvent<HTMLDivElement>, index: number) => {
+    e.preventDefault();
+    e.dataTransfer.dropEffect = "move";
+    if (draggedFileIndex !== null && draggedFileIndex !== index) {
+      setDragOverFileIndex(index);
+    }
+  };
 
-    setExistingImages(reordered);
+  const handleFileDragLeave = () => {
+    setDragOverFileIndex(null);
+  };
 
-    const updates = reordered.map((img, idx) => ({
-      id: img.id,
-      position: idx,
-    }));
+  const handleFileDrop = (e: React.DragEvent<HTMLDivElement>, dropIndex: number) => {
+    e.preventDefault();
+    setDragOverFileIndex(null);
+    
+    if (draggedFileIndex === null || draggedFileIndex === dropIndex) {
+      setDraggedFileIndex(null);
+      return;
+    }
 
-    reorderImagesMutation.mutate(updates);
+    const reordered = [...selectedFiles];
+    const [draggedItem] = reordered.splice(draggedFileIndex, 1);
+    reordered.splice(dropIndex, 0, draggedItem);
+
+    setSelectedFiles(reordered);
+    setDraggedFileIndex(null);
+  };
+
+  const handleFileDragEnd = () => {
+    setDraggedFileIndex(null);
+    setDragOverFileIndex(null);
   };
 
   const onSubmit = (data: FormData) => {
@@ -747,12 +771,13 @@ export default function AdminImmobileForm() {
                     {existingImages.map((img, index) => (
                       <div
                         key={img.id}
-                        className={`relative group cursor-move ${
-                          draggedIndex === index ? "opacity-50" : ""
-                        }`}
+                        className={`relative group cursor-grab active:cursor-grabbing transition-all duration-200 ${
+                          draggedIndex === index ? "opacity-50 scale-95" : ""
+                        } ${dragOverIndex === index ? "ring-2 ring-primary ring-offset-2 scale-105" : ""}`}
                         draggable
                         onDragStart={(e) => handleDragStart(e, index)}
-                        onDragOver={handleDragOver}
+                        onDragOver={(e) => handleDragOver(e, index)}
+                        onDragLeave={handleDragLeave}
                         onDrop={(e) => handleDrop(e, index)}
                         onDragEnd={handleDragEnd}
                         data-testid={`image-container-${index}`}
@@ -760,47 +785,24 @@ export default function AdminImmobileForm() {
                         <img
                           src={img.urlHot}
                           alt="Immagine immobile"
-                          className="w-full h-32 object-cover rounded"
+                          className="w-full h-32 object-cover rounded pointer-events-none"
                         />
-                        <div className="absolute top-2 left-2 bg-black/70 text-white text-xs px-2 py-1 rounded">
+                        <div className="absolute top-2 left-2 bg-black/70 text-white text-xs px-2 py-1 rounded flex items-center gap-1">
+                          <GripVertical className="h-3 w-3" />
                           {index + 1}
                         </div>
                         
-                        <div className="absolute inset-0 bg-black/50 opacity-0 group-hover:opacity-100 transition-opacity flex items-center justify-center gap-2">
-                          <Button
-                            type="button"
-                            size="icon"
-                            variant="secondary"
-                            onClick={() => moveImage(index, "left")}
-                            disabled={index === 0 || reorderImagesMutation.isPending}
-                            className="h-8 w-8"
-                            data-testid={`button-move-left-${index}`}
-                          >
-                            <ChevronLeft className="h-4 w-4" />
-                          </Button>
-                          
+                        <div className="absolute top-2 right-2">
                           <Button
                             type="button"
                             size="icon"
                             variant="destructive"
                             onClick={() => removeExistingImage(img.id)}
                             disabled={deleteImageMutation.isPending}
-                            className="h-8 w-8"
+                            className="h-7 w-7"
                             data-testid={`button-rimuovi-immagine-${img.id}`}
                           >
-                            <X className="h-4 w-4" />
-                          </Button>
-                          
-                          <Button
-                            type="button"
-                            size="icon"
-                            variant="secondary"
-                            onClick={() => moveImage(index, "right")}
-                            disabled={index === existingImages.length - 1 || reorderImagesMutation.isPending}
-                            className="h-8 w-8"
-                            data-testid={`button-move-right-${index}`}
-                          >
-                            <ChevronRight className="h-4 w-4" />
+                            <X className="h-3 w-3" />
                           </Button>
                         </div>
 
@@ -818,54 +820,43 @@ export default function AdminImmobileForm() {
               {selectedFiles.length > 0 && (
                 <div>
                   <p className="text-sm text-muted-foreground mb-3">
-                    Nuove immagini da caricare ({selectedFiles.length}) - Usa le frecce per riordinare
+                    Nuove immagini da caricare ({selectedFiles.length}) - Trascina per riordinare
                   </p>
                   <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
                     {selectedFiles.map((file, index) => (
-                      <div key={index} className="relative group" data-testid={`file-container-${index}`}>
+                      <div 
+                        key={`${file.name}-${index}`} 
+                        className={`relative group cursor-grab active:cursor-grabbing transition-all duration-200 ${
+                          draggedFileIndex === index ? "opacity-50 scale-95" : ""
+                        } ${dragOverFileIndex === index ? "ring-2 ring-primary ring-offset-2 scale-105" : ""}`}
+                        draggable
+                        onDragStart={(e) => handleFileDragStart(e, index)}
+                        onDragOver={(e) => handleFileDragOver(e, index)}
+                        onDragLeave={handleFileDragLeave}
+                        onDrop={(e) => handleFileDrop(e, index)}
+                        onDragEnd={handleFileDragEnd}
+                        data-testid={`file-container-${index}`}
+                      >
                         <img
                           src={URL.createObjectURL(file)}
                           alt={file.name}
-                          className="w-full h-32 object-cover rounded"
+                          className="w-full h-32 object-cover rounded pointer-events-none"
                         />
-                        <div className="absolute top-2 left-2 bg-black/70 text-white text-xs px-2 py-1 rounded">
+                        <div className="absolute top-2 left-2 bg-black/70 text-white text-xs px-2 py-1 rounded flex items-center gap-1">
+                          <GripVertical className="h-3 w-3" />
                           {index + 1}
                         </div>
                         
-                        <div className="absolute inset-0 bg-black/50 opacity-0 group-hover:opacity-100 transition-opacity flex items-center justify-center gap-2">
-                          <Button
-                            type="button"
-                            size="icon"
-                            variant="secondary"
-                            onClick={() => moveSelectedFile(index, "left")}
-                            disabled={index === 0}
-                            className="h-8 w-8"
-                            data-testid={`button-move-file-left-${index}`}
-                          >
-                            <ChevronLeft className="h-4 w-4" />
-                          </Button>
-                          
+                        <div className="absolute top-2 right-2">
                           <Button
                             type="button"
                             size="icon"
                             variant="destructive"
                             onClick={() => removeSelectedFile(index)}
-                            className="h-8 w-8"
+                            className="h-7 w-7"
                             data-testid={`button-rimuovi-file-${index}`}
                           >
-                            <X className="h-4 w-4" />
-                          </Button>
-                          
-                          <Button
-                            type="button"
-                            size="icon"
-                            variant="secondary"
-                            onClick={() => moveSelectedFile(index, "right")}
-                            disabled={index === selectedFiles.length - 1}
-                            className="h-8 w-8"
-                            data-testid={`button-move-file-right-${index}`}
-                          >
-                            <ChevronRight className="h-4 w-4" />
+                            <X className="h-3 w-3" />
                           </Button>
                         </div>
                       </div>
