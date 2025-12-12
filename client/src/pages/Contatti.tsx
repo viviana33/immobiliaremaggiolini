@@ -101,10 +101,7 @@ export default function Contatti() {
               Gli affitti te li buttavano dietro. Bastava un cartello "Vendesi" e il telefono squillava. Le persone si fidavano.
             </p>
             <p>
-              Oggi è tutto più complicato. Proprietari che temono inquilini inaffidabili. Acquirenti scottati da valutazioni gonfiate. Agenti che spariscono dopo aver incassato la provvigione.
-            </p>
-            <p>
-              In quarant'anni abbiamo visto colleghi aprire e chiudere. Abbiamo visto agenzie bruciare reputazioni per chiudere contratti veloci. Abbiamo visto proprietari e inquilini scottati da accordi che sulla carta sembravano perfetti.
+              Oggi è tutto più complicato. Proprietari che temono inquilini inaffidabili. Acquirenti scottati da valutazioni gonfiate.
             </p>
             <p>
               Noi siamo ancora qui perché quarant'anni fa abbiamo fatto una scelta: costruire relazioni che durano, non chiudere contratti che poi esplodono. Significa dire dei no. No a proprietari che vogliono affittare a chiunque pur di incassare subito. No a inquilini che cercano soluzioni troppo rischiose. Significa verificare tutto quello che può essere verificato, prima di proporti qualcosa. E significa esserci anche dopo, quando gli altri hanno già dimenticato il tuo nome.
