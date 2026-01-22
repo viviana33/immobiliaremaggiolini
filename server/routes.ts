@@ -1791,15 +1791,6 @@ ${rssItems}
     }
   });
 
-  // Redirect SEO per /vendita e /affitto
-  app.get("/vendita", (req, res) => {
-    res.redirect(301, '/immobili?tipo=vendita');
-  });
-  
-  app.get("/affitto", (req, res) => {
-    res.redirect(301, '/immobili?tipo=affitto');
-  });
-
   // Redirect da /sitemap.xml a /api/sitemap.xml
   app.get("/sitemap.xml", (req, res) => {
     res.redirect(301, '/api/sitemap.xml');
@@ -1820,8 +1811,6 @@ ${rssItems}
       const staticPages = [
         { url: '/', priority: '1.0', changefreq: 'weekly' },
         { url: '/immobili', priority: '0.9', changefreq: 'daily' },
-        { url: '/immobili?tipo=vendita', priority: '0.9', changefreq: 'daily' },
-        { url: '/immobili?tipo=affitto', priority: '0.9', changefreq: 'daily' },
         { url: '/blog', priority: '0.8', changefreq: 'daily' },
         { url: '/chi-siamo', priority: '0.7', changefreq: 'monthly' },
         { url: '/contatti', priority: '0.7', changefreq: 'monthly' },
